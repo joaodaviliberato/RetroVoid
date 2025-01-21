@@ -533,50 +533,14 @@ footer.hidden {
     position: static;
 }
 
-/* Update life bar styles */
+/* Update life bar position */
 .life-bar {
     position: fixed;
     bottom: 20px;
     left: 20px;
     z-index: 5;
     display: flex;
-    gap: 15px;
-}
-
-.heart {
-    width: 25px;
-    height: 25px;
-    position: relative;
-    animation: pulse 1.5s ease infinite;
-    color: var(--neon-pink);
-    text-shadow: 0 0 10px var(--neon-pink);
-}
-
-.heart::before,
-.heart::after {
-    content: "♥";
-    position: absolute;
-    font-size: 25px;
-    left: 0;
-    top: 0;
-}
-
-.heart.lost {
-    opacity: 0.3;
-    animation: none;
-    filter: grayscale(100%);
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
-    }
+    gap: 10px;
 }
 
 /* Update score position */
