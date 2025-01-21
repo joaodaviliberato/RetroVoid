@@ -42,7 +42,7 @@ function initSpaceshipGame() {
             enemySpeed: 0.8,
             playerShield: 150,
             enemyBulletSpeed: 3,
-            bulletDamage: 15
+            bulletDamage: 5
         },
         NORMAL: {
             name: 'NORMAL',
@@ -53,7 +53,7 @@ function initSpaceshipGame() {
             enemySpeed: 1,
             playerShield: 100,
             enemyBulletSpeed: 5,
-            bulletDamage: 25
+            bulletDamage: 10
         },
         HARD: {
             name: 'HARD',
@@ -62,9 +62,9 @@ function initSpaceshipGame() {
             enemyShootRate: 0.03,
             playerShootDelay: 50,
             enemySpeed: 1.2,
-            playerShield: 75,
+            playerShield: 100,
             enemyBulletSpeed: 7,
-            bulletDamage: 35
+            bulletDamage: 15
         }
     };
 
@@ -568,7 +568,7 @@ function initSpaceshipGame() {
                     // Check player collision with enemy bullets
                     if (checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
-                        player.shield -= gameState.bulletDamage;
+                        player.shield -= DIFFICULTY[selectedDifficulty].bulletDamage;
                         
                         // Game over when shield reaches 0
                         if (player.shield <= 0) {
@@ -587,13 +587,13 @@ function initSpaceshipGame() {
 
                 // Update enemies with new movement
                 gameState.enemies.forEach((enemy, index) => {
-                    // Move towards target Y position only
+                    // Move towards target Y position
                     if (enemy.y < enemy.targetY) {
                         enemy.y += enemy.speed;
                     }
                     
-                    // Enemy shooting - Fixed shooting mechanism
-                    if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
+                    // Enemy shooting - Enhanced shooting mechanism
+                    if (currentState === GAME_STATE.PLAYING && Math.random() < DIFFICULTY[selectedDifficulty].enemyShootRate) {
                         gameState.enemyBullets.push({
                             x: enemy.x,
                             y: enemy.y + enemy.height/2,
@@ -604,11 +604,11 @@ function initSpaceshipGame() {
                         });
                     }
                     
+                    // Collision with player
                     if (checkCollision(enemy, player)) {
-                        player.shield -= gameState.bulletDamage * 2;
+                        player.shield -= DIFFICULTY[selectedDifficulty].bulletDamage * 2;
                         gameState.enemies.splice(index, 1);
                         
-                        // Game over when shield reaches 0
                         if (player.shield <= 0) {
                             player.shield = 0;
                             gameState.gameOver = true;
