@@ -152,8 +152,18 @@ function initSpaceshipGame() {
         ctx.save();
         ctx.translate(player.x, player.y);
         
-        // Main body - improved design
+        // Draw shield if active
+        if (player.shield > 0) {
+            ctx.beginPath();
+            ctx.arc(0, 0, player.width/2 + 5, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${player.shield/100})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // Improved player spaceship design
         ctx.beginPath();
+        // Main body
         ctx.moveTo(0, -30);
         ctx.lineTo(-20, 10);
         ctx.lineTo(-25, 20);
@@ -166,8 +176,26 @@ function initSpaceshipGame() {
         ctx.closePath();
         ctx.fillStyle = player.color;
         ctx.fill();
+
+        // Wing details
+        ctx.beginPath();
+        ctx.moveTo(-20, 10);
+        ctx.lineTo(-35, 0);
+        ctx.lineTo(-20, -10);
+        ctx.moveTo(20, 10);
+        ctx.lineTo(35, 0);
+        ctx.lineTo(20, -10);
+        ctx.strokeStyle = '#ff0066';
+        ctx.lineWidth = 2;
+        ctx.stroke();
         
-        // Engine glow effect
+        // Cockpit
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 8, 15, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#0ff';
+        ctx.fill();
+        
+        // Engine glow
         const engineGlow = ctx.createRadialGradient(0, 25, 0, 0, 25, 20);
         engineGlow.addColorStop(0, '#0ff');
         engineGlow.addColorStop(1, 'transparent');
@@ -375,24 +403,10 @@ function initSpaceshipGame() {
     }
 
     function checkCollision(rect1, rect2) {
-        const r1 = {
-            left: rect1.x - rect1.width/2,
-            right: rect1.x + rect1.width/2,
-            top: rect1.y,
-            bottom: rect1.y + rect1.height
-        };
-        
-        const r2 = {
-            left: rect2.x - rect2.width/2,
-            right: rect2.x + rect2.width/2,
-            top: rect2.y,
-            bottom: rect2.y + rect2.height
-        };
-        
-        return !(r1.left > r2.right || 
-                 r1.right < r2.left || 
-                 r1.top > r2.bottom ||
-                 r1.bottom < r2.top);
+        return rect1.x < rect2.x + rect2.width &&
+               rect1.x + rect1.width > rect2.x &&
+               rect1.y < rect2.y + rect2.height &&
+               rect1.y + rect1.height > rect2.y;
     }
 
     function drawMenu() {
@@ -527,13 +541,6 @@ function initSpaceshipGame() {
                             gameState.enemies.splice(enemyIndex, 1);
                             score += 100;
                             scoreElement.textContent = score;
-                            
-                            if (score > currentHighScore) {
-                                if (saveHighScore(selectedDifficulty, score)) {
-                                    currentHighScore = score;
-                                    highScoreElement.textContent = score;
-                                }
-                            }
                         }
                     });
 
@@ -747,6 +754,9 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
+        // Hide game over overlay
+        gameOverOverlay.classList.add('hidden');
+        
         // Show menu overlay and update state
         menuOverlay.classList.remove('hidden');
         currentState = GAME_STATE.MENU;
@@ -755,10 +765,6 @@ function initSpaceshipGame() {
         // Reset difficulty buttons
         difficultyBtns.forEach(btn => btn.classList.remove('selected'));
         difficultyInfo.textContent = 'Choose your challenge level';
-
-        // Update high score display
-        document.querySelector('.high-score').setAttribute('data-difficulty', '');
-        highScoreElement.textContent = '0';
     });
 
     // Initial menu show
@@ -770,6 +776,13 @@ function initSpaceshipGame() {
             currentHighScore = highScores[selectedDifficulty];
             highScoreElement.textContent = currentHighScore;
         }
+    }
+
+    const gameOverOverlay = document.querySelector('.game-over-overlay');
+    
+    // Modify update function game over handling
+    if (gameState.gameOver) {
+        gameOverOverlay.classList.remove('hidden');
     }
 
     update();
@@ -792,69 +805,4 @@ function saveHighScore(difficulty, newScore) {
         return true;
     }
     return false;
-}
-
-// Add space background effect
-function createStarfield() {
-    const stars = [];
-    const numStars = 200;
-    
-    for (let i = 0; i < numStars; i++) {
-        stars.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2,
-            speed: 0.5 + Math.random() * 2,
-            brightness: Math.random()
-        });
-    }
-    return stars;
-}
-
-function updateStarfield() {
-    gameState.stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > canvas.height) {
-            star.y = 0;
-            star.x = Math.random() * canvas.width;
-        }
-        
-        // Twinkle effect
-        star.brightness = Math.max(0.2, Math.sin(Date.now() * 0.001 + star.x));
-    });
-}
-
-function drawStarfield() {
-    gameState.stars.forEach(star => {
-        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
-        ctx.fillRect(star.x, star.y, star.size, star.size);
-    });
-}
-
-// Improve game over screen
-function drawGameOver() {
-    const gameOverScreen = document.createElement('div');
-    gameOverScreen.className = 'game-over-screen';
-    
-    gameOverScreen.innerHTML = `
-        <div class="game-over-title">GAME OVER</div>
-        <div class="game-over-score">FINAL SCORE: ${score}</div>
-        <div class="game-over-score">BEST: ${currentHighScore}</div>
-        <div class="game-over-hint">Press SPACE to return to menu</div>
-    `;
-    
-    document.querySelector('.cabinet-screen').appendChild(gameOverScreen);
-    
-    return gameOverScreen;
-}
-
-// Update the current record display
-function updateRecordDisplay() {
-    const currentRecordElement = document.getElementById('current-record');
-    if (selectedDifficulty) {
-        currentRecordElement.textContent = highScores[selectedDifficulty];
-    }
-}
-
-// Call this in the difficulty button click handler and when updating scores
-updateRecordDisplay(); 
+} 
