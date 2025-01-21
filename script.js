@@ -21,24 +21,33 @@ function initSpaceshipGame() {
     const DIFFICULTY = {
         EASY: {
             name: 'EASY',
+            description: 'Perfect for beginners. Slower enemies, more shields.',
             enemySpawnRate: 0.003,
             enemyShootRate: 0.01,
             playerShootDelay: 30,
-            enemySpeed: 0.8
+            enemySpeed: 0.8,
+            playerShield: 150,
+            enemyBulletSpeed: 3
         },
         NORMAL: {
             name: 'NORMAL',
+            description: 'The classic experience. Balanced challenge.',
             enemySpawnRate: 0.005,
             enemyShootRate: 0.02,
             playerShootDelay: 40,
-            enemySpeed: 1
+            enemySpeed: 1,
+            playerShield: 100,
+            enemyBulletSpeed: 5
         },
         HARD: {
             name: 'HARD',
+            description: 'For veteran pilots. Fast enemies, deadly shots.',
             enemySpawnRate: 0.007,
             enemyShootRate: 0.03,
             playerShootDelay: 50,
-            enemySpeed: 1.2
+            enemySpeed: 1.2,
+            playerShield: 75,
+            enemyBulletSpeed: 7
         }
     };
 
@@ -120,6 +129,7 @@ function initSpaceshipGame() {
                         gameState.enemySpawnRate = difficulty.enemySpawnRate;
                         gameState.enemyShootRate = difficulty.enemyShootRate;
                         player.shootDelay = difficulty.playerShootDelay;
+                        player.shield = difficulty.playerShield;
                         
                         // Start the game
                         currentState = GAME_STATE.PLAYING;
@@ -402,7 +412,7 @@ function initSpaceshipGame() {
                 y: enemy.y + enemy.height/2,
                 width: 4,
                 height: 12,
-                speed: 5,
+                speed: enemy.enemyBulletSpeed,
                 color: enemy.color
             });
         }
@@ -670,6 +680,51 @@ function initSpaceshipGame() {
         }
         requestAnimationFrame(update);
     }
+
+    const menuOverlay = document.querySelector('.menu-overlay');
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    const difficultyInfo = document.getElementById('difficulty-info');
+
+    // Add click handlers for difficulty buttons
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const difficulty = DIFFICULTY[btn.dataset.difficulty];
+            
+            // Update button styles
+            difficultyBtns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Show difficulty description
+            difficultyInfo.textContent = difficulty.description;
+            
+            // Apply difficulty settings
+            gameState.enemySpawnRate = difficulty.enemySpawnRate;
+            gameState.enemyShootRate = difficulty.enemyShootRate;
+            player.shootDelay = difficulty.playerShootDelay;
+            player.shield = difficulty.playerShield;
+            
+            // Start game after short delay
+            setTimeout(() => {
+                menuOverlay.classList.add('hidden');
+                currentState = GAME_STATE.PLAYING;
+            }, 500);
+        });
+
+        // Show difficulty info on hover
+        btn.addEventListener('mouseenter', () => {
+            difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
+        });
+    });
+
+    // Show menu when returning from game over
+    function showMenu() {
+        menuOverlay.classList.remove('hidden');
+        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+        difficultyInfo.textContent = 'Choose your challenge level';
+    }
+
+    // Initial menu show
+    showMenu();
 
     update();
 } 
