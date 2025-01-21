@@ -37,6 +37,8 @@ header {
     width: 100%;
     z-index: 3;
     background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+    padding: 1rem 0;
 }
 
 .neon-text {
@@ -46,12 +48,14 @@ header {
                  0 0 20px var(--neon-pink),
                  0 0 30px var(--neon-pink);
     animation: flicker 1.5s infinite alternate;
+    margin: 0;
 }
 
 .subtitle {
     color: var(--neon-blue);
     font-size: 1.2rem;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
 }
 
 .arcade {
@@ -109,6 +113,8 @@ footer {
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 3;
+    text-align: center;
+    padding: 0.5rem 0;
 }
 
 @keyframes flicker {
