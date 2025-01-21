@@ -27,7 +27,8 @@ function initSpaceshipGame() {
             playerShootDelay: 30,
             enemySpeed: 0.8,
             playerShield: 150,
-            enemyBulletSpeed: 3
+            enemyBulletSpeed: 3,
+            bulletDamage: 15
         },
         NORMAL: {
             name: 'NORMAL',
@@ -37,7 +38,8 @@ function initSpaceshipGame() {
             playerShootDelay: 40,
             enemySpeed: 1,
             playerShield: 100,
-            enemyBulletSpeed: 5
+            enemyBulletSpeed: 5,
+            bulletDamage: 25
         },
         HARD: {
             name: 'HARD',
@@ -47,7 +49,8 @@ function initSpaceshipGame() {
             playerShootDelay: 50,
             enemySpeed: 1.2,
             playerShield: 75,
-            enemyBulletSpeed: 7
+            enemyBulletSpeed: 7,
+            bulletDamage: 35
         }
     };
 
@@ -86,7 +89,8 @@ function initSpaceshipGame() {
         bulletCooldown: 0,
         level: 1,
         enemySpawnRate: 0.005,
-        enemyShootRate: 0.02
+        enemyShootRate: 0.02,
+        bulletDamage: 25
     };
 
     // Create initial stars
@@ -130,6 +134,7 @@ function initSpaceshipGame() {
                         gameState.enemyShootRate = difficulty.enemyShootRate;
                         player.shootDelay = difficulty.playerShootDelay;
                         player.shield = difficulty.playerShield;
+                        gameState.bulletDamage = difficulty.bulletDamage;
                         
                         // Start the game
                         currentState = GAME_STATE.PLAYING;
@@ -560,12 +565,13 @@ function initSpaceshipGame() {
                     if (checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
                         if (player.shield > 0) {
-                            player.shield -= 25;
+                            player.shield -= gameState.bulletDamage;
+                            if (player.shield < 0) player.shield = 0;
                         } else {
                             player.lives--;
-                            player.shield = 100;
-                            
-                            if (player.lives <= 0) {
+                            if (player.lives > 0) {
+                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                            } else {
                                 gameState.gameOver = true;
                                 for (let i = 0; i < 20; i++) {
                                     gameState.particles.push(createParticle(player.x, player.y, player.color));
@@ -591,7 +597,8 @@ function initSpaceshipGame() {
                     
                     if (checkCollision(enemy, player)) {
                         if (player.shield > 0) {
-                            player.shield -= 25;
+                            player.shield -= gameState.bulletDamage * 2;
+                            if (player.shield < 0) player.shield = 0;
                             gameState.enemies.splice(index, 1);
                         } else {
                             gameState.gameOver = true;
@@ -672,7 +679,7 @@ function initSpaceshipGame() {
                     gameState.particles = [];
                     player.x = canvas.width / 2;
                     player.lives = 3;
-                    player.shield = 100;
+                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
                 }
@@ -702,6 +709,7 @@ function initSpaceshipGame() {
             gameState.enemyShootRate = difficulty.enemyShootRate;
             player.shootDelay = difficulty.playerShootDelay;
             player.shield = difficulty.playerShield;
+            gameState.bulletDamage = difficulty.bulletDamage;
             
             // Start game after short delay
             setTimeout(() => {
