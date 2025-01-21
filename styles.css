@@ -692,4 +692,25 @@ footer.hidden {
 @keyframes scanline {
     0% { transform: translateY(0); }
     100% { transform: translateY(4px); }
+}
+
+/* Update shield bar styles */
+.shield-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 120px; /* Position it next to the hearts */
+    z-index: 5;
+    width: 200px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid var(--neon-blue);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.shield-bar-fill {
+    height: 100%;
+    background: var(--neon-blue);
+    box-shadow: 0 0 10px var(--neon-blue);
+    transition: width 0.3s ease;
 } 

@@ -42,8 +42,7 @@ function initSpaceshipGame() {
             enemySpeed: 0.8,
             playerShield: 200,
             enemyBulletSpeed: 3,
-            bulletDamage: 15,
-            lives: 5
+            bulletDamage: 15
         },
         NORMAL: {
             name: 'NORMAL',
@@ -54,8 +53,7 @@ function initSpaceshipGame() {
             enemySpeed: 1,
             playerShield: 200,
             enemyBulletSpeed: 5,
-            bulletDamage: 25,
-            lives: 4
+            bulletDamage: 25
         },
         HARD: {
             name: 'HARD',
@@ -66,8 +64,7 @@ function initSpaceshipGame() {
             enemySpeed: 1.2,
             playerShield: 200,
             enemyBulletSpeed: 7,
-            bulletDamage: 35,
-            lives: 3
+            bulletDamage: 35
         }
     };
 
@@ -148,7 +145,6 @@ function initSpaceshipGame() {
                         gameState.enemyShootRate = difficulty.enemyShootRate;
                         player.shootDelay = difficulty.playerShootDelay;
                         player.shield = difficulty.playerShield;
-                        player.lives = difficulty.lives;
                         gameState.bulletDamage = difficulty.bulletDamage;
                         
                         // Start the game
@@ -667,6 +663,7 @@ function initSpaceshipGame() {
             
             if (!gameState.gameOver) {
                 drawPlayer();
+                drawShieldBar();
                 
                 // Draw shield bar
                 ctx.fillStyle = '#0ff';
@@ -691,7 +688,7 @@ function initSpaceshipGame() {
                     gameState.enemyBullets = [];
                     gameState.particles = [];
                     player.x = canvas.width / 2;
-                    player.lives = DIFFICULTY[selectedDifficulty].lives;
+                    player.lives = 3;
                     player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
@@ -719,16 +716,12 @@ function initSpaceshipGame() {
             // Show difficulty description
             difficultyInfo.textContent = difficulty.description;
             
-            // Apply difficulty settings including lives
+            // Apply difficulty settings
             gameState.enemySpawnRate = difficulty.enemySpawnRate;
             gameState.enemyShootRate = difficulty.enemyShootRate;
             player.shootDelay = difficulty.playerShootDelay;
             player.shield = difficulty.playerShield;
-            player.lives = difficulty.lives;
             gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Update the life display
-            drawLives();
             
             // Hide header and footer
             document.querySelector('.game-header').classList.add('hidden');
@@ -769,8 +762,8 @@ function initSpaceshipGame() {
         gameState.enemyBullets = [];
         gameState.particles = [];
         player.x = canvas.width / 2;
-        player.lives = selectedDifficulty ? DIFFICULTY[selectedDifficulty].lives : 3;
-        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 200;
+        player.lives = 3;
+        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
         // Stop game music and reset menu music
@@ -880,6 +873,25 @@ function initSpaceshipGame() {
             heart.textContent = '❤️';
             lifeBar.appendChild(heart);
         }
+    }
+
+    // Update the shield bar drawing code
+    function drawShieldBar() {
+        // Create shield bar if it doesn't exist
+        let shieldBar = document.querySelector('.shield-bar');
+        if (!shieldBar) {
+            shieldBar = document.createElement('div');
+            shieldBar.className = 'shield-bar';
+            const shieldBarFill = document.createElement('div');
+            shieldBarFill.className = 'shield-bar-fill';
+            shieldBar.appendChild(shieldBarFill);
+            document.querySelector('.game-overlay').appendChild(shieldBar);
+        }
+
+        // Update shield bar fill
+        const shieldPercent = Math.max(0, Math.min(100, (player.shield / DIFFICULTY[selectedDifficulty].playerShield) * 100));
+        const shieldBarFill = shieldBar.querySelector('.shield-bar-fill');
+        shieldBarFill.style.width = `${shieldPercent}%`;
     }
 
     update();
