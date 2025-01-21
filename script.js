@@ -790,27 +790,40 @@ function initSpaceshipGame() {
         mainMenuOverlay.classList.add('hidden');
         lightspeedOverlay.classList.remove('hidden');
         createStars();
+        
+        // Fade out menu music and start game music
+        menuMusic.volume = 1;
+        const fadeOut = setInterval(() => {
+            if (menuMusic.volume > 0.1) {
+                menuMusic.volume -= 0.1;
+            } else {
+                clearInterval(fadeOut);
+                menuMusic.pause();
+                menuMusic.volume = 1;
+                gameMusic.play();
+            }
+        }, 100);
 
-        // After light speed effect, show difficulty selection
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
             menuOverlay.classList.remove('hidden');
         }, 1500);
     });
 
-    // Modify menu button to return to main menu
+    // Modify menu button click handler
     menuBtn.addEventListener('click', () => {
         // ... existing reset code ...
-
-        // Show main menu instead of difficulty selection
+        
+        playMenuMusic();
         mainMenuOverlay.classList.remove('hidden');
         menuOverlay.classList.add('hidden');
         gameOverOverlay.classList.add('hidden');
     });
 
-    // Show main menu initially
-    mainMenuOverlay.classList.remove('hidden');
-    menuOverlay.classList.add('hidden');
+    // Start menu music when game loads
+    window.addEventListener('load', () => {
+        playMenuMusic();
+    });
 
     // Update the controls hint text
     document.querySelector('.controls-hint').textContent = '← → ↑ ↓ to move | Automatic shooting';
@@ -851,4 +864,34 @@ function initSpaceshipGame() {
     window.addEventListener('resize', resizeCanvas);
 
     update();
+}
+
+// Add at the beginning of initSpaceshipGame
+const gameMusic = document.getElementById('game-music');
+const menuMusic = document.getElementById('menu-music');
+const toggleMusicBtn = document.getElementById('toggle-music');
+let isMuted = false;
+
+// Music control
+toggleMusicBtn.addEventListener('click', () => {
+    isMuted = !isMuted;
+    toggleMusicBtn.classList.toggle('muted');
+    toggleMusicBtn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    
+    [gameMusic, menuMusic].forEach(audio => {
+        audio.muted = isMuted;
+    });
+});
+
+// Handle music transitions
+function playMenuMusic() {
+    gameMusic.pause();
+    gameMusic.currentTime = 0;
+    menuMusic.play();
+}
+
+function playGameMusic() {
+    menuMusic.pause();
+    menuMusic.currentTime = 0;
+    gameMusic.play();
 } 

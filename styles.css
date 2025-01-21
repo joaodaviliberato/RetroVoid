@@ -397,4 +397,107 @@ footer {
 /* Hide class */
 .hidden {
     display: none;
+}
+
+/* Background Effects */
+.background-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.grid {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        linear-gradient(var(--neon-blue) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-blue) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center;
+    opacity: 0.15;
+    transform: perspective(500px) rotateX(60deg);
+    animation: gridMove 20s linear infinite;
+}
+
+.floating-symbols {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-symbols::before {
+    content: '01';
+    position: absolute;
+    color: var(--neon-purple);
+    font-size: 2rem;
+    opacity: 0.2;
+    animation: floatSymbol 10s linear infinite;
+}
+
+.floating-symbols::after {
+    content: '10';
+    position: absolute;
+    color: var(--neon-pink);
+    font-size: 2rem;
+    opacity: 0.2;
+    animation: floatSymbol 15s linear infinite reverse;
+}
+
+@keyframes gridMove {
+    0% {
+        transform: perspective(500px) rotateX(60deg) translateY(0);
+    }
+    100% {
+        transform: perspective(500px) rotateX(60deg) translateY(50px);
+    }
+}
+
+@keyframes floatSymbol {
+    0% {
+        top: -20px;
+        left: 10%;
+        transform: rotate(0deg);
+    }
+    50% {
+        left: 90%;
+        transform: rotate(180deg);
+    }
+    100% {
+        top: 120%;
+        left: 10%;
+        transform: rotate(360deg);
+    }
+}
+
+/* Sound Controls */
+.sound-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.sound-btn {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sound-btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+.sound-btn.muted .icon {
+    opacity: 0.5;
 } 

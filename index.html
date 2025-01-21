@@ -9,6 +9,12 @@
 </head>
 <body>
     <div class="neon-overlay"></div>
+    <audio id="game-music" loop>
+        <source src="assets/game-music.mp3" type="audio/mp3">
+    </audio>
+    <audio id="menu-music" loop>
+        <source src="assets/menu-music.mp3" type="audio/mp3">
+    </audio>
     
     <header>
         <h1 class="neon-text">Retro Void</h1>
@@ -28,10 +34,19 @@
                     
                     <!-- Main Menu Overlay -->
                     <div class="main-menu-overlay">
+                        <div class="background-effects">
+                            <div class="grid"></div>
+                            <div class="floating-symbols"></div>
+                        </div>
                         <div class="menu-content">
                             <h2 class="game-title">RETRO VOYAGER</h2>
                             <p class="game-desc">Navigate through cyber space, defeat enemy ships, become the ultimate pilot</p>
                             <button class="play-btn">PLAY</button>
+                            <div class="sound-controls">
+                                <button class="sound-btn" id="toggle-music">
+                                    <span class="icon">🔊</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
