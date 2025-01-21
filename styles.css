@@ -63,8 +63,8 @@ header {
 }
 
 .cabinet {
-    width: 300px;
-    height: 500px;
+    width: 600px;
+    height: 800px;
     background: linear-gradient(45deg, #1a1a1f, #2a2a35);
     border-radius: 10px;
     overflow: hidden;
@@ -133,8 +133,9 @@ footer {
     }
     
     .cabinet {
-        width: 90%;
-        max-width: 300px;
+        width: 95%;
+        height: 600px;
+        max-width: none;
     }
 }
 

@@ -21,20 +21,35 @@ function initSpaceshipGame() {
     const player = {
         x: canvas.width / 2,
         y: canvas.height - 50,
-        width: 40,
-        height: 40,
-        speed: 5,
-        color: '#ff2d55'
+        width: 60,
+        height: 60,
+        speed: 6,
+        color: '#ff2d55',
+        shield: 100,
+        powerups: []
     };
 
     const gameState = {
         bullets: [],
         enemies: [],
         particles: [],
+        stars: [],
         keys: {},
         gameOver: false,
-        bulletCooldown: 0
+        bulletCooldown: 0,
+        level: 1,
+        enemySpawnRate: 0.02
     };
+
+    // Create initial stars
+    for (let i = 0; i < 100; i++) {
+        gameState.stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            speed: 0.5 + Math.random() * 2,
+            size: Math.random() * 2
+        });
+    }
 
     // Event listeners
     window.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
@@ -44,52 +59,123 @@ function initSpaceshipGame() {
         ctx.save();
         ctx.translate(player.x, player.y);
         
+        // Draw shield if active
+        if (player.shield > 0) {
+            ctx.beginPath();
+            ctx.arc(0, 0, player.width/2 + 5, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(0, 255, 255, ${player.shield/100})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
         // Draw spaceship body
         ctx.beginPath();
-        ctx.moveTo(0, -20);
-        ctx.lineTo(-15, 20);
-        ctx.lineTo(15, 20);
+        ctx.moveTo(0, -30);
+        ctx.lineTo(-25, 20);
+        ctx.lineTo(-15, 15);
+        ctx.lineTo(-10, 30);
+        ctx.lineTo(10, 30);
+        ctx.lineTo(15, 15);
+        ctx.lineTo(25, 20);
         ctx.closePath();
         ctx.fillStyle = player.color;
         ctx.fill();
         
-        // Draw engine glow
-        ctx.fillStyle = '#0ff';
+        // Draw cockpit
         ctx.beginPath();
-        ctx.moveTo(-8, 20);
-        ctx.lineTo(8, 20);
-        ctx.lineTo(0, 30);
-        ctx.closePath();
+        ctx.ellipse(0, 0, 8, 15, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#0ff';
         ctx.fill();
+        
+        // Draw engine glow
+        const engineGlow = ctx.createRadialGradient(0, 25, 0, 0, 25, 20);
+        engineGlow.addColorStop(0, '#0ff');
+        engineGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = engineGlow;
+        ctx.fillRect(-15, 25, 30, 20);
         
         ctx.restore();
     }
 
     function createEnemy() {
+        const types = [
+            {
+                width: 40,
+                height: 40,
+                speed: 2 + Math.random() * 2,
+                health: 1,
+                color: '#b026ff',
+                points: 100,
+                draw: function(ctx, x, y) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    
+                    // Draw enemy ship body
+                    ctx.beginPath();
+                    ctx.moveTo(0, -20);
+                    ctx.lineTo(-20, 10);
+                    ctx.lineTo(-10, 15);
+                    ctx.lineTo(10, 15);
+                    ctx.lineTo(20, 10);
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // Draw enemy cockpit
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ff0066';
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
+            },
+            {
+                width: 60,
+                height: 60,
+                speed: 1.5 + Math.random() * 1.5,
+                health: 2,
+                color: '#ff0066',
+                points: 200,
+                draw: function(ctx, x, y) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    
+                    // Draw boss-type enemy
+                    ctx.beginPath();
+                    ctx.moveTo(0, -25);
+                    ctx.lineTo(-30, 0);
+                    ctx.lineTo(-20, 20);
+                    ctx.lineTo(20, 20);
+                    ctx.lineTo(30, 0);
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // Draw enemy details
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                    ctx.fillStyle = '#b026ff';
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }
+            }
+        ];
+        
+        const type = types[Math.floor(Math.random() * types.length)];
         return {
-            x: Math.random() * (canvas.width - 30) + 15,
-            y: -20,
-            width: 30,
-            height: 30,
-            speed: 2 + Math.random() * 2,
-            color: '#b026ff'
+            x: Math.random() * (canvas.width - type.width) + type.width/2,
+            y: -type.height,
+            ...type
         };
     }
 
-    function drawEnemy(enemy) {
-        ctx.save();
-        ctx.translate(enemy.x, enemy.y);
-        
-        // Draw enemy ship
-        ctx.beginPath();
-        ctx.moveTo(0, -15);
-        ctx.lineTo(-15, 15);
-        ctx.lineTo(15, 15);
-        ctx.closePath();
-        ctx.fillStyle = enemy.color;
-        ctx.fill();
-        
-        ctx.restore();
+    function drawStars() {
+        ctx.fillStyle = '#fff';
+        gameState.stars.forEach(star => {
+            ctx.fillRect(star.x, star.y, star.size, star.size);
+        });
     }
 
     function createParticle(x, y, color) {
@@ -119,7 +205,18 @@ function initSpaceshipGame() {
 
     function update() {
         // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Update and draw stars
+        gameState.stars.forEach(star => {
+            star.y += star.speed;
+            if (star.y > canvas.height) {
+                star.y = 0;
+                star.x = Math.random() * canvas.width;
+            }
+        });
+        drawStars();
 
         if (!gameState.gameOver) {
             // Update player position
@@ -130,21 +227,30 @@ function initSpaceshipGame() {
                 player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
             }
 
-            // Shooting
+            // Shooting mechanics
             if (gameState.keys[' '] && gameState.bulletCooldown <= 0) {
-                gameState.bullets.push({
-                    x: player.x,
-                    y: player.y - 20,
-                    width: 4,
-                    height: 15,
-                    color: '#0ff'
-                });
-                gameState.bulletCooldown = 10;
+                // Double bullets
+                gameState.bullets.push(
+                    {
+                        x: player.x - 15,
+                        y: player.y - 20,
+                        width: 4,
+                        height: 15,
+                        color: '#0ff'
+                    },
+                    {
+                        x: player.x + 15,
+                        y: player.y - 20,
+                        width: 4,
+                        height: 15,
+                        color: '#0ff'
+                    }
+                );
+                gameState.bulletCooldown = 8;
             }
-            gameState.bulletCooldown--;
-
-            // Spawn enemies
-            if (Math.random() < 0.02) {
+            
+            // Spawn enemies based on level
+            if (Math.random() < gameState.enemySpawnRate) {
                 gameState.enemies.push(createEnemy());
             }
 
@@ -179,19 +285,22 @@ function initSpaceshipGame() {
                 }
             });
 
-            // Update enemies
+            // Update enemies with new drawing method
             gameState.enemies.forEach((enemy, index) => {
                 enemy.y += enemy.speed;
                 
-                // Check player collision
                 if (checkCollision(enemy, player)) {
-                    gameState.gameOver = true;
-                    for (let i = 0; i < 20; i++) {
-                        gameState.particles.push(createParticle(player.x, player.y, player.color));
+                    if (player.shield > 0) {
+                        player.shield -= 25;
+                        gameState.enemies.splice(index, 1);
+                    } else {
+                        gameState.gameOver = true;
+                        for (let i = 0; i < 20; i++) {
+                            gameState.particles.push(createParticle(player.x, player.y, player.color));
+                        }
                     }
                 }
                 
-                // Remove off-screen enemies
                 if (enemy.y > canvas.height) {
                     gameState.enemies.splice(index, 1);
                 }
@@ -206,6 +315,12 @@ function initSpaceshipGame() {
                     gameState.particles.splice(index, 1);
                 }
             });
+
+            // Level progression
+            if (score > gameState.level * 1000) {
+                gameState.level++;
+                gameState.enemySpawnRate += 0.005;
+            }
         }
 
         // Draw everything
@@ -214,10 +329,16 @@ function initSpaceshipGame() {
             ctx.fillStyle = bullet.color;
             ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
         });
-        gameState.enemies.forEach(drawEnemy);
+        gameState.enemies.forEach(enemy => enemy.draw(ctx, enemy.x, enemy.y));
         
         if (!gameState.gameOver) {
             drawPlayer();
+            
+            // Draw shield bar
+            ctx.fillStyle = '#0ff';
+            ctx.fillRect(10, 10, player.shield * 2, 10);
+            ctx.strokeStyle = '#fff';
+            ctx.strokeRect(10, 10, 200, 10);
         } else {
             ctx.fillStyle = '#ff2d55';
             ctx.font = '30px "Courier New"';
