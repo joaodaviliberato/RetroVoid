@@ -136,4 +136,25 @@ footer {
         width: 90%;
         max-width: 300px;
     }
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Courier New', monospace;
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue);
+}
+
+.controls-hint {
+    text-align: center;
+    color: var(--neon-pink);
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-shadow: 0 0 5px var(--neon-pink);
 } 

@@ -16,24 +16,22 @@
     </header>
 
     <main class="arcade">
-        <div class="cabinet" data-game="puzzle">
+        <div class="cabinet" data-game="spaceship">
             <div class="cabinet-screen">
-                <h2>Neural Puzzle</h2>
+                <h2>Neon Voyager</h2>
                 <div class="cabinet-content">
-                    <canvas id="puzzle-canvas"></canvas>
+                    <canvas id="spaceship-canvas"></canvas>
+                    <div class="game-overlay">
+                        <div class="score">SCORE: <span id="score">0</span></div>
+                        <div class="high-score">HI-SCORE: <span id="high-score">0</span></div>
+                    </div>
                 </div>
             </div>
-            <div class="cabinet-base"></div>
-        </div>
-
-        <div class="cabinet" data-game="shooter">
-            <div class="cabinet-screen">
-                <h2>Cyber Shooter</h2>
-                <div class="cabinet-content">
-                    <canvas id="shooter-canvas"></canvas>
+            <div class="cabinet-base">
+                <div class="controls-hint">
+                    ← → to move | SPACE to shoot
                 </div>
             </div>
-            <div class="cabinet-base"></div>
         </div>
     </main>
 

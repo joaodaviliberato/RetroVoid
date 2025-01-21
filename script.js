@@ -1,154 +1,245 @@
 document.addEventListener('DOMContentLoaded', () => {
-    initPuzzleGame();
-    initShooterGame();
+    initSpaceshipGame();
 });
 
-function initPuzzleGame() {
-    const canvas = document.getElementById('puzzle-canvas');
+function initSpaceshipGame() {
+    const canvas = document.getElementById('spaceship-canvas');
     const ctx = canvas.getContext('2d');
-    
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    
-    // Simple puzzle game setup
-    const tiles = [];
-    const gridSize = 3;
-    
-    for (let i = 0; i < gridSize * gridSize - 1; i++) {
-        tiles.push(i + 1);
-    }
-    tiles.push(null); // Empty tile
-    
-    function drawPuzzle() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const tileWidth = canvas.width / gridSize;
-        const tileHeight = canvas.height / gridSize;
-        
-        tiles.forEach((tile, index) => {
-            if (tile) {
-                const x = (index % gridSize) * tileWidth;
-                const y = Math.floor(index / gridSize) * tileHeight;
-                
-                ctx.fillStyle = '#0ff';
-                ctx.strokeStyle = '#ff2d55';
-                ctx.lineWidth = 2;
-                ctx.fillRect(x + 2, y + 2, tileWidth - 4, tileHeight - 4);
-                ctx.strokeRect(x + 2, y + 2, tileWidth - 4, tileHeight - 4);
-                
-                ctx.fillStyle = '#000';
-                ctx.font = '20px "Courier New"';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(tile.toString(), x + tileWidth / 2, y + tileHeight / 2);
-            }
-        });
-    }
-    
-    canvas.addEventListener('click', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const tileWidth = canvas.width / gridSize;
-        const tileHeight = canvas.height / gridSize;
-        
-        const clickedIndex = Math.floor(y / tileHeight) * gridSize + Math.floor(x / tileWidth);
-        const emptyIndex = tiles.indexOf(null);
-        
-        if (isAdjacent(clickedIndex, emptyIndex)) {
-            [tiles[clickedIndex], tiles[emptyIndex]] = [tiles[emptyIndex], tiles[clickedIndex]];
-            drawPuzzle();
-        }
-    });
-    
-    function isAdjacent(index1, index2) {
-        const row1 = Math.floor(index1 / gridSize);
-        const col1 = index1 % gridSize;
-        const row2 = Math.floor(index2 / gridSize);
-        const col2 = index2 % gridSize;
-        
-        return Math.abs(row1 - row2) + Math.abs(col1 - col2) === 1;
-    }
-    
-    drawPuzzle();
-}
+    const scoreElement = document.getElementById('score');
+    const highScoreElement = document.getElementById('high-score');
 
-function initShooterGame() {
-    const canvas = document.getElementById('shooter-canvas');
-    const ctx = canvas.getContext('2d');
-    
     // Set canvas size
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-    
+
+    // Game state
+    let score = 0;
+    let highScore = localStorage.getItem('highScore') || 0;
+    highScoreElement.textContent = highScore;
+
+    // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 30,
-        width: 20,
-        height: 20,
-        speed: 5
+        y: canvas.height - 50,
+        width: 40,
+        height: 40,
+        speed: 5,
+        color: '#ff2d55'
     };
-    
-    const bullets = [];
-    const enemies = [];
-    let gameLoop;
-    
+
+    const gameState = {
+        bullets: [],
+        enemies: [],
+        particles: [],
+        keys: {},
+        gameOver: false,
+        bulletCooldown: 0
+    };
+
+    // Event listeners
+    window.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
+    window.addEventListener('keyup', (e) => gameState.keys[e.key] = false);
+
     function drawPlayer() {
-        ctx.fillStyle = '#ff2d55';
-        ctx.fillRect(player.x - player.width / 2, player.y - player.height / 2, 
-                    player.width, player.height);
-    }
-    
-    function drawBullets() {
+        ctx.save();
+        ctx.translate(player.x, player.y);
+        
+        // Draw spaceship body
+        ctx.beginPath();
+        ctx.moveTo(0, -20);
+        ctx.lineTo(-15, 20);
+        ctx.lineTo(15, 20);
+        ctx.closePath();
+        ctx.fillStyle = player.color;
+        ctx.fill();
+        
+        // Draw engine glow
         ctx.fillStyle = '#0ff';
-        bullets.forEach(bullet => {
-            ctx.fillRect(bullet.x - 2, bullet.y - 8, 4, 8);
-        });
+        ctx.beginPath();
+        ctx.moveTo(-8, 20);
+        ctx.lineTo(8, 20);
+        ctx.lineTo(0, 30);
+        ctx.closePath();
+        ctx.fill();
+        
+        ctx.restore();
     }
-    
-    function drawEnemies() {
-        ctx.fillStyle = '#b026ff';
-        enemies.forEach(enemy => {
-            ctx.fillRect(enemy.x - 15, enemy.y - 15, 30, 30);
-        });
+
+    function createEnemy() {
+        return {
+            x: Math.random() * (canvas.width - 30) + 15,
+            y: -20,
+            width: 30,
+            height: 30,
+            speed: 2 + Math.random() * 2,
+            color: '#b026ff'
+        };
     }
-    
+
+    function drawEnemy(enemy) {
+        ctx.save();
+        ctx.translate(enemy.x, enemy.y);
+        
+        // Draw enemy ship
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(-15, 15);
+        ctx.lineTo(15, 15);
+        ctx.closePath();
+        ctx.fillStyle = enemy.color;
+        ctx.fill();
+        
+        ctx.restore();
+    }
+
+    function createParticle(x, y, color) {
+        return {
+            x,
+            y,
+            color,
+            speed: Math.random() * 3 + 1,
+            angle: Math.random() * Math.PI * 2,
+            life: 1
+        };
+    }
+
+    function drawParticle(particle) {
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.life * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `${particle.color}${Math.floor(particle.life * 255).toString(16).padStart(2, '0')}`;
+        ctx.fill();
+    }
+
+    function checkCollision(rect1, rect2) {
+        return rect1.x < rect2.x + rect2.width &&
+               rect1.x + rect1.width > rect2.x &&
+               rect1.y < rect2.y + rect2.height &&
+               rect1.y + rect1.height > rect2.y;
+    }
+
     function update() {
+        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Update bullets
-        bullets.forEach((bullet, index) => {
-            bullet.y -= 7;
-            if (bullet.y < 0) bullets.splice(index, 1);
-        });
-        
-        // Update enemies
-        if (Math.random() < 0.02) {
-            enemies.push({
-                x: Math.random() * canvas.width,
-                y: -20,
-                speed: 2
+
+        if (!gameState.gameOver) {
+            // Update player position
+            if (gameState.keys['ArrowLeft']) {
+                player.x = Math.max(player.width / 2, player.x - player.speed);
+            }
+            if (gameState.keys['ArrowRight']) {
+                player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
+            }
+
+            // Shooting
+            if (gameState.keys[' '] && gameState.bulletCooldown <= 0) {
+                gameState.bullets.push({
+                    x: player.x,
+                    y: player.y - 20,
+                    width: 4,
+                    height: 15,
+                    color: '#0ff'
+                });
+                gameState.bulletCooldown = 10;
+            }
+            gameState.bulletCooldown--;
+
+            // Spawn enemies
+            if (Math.random() < 0.02) {
+                gameState.enemies.push(createEnemy());
+            }
+
+            // Update bullets
+            gameState.bullets.forEach((bullet, bulletIndex) => {
+                bullet.y -= 7;
+                
+                // Check enemy collisions
+                gameState.enemies.forEach((enemy, enemyIndex) => {
+                    if (checkCollision(bullet, enemy)) {
+                        // Create explosion particles
+                        for (let i = 0; i < 10; i++) {
+                            gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
+                        }
+                        
+                        gameState.bullets.splice(bulletIndex, 1);
+                        gameState.enemies.splice(enemyIndex, 1);
+                        score += 100;
+                        scoreElement.textContent = score;
+                        
+                        if (score > highScore) {
+                            highScore = score;
+                            highScoreElement.textContent = highScore;
+                            localStorage.setItem('highScore', highScore);
+                        }
+                    }
+                });
+
+                // Remove off-screen bullets
+                if (bullet.y < 0) {
+                    gameState.bullets.splice(bulletIndex, 1);
+                }
+            });
+
+            // Update enemies
+            gameState.enemies.forEach((enemy, index) => {
+                enemy.y += enemy.speed;
+                
+                // Check player collision
+                if (checkCollision(enemy, player)) {
+                    gameState.gameOver = true;
+                    for (let i = 0; i < 20; i++) {
+                        gameState.particles.push(createParticle(player.x, player.y, player.color));
+                    }
+                }
+                
+                // Remove off-screen enemies
+                if (enemy.y > canvas.height) {
+                    gameState.enemies.splice(index, 1);
+                }
+            });
+
+            // Update particles
+            gameState.particles.forEach((particle, index) => {
+                particle.x += Math.cos(particle.angle) * particle.speed;
+                particle.y += Math.sin(particle.angle) * particle.speed;
+                particle.life -= 0.02;
+                if (particle.life <= 0) {
+                    gameState.particles.splice(index, 1);
+                }
             });
         }
-        
-        enemies.forEach((enemy, index) => {
-            enemy.y += enemy.speed;
-            if (enemy.y > canvas.height) enemies.splice(index, 1);
-        });
-        
+
         // Draw everything
-        drawPlayer();
-        drawBullets();
-        drawEnemies();
+        gameState.particles.forEach(drawParticle);
+        gameState.bullets.forEach(bullet => {
+            ctx.fillStyle = bullet.color;
+            ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
+        });
+        gameState.enemies.forEach(drawEnemy);
+        
+        if (!gameState.gameOver) {
+            drawPlayer();
+        } else {
+            ctx.fillStyle = '#ff2d55';
+            ctx.font = '30px "Courier New"';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+            ctx.font = '20px "Courier New"';
+            ctx.fillText('Press SPACE to restart', canvas.width / 2, canvas.height / 2 + 40);
+            
+            if (gameState.keys[' ']) {
+                // Reset game
+                score = 0;
+                scoreElement.textContent = score;
+                gameState.gameOver = false;
+                gameState.enemies = [];
+                gameState.bullets = [];
+                gameState.particles = [];
+                player.x = canvas.width / 2;
+            }
+        }
+
+        requestAnimationFrame(update);
     }
-    
-    // Controls
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') player.x = Math.max(player.width / 2, player.x - player.speed);
-        if (e.key === 'ArrowRight') player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
-        if (e.key === ' ') bullets.push({ x: player.x, y: player.y });
-    });
-    
-    gameLoop = setInterval(update, 1000 / 60);
+
+    update();
 } 
