@@ -733,6 +733,9 @@ function initSpaceshipGame() {
 
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
+                mainMenuOverlay.classList.add('hidden');
+                lightspeedOverlay.classList.add('hidden');
+                gameOverOverlay.classList.add('hidden');
                 currentState = GAME_STATE.PLAYING;
             }, 500);
         });
@@ -777,6 +780,7 @@ function initSpaceshipGame() {
         // Show main menu
         mainMenuOverlay.classList.remove('hidden');
         menuOverlay.classList.add('hidden');
+        lightspeedOverlay.classList.add('hidden');
         gameOverOverlay.classList.add('hidden');
         currentState = GAME_STATE.MENU;
         selectedDifficulty = null;
@@ -790,6 +794,9 @@ function initSpaceshipGame() {
     // Modify update function game over handling
     if (gameState.gameOver) {
         gameOverOverlay.classList.remove('hidden');
+        mainMenuOverlay.classList.add('hidden');
+        menuOverlay.classList.add('hidden');
+        lightspeedOverlay.classList.add('hidden');
     }
 
     const mainMenuOverlay = document.querySelector('.main-menu-overlay');
@@ -814,6 +821,8 @@ function initSpaceshipGame() {
     playBtn.addEventListener('click', () => {
         mainMenuOverlay.classList.add('hidden');
         lightspeedOverlay.classList.remove('hidden');
+        menuOverlay.classList.add('hidden');
+        gameOverOverlay.classList.add('hidden');
         createStars();
         
         // Start menu music
