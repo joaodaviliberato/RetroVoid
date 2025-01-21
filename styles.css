@@ -535,16 +535,7 @@ footer.hidden {
 
 /* Update life bar position and styling */
 .life-bar {
-    position: fixed;
-    top: 20px;
-    right: 150px; /* Position it to the left of the score */
-    z-index: 5;
-    display: flex;
-    gap: 5px;
-    padding: 0.5rem 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--neon-blue);
-    border-radius: 4px;
+    display: none;  /* Hide the life bar completely */
 }
 
 /* Update score position to be next to life bar */

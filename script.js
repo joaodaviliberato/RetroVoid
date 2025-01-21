@@ -35,7 +35,7 @@ function initSpaceshipGame() {
     const DIFFICULTY = {
         EASY: {
             name: 'EASY',
-            description: 'Perfect for beginners. Slower enemies, more shields.',
+            description: 'Perfect for beginners. Slower enemies, stronger shield.',
             enemySpawnRate: 0.003,
             enemyShootRate: 0.01,
             playerShootDelay: 30,
@@ -57,7 +57,7 @@ function initSpaceshipGame() {
         },
         HARD: {
             name: 'HARD',
-            description: 'For veteran pilots. Fast enemies, deadly shots.',
+            description: 'For veteran pilots. Fast enemies, weaker shield.',
             enemySpawnRate: 0.007,
             enemyShootRate: 0.03,
             playerShootDelay: 50,
@@ -75,18 +75,17 @@ function initSpaceshipGame() {
     // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 100,  // Start a bit higher
+        y: canvas.height - 100,
         width: 60,
         height: 60,
         speed: 6,
         color: '#ff2d55',
-        shield: 100,
-        lives: 3,
+        shield: 100,  // This is now our only health indicator
         powerups: [],
         autoShootCooldown: 0,
         shootDelay: 40,
-        minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
-        maxY: canvas.height - 100   // Restrict downward movement
+        minY: canvas.height * 0.5,
+        maxY: canvas.height - 100
     };
 
     const gameState = {
@@ -569,18 +568,14 @@ function initSpaceshipGame() {
                     // Check player collision with enemy bullets
                     if (checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage;
-                            if (player.shield < 0) player.shield = 0;
-                        } else {
-                            player.lives--;
-                            if (player.lives > 0) {
-                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                            } else {
-                                gameState.gameOver = true;
-                                for (let i = 0; i < 20; i++) {
-                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
-                                }
+                        player.shield -= gameState.bulletDamage;
+                        
+                        // Game over when shield reaches 0
+                        if (player.shield <= 0) {
+                            player.shield = 0;
+                            gameState.gameOver = true;
+                            for (let i = 0; i < 20; i++) {
+                                gameState.particles.push(createParticle(player.x, player.y, player.color));
                             }
                         }
                     }
@@ -610,11 +605,12 @@ function initSpaceshipGame() {
                     }
                     
                     if (checkCollision(enemy, player)) {
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage * 2;
-                            if (player.shield < 0) player.shield = 0;
-                            gameState.enemies.splice(index, 1);
-                        } else {
+                        player.shield -= gameState.bulletDamage * 2;
+                        gameState.enemies.splice(index, 1);
+                        
+                        // Game over when shield reaches 0
+                        if (player.shield <= 0) {
+                            player.shield = 0;
                             gameState.gameOver = true;
                             for (let i = 0; i < 20; i++) {
                                 gameState.particles.push(createParticle(player.x, player.y, player.color));
@@ -636,21 +632,6 @@ function initSpaceshipGame() {
                         gameState.particles.splice(index, 1);
                     }
                 });
-
-                // Draw lives
-                drawLives();
-
-                // Draw enemy bullets
-                gameState.enemyBullets.forEach(bullet => {
-                    ctx.fillStyle = bullet.color;
-                    ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
-                });
-
-                // Level progression
-                if (score > gameState.level * 1000) {
-                    gameState.level++;
-                    gameState.enemySpawnRate += 0.005;
-                }
             }
 
             // Draw everything
@@ -687,8 +668,9 @@ function initSpaceshipGame() {
                     gameState.enemyBullets = [];
                     gameState.particles = [];
                     player.x = canvas.width / 2;
-                    player.lives = 3;
-                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                    player.y = canvas.height - 100;
+                    player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+                    player.autoShootCooldown = 0;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
                 }
@@ -761,7 +743,7 @@ function initSpaceshipGame() {
         gameState.enemyBullets = [];
         gameState.particles = [];
         player.x = canvas.width / 2;
-        player.lives = 3;
+        player.y = canvas.height - 100;
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
@@ -862,67 +844,6 @@ function initSpaceshipGame() {
 
     // Update resize handler
     window.addEventListener('resize', resizeCanvas);
-
-    // Update the lives drawing code
-    function drawLives() {
-        const lifeBar = document.querySelector('.life-bar');
-        lifeBar.innerHTML = '';
-        for (let i = 0; i < player.lives; i++) {
-            const lifeIcon = document.createElement('div');
-            lifeIcon.style.width = '20px';
-            lifeIcon.style.height = '20px';
-            lifeIcon.style.backgroundColor = player.color;
-            lifeIcon.style.borderRadius = '50%';
-            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
-            lifeBar.appendChild(lifeIcon);
-        }
-    }
-
-    // Update the life bar initialization
-    function initLifeBar() {
-        const lifeBar = document.querySelector('.life-bar');
-        lifeBar.innerHTML = ''; // Clear existing life bar
-        const lifeBarWidth = 150; // Total width of life bar
-        const lifeBarBackground = document.createElement('div');
-        lifeBarBackground.style.cssText = `
-            width: ${lifeBarWidth}px;
-            height: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 2px;
-            overflow: hidden;
-        `;
-        
-        const lifeBarFill = document.createElement('div');
-        lifeBarFill.style.cssText = `
-            width: 100%;
-            height: 100%;
-            background: var(--neon-blue);
-            box-shadow: 0 0 10px var(--neon-blue);
-            transition: width 0.3s ease;
-        `;
-        
-        lifeBarBackground.appendChild(lifeBarFill);
-        lifeBar.appendChild(lifeBarBackground);
-        return lifeBarFill;
-    }
-
-    // Update the updateLifeBar function
-    function updateLifeBar(currentLife, maxLife) {
-        const lifeBarFill = document.querySelector('.life-bar div div');
-        if (lifeBarFill) {
-            const percentage = (currentLife / maxLife) * 100;
-            lifeBarFill.style.width = `${percentage}%`;
-            
-            // Update color based on life percentage
-            if (percentage > 60) {
-                lifeBarFill.style.background = 'var(--neon-blue)';
-            } else if (percentage > 30) {
-                lifeBarFill.style.background = 'var(--neon-purple)';
-            } else {
-                lifeBarFill.style.background = 'var(--neon-pink)';
-            }
-        }
-    }
 
     update();
 }
