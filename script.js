@@ -709,7 +709,11 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
-            // Start game after delay
+            // Switch from menu music to game music
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+            gameMusic.play();
+
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
                 currentState = GAME_STATE.PLAYING;
@@ -744,17 +748,17 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Hide game over overlay
-        gameOverOverlay.classList.add('hidden');
+        // Stop game music and reset menu music
+        gameMusic.pause();
+        gameMusic.currentTime = 0;
+        menuMusic.currentTime = 0;
         
-        // Show menu overlay and update state
-        menuOverlay.classList.remove('hidden');
+        // Show main menu
+        mainMenuOverlay.classList.remove('hidden');
+        menuOverlay.classList.add('hidden');
+        gameOverOverlay.classList.add('hidden');
         currentState = GAME_STATE.MENU;
         selectedDifficulty = null;
-        
-        // Reset difficulty buttons
-        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-        difficultyInfo.textContent = 'Choose your challenge level';
     });
 
     // Initial menu show
@@ -791,38 +795,13 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Fade out menu music and start game music
-        menuMusic.volume = 1;
-        const fadeOut = setInterval(() => {
-            if (menuMusic.volume > 0.1) {
-                menuMusic.volume -= 0.1;
-            } else {
-                clearInterval(fadeOut);
-                menuMusic.pause();
-                menuMusic.volume = 1;
-                gameMusic.play();
-            }
-        }, 100);
+        // Start menu music
+        menuMusic.play();
 
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
             menuOverlay.classList.remove('hidden');
         }, 1500);
-    });
-
-    // Modify menu button click handler
-    menuBtn.addEventListener('click', () => {
-        // ... existing reset code ...
-        
-        playMenuMusic();
-        mainMenuOverlay.classList.remove('hidden');
-        menuOverlay.classList.add('hidden');
-        gameOverOverlay.classList.add('hidden');
-    });
-
-    // Start menu music when game loads
-    window.addEventListener('load', () => {
-        playMenuMusic();
     });
 
     // Update the controls hint text

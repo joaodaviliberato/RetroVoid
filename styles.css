@@ -141,6 +141,7 @@ footer {
     padding: 10px;
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     font-family: 'Courier New', monospace;
     color: var(--neon-blue);
     text-shadow: 0 0 5px var(--neon-blue);
@@ -490,6 +491,9 @@ footer {
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sound-btn:hover {
@@ -500,4 +504,11 @@ footer {
 
 .sound-btn.muted .icon {
     opacity: 0.5;
+}
+
+/* Position the game sound button */
+#game-toggle-music {
+    position: absolute;
+    top: 10px;
+    right: 10px;
 } 
