@@ -59,6 +59,12 @@ function initSpaceshipGame() {
     // Add these variables at the top of initSpaceshipGame
     const difficultyBtns = document.querySelectorAll('.difficulty-btn');
     const difficultyInfo = document.getElementById('difficulty-info');
+    const difficultyOverlay = document.querySelector('.difficulty-overlay');
+    const mainMenuOverlay = document.querySelector('.main-menu-overlay');
+    const gameOverOverlay = document.querySelector('.game-over-overlay');
+    const menuBtn = document.querySelector('.menu-btn');
+    const playBtn = document.querySelector('.play-btn');
+    const hyperspaceEffect = document.querySelector('.hyperspace-effect');
 
     // Set canvas size
     canvas.width = canvas.offsetWidth;
@@ -106,44 +112,7 @@ function initSpaceshipGame() {
 
     // Event listeners
     window.addEventListener('keydown', (e) => {
-        if (currentState === GAME_STATE.MENU) {
-            const difficulties = Object.values(DIFFICULTY);
-            const currentIndex = difficulties.findIndex(d => d.name === selectedDifficulty);
-            
-            switch (e.key) {
-                case 'ArrowUp':
-                    if (selectedDifficulty === null) {
-                        selectedDifficulty = difficulties[0].name;
-                    } else {
-                        const newIndex = (currentIndex - 1 + difficulties.length) % difficulties.length;
-                        selectedDifficulty = difficulties[newIndex].name;
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (selectedDifficulty === null) {
-                        selectedDifficulty = difficulties[0].name;
-                    } else {
-                        const newIndex = (currentIndex + 1) % difficulties.length;
-                        selectedDifficulty = difficulties[newIndex].name;
-                    }
-                    break;
-                case ' ':
-                    if (selectedDifficulty) {
-                        // Apply difficulty settings
-                        const difficulty = DIFFICULTY[selectedDifficulty];
-                        gameState.enemySpawnRate = difficulty.enemySpawnRate;
-                        gameState.enemyShootRate = difficulty.enemyShootRate;
-                        player.shootDelay = difficulty.playerShootDelay;
-                        player.shield = difficulty.playerShield;
-                        gameState.bulletDamage = difficulty.bulletDamage;
-                        
-                        // Start the game
-                        currentState = GAME_STATE.PLAYING;
-                    }
-                    break;
-            }
-        } else {
-            // Your existing keydown handling for the game
+        if (currentState === GAME_STATE.PLAYING) {
             gameState.keys[e.key] = true;
         }
     });
@@ -680,11 +649,6 @@ function initSpaceshipGame() {
         requestAnimationFrame(update);
     }
 
-    const mainMenuOverlay = document.querySelector('.main-menu-overlay');
-    const difficultyOverlay = document.querySelector('.difficulty-overlay');
-    const playBtn = document.querySelector('.play-btn');
-    const hyperspaceEffect = document.querySelector('.hyperspace-effect');
-
     // Create star background for menu
     const starsContainer = document.querySelector('.stars-container');
     for (let i = 0; i < 50; i++) {
@@ -736,6 +700,9 @@ function initSpaceshipGame() {
             difficultyOverlay.classList.remove('hidden');
             hyperspaceEffect.classList.remove('active');
             hyperspaceEffect.classList.add('hidden');
+            // Reset difficulty selection
+            difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+            difficultyInfo.textContent = 'Choose your challenge level';
         }, 2000);
     });
 
@@ -751,7 +718,7 @@ function initSpaceshipGame() {
         gameState.particles = [];
         player.x = canvas.width / 2;
         player.lives = 3;
-        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        player.shield = 100;
         player.autoShootCooldown = 0;
         
         // Hide all overlays
@@ -767,18 +734,12 @@ function initSpaceshipGame() {
     // Initial menu show
     showMenu();
 
-    const gameOverOverlay = document.querySelector('.game-over-overlay');
-    
-    // Modify update function game over handling
-    if (gameState.gameOver) {
-        gameOverOverlay.classList.remove('hidden');
-    }
-
-    // Add the difficulty button handlers
+    // Add difficulty button click handlers
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            const difficulty = DIFFICULTY[btn.dataset.difficulty];
-            selectedDifficulty = btn.dataset.difficulty;
+            const difficultyKey = btn.dataset.difficulty;
+            const difficulty = DIFFICULTY[difficultyKey];
+            selectedDifficulty = difficultyKey;
             
             // Update button styles
             difficultyBtns.forEach(b => b.classList.remove('selected'));
@@ -794,16 +755,26 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
+            // Start hyperspace effect
             createHyperspaceEffect();
             hyperspaceEffect.classList.remove('hidden');
             hyperspaceEffect.classList.add('active');
             
+            // Start game after effect
             setTimeout(() => {
                 difficultyOverlay.classList.add('hidden');
                 hyperspaceEffect.classList.remove('active');
                 hyperspaceEffect.classList.add('hidden');
                 currentState = GAME_STATE.PLAYING;
+                score = 0;
+                scoreElement.textContent = score;
             }, 2000);
+        });
+
+        // Add hover effect for difficulty descriptions
+        btn.addEventListener('mouseenter', () => {
+            const difficulty = DIFFICULTY[btn.dataset.difficulty];
+            difficultyInfo.textContent = difficulty.description;
         });
     });
 
