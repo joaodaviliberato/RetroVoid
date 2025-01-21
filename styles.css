@@ -358,12 +358,40 @@ footer {
     height: 100%;
     background: black;
     z-index: 15;
+    perspective: 500px;
+    overflow: hidden;
     opacity: 0;
     pointer-events: none;
 }
 
 .hyperspace-effect.active {
-    animation: hyperspace 2s ease-in-out forwards;
+    opacity: 1;
+    animation: none;
+}
+
+.light-speed-lines {
+    position: absolute;
+    width: 4px;
+    height: 100vh;
+    background: linear-gradient(to bottom, transparent, var(--neon-blue), transparent);
+    animation: lightSpeed 0.8s linear infinite;
+}
+
+@keyframes lightSpeed {
+    0% {
+        transform: translateX(100vw) translateZ(-100px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(-100vw) translateZ(500px);
+        opacity: 0;
+    }
 }
 
 .stars-container {
@@ -393,24 +421,6 @@ footer {
     }
     to {
         transform: rotate(45deg) translateX(100%);
-    }
-}
-
-@keyframes hyperspace {
-    0% {
-        opacity: 0;
-        transform: scale(1);
-        background: black;
-    }
-    50% {
-        opacity: 1;
-        transform: scale(2);
-        background: radial-gradient(circle, white, var(--neon-blue), black);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1);
-        background: black;
     }
 }
 

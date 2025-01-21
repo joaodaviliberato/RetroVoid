@@ -678,26 +678,64 @@ function initSpaceshipGame() {
 
     const mainMenuOverlay = document.querySelector('.main-menu-overlay');
     const difficultyOverlay = document.querySelector('.difficulty-overlay');
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    const difficultyInfo = document.getElementById('difficulty-info');
     const playBtn = document.querySelector('.play-btn');
     const hyperspaceEffect = document.querySelector('.hyperspace-effect');
+    const menuBtn = document.querySelector('.menu-btn');
 
-    // Create star background for menu
-    const starsContainer = document.querySelector('.stars-container');
-    for (let i = 0; i < 50; i++) {
-        const star = document.createElement('div');
-        star.className = 'star';
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.top = `${Math.random() * 100}%`;
-        star.style.animationDelay = `${Math.random() * 2}s`;
-        starsContainer.appendChild(star);
+    // Create light speed effect lines
+    function createLightSpeedEffect() {
+        hyperspaceEffect.innerHTML = ''; // Clear existing lines
+        for (let i = 0; i < 50; i++) {
+            const line = document.createElement('div');
+            line.className = 'light-speed-lines';
+            line.style.left = `${Math.random() * 100}%`;
+            line.style.animationDelay = `${Math.random() * 2}s`;
+            hyperspaceEffect.appendChild(line);
+        }
     }
 
+    // Add difficulty button handlers
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const difficulty = DIFFICULTY[btn.dataset.difficulty];
+            selectedDifficulty = btn.dataset.difficulty;
+            
+            // Update button styles
+            difficultyBtns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Show difficulty description
+            difficultyInfo.textContent = difficulty.description;
+            
+            // Apply difficulty settings
+            gameState.enemySpawnRate = difficulty.enemySpawnRate;
+            gameState.enemyShootRate = difficulty.enemyShootRate;
+            player.shootDelay = difficulty.playerShootDelay;
+            player.shield = difficulty.playerShield;
+            gameState.bulletDamage = difficulty.bulletDamage;
+            
+            // Start game after delay
+            setTimeout(() => {
+                difficultyOverlay.classList.add('hidden');
+                currentState = GAME_STATE.PLAYING;
+            }, 500);
+        });
+
+        // Show difficulty info on hover
+        btn.addEventListener('mouseenter', () => {
+            difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
+        });
+    });
+
     playBtn.addEventListener('click', () => {
-        // Start hyperspace effect
+        // Start light speed effect
         hyperspaceEffect.classList.remove('hidden');
         hyperspaceEffect.classList.add('active');
+        createLightSpeedEffect();
 
-        // After hyperspace effect, show difficulty selection
+        // After effect, show difficulty selection
         setTimeout(() => {
             mainMenuOverlay.classList.add('hidden');
             difficultyOverlay.classList.remove('hidden');
