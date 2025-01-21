@@ -16,7 +16,7 @@
         <source src="assets/menu-music.mp3" type="audio/mp3">
     </audio>
     
-    <header>
+    <header class="game-header">
         <h1 class="neon-text">Retro Void</h1>
         <p class="subtitle">Enter the Digital Realm</p>
     </header>
@@ -26,19 +26,16 @@
             <div class="cabinet-screen">
                 <div class="cabinet-content">
                     <canvas id="spaceship-canvas"></canvas>
-                    <div class="controls-hint">← → ↑ ↓ to move | Automatic shooting</div>
-                    <button class="menu-btn">MENU</button>
                     <div class="game-overlay">
-                        <div class="controls-hint">← → ↑ ↓ to move | Automatic shooting</div>
                         <div class="score">SCORE: <span id="score">0</span></div>
-                        <button class="menu-btn">MENU</button>
-                        <div class="lives-display" id="lives-display"></div>
-                        <div class="shield-bar">
-                            <div class="shield-bar-fill" id="shield-bar-fill"></div>
+                        <div class="life-bar"></div>
+                        <div class="controls-hint">← → ↑ ↓ to move | Automatic shooting</div>
+                        <div class="game-controls">
+                            <button class="sound-btn" id="game-toggle-music">
+                                <span class="icon">🔊</span>
+                            </button>
+                            <button class="menu-btn">MENU</button>
                         </div>
-                        <button class="sound-btn" id="game-toggle-music">
-                            <span class="icon">🔊</span>
-                        </button>
                     </div>
                     
                     <!-- Main Menu Overlay -->
@@ -87,7 +84,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer class="game-footer">
         <p>© 2024 Pixel Void - Jack into the Matrix</p>
     </footer>
 </body>

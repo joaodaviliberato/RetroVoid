@@ -458,12 +458,6 @@ function initSpaceshipGame() {
         ctx.fillText('↑↓ to select, SPACE to start', canvas.width / 2, canvas.height * 0.8);
     }
 
-    function updateUI() {
-        // Update shield bar
-        const shieldBarFill = document.getElementById('shield-bar-fill');
-        shieldBarFill.style.width = `${(player.shield / DIFFICULTY[selectedDifficulty].playerShield) * 100}%`;
-    }
-
     function update() {
         if (currentState === GAME_STATE.MENU) {
             drawMenu();
@@ -625,13 +619,7 @@ function initSpaceshipGame() {
                 });
 
                 // Draw lives
-                for (let i = 0; i < player.lives; i++) {
-                    ctx.save();
-                    ctx.translate(30 + i * 30, canvas.height - 30);
-                    ctx.scale(0.4, 0.4);
-                    drawPlayer();
-                    ctx.restore();
-                }
+                drawLives();
 
                 // Draw enemy bullets
                 gameState.enemyBullets.forEach(bullet => {
@@ -644,8 +632,6 @@ function initSpaceshipGame() {
                     gameState.level++;
                     gameState.enemySpawnRate += 0.005;
                 }
-
-                updateUI();
             }
 
             // Draw everything
@@ -717,6 +703,10 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
+            // Hide header and footer
+            document.querySelector('.game-header').classList.add('hidden');
+            document.querySelector('.game-footer').classList.add('hidden');
+
             // Switch from menu music to game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
@@ -760,6 +750,10 @@ function initSpaceshipGame() {
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
+        
+        // Show header and footer
+        document.querySelector('.game-header').classList.remove('hidden');
+        document.querySelector('.game-footer').classList.remove('hidden');
         
         // Show main menu
         mainMenuOverlay.classList.remove('hidden');
@@ -849,6 +843,21 @@ function initSpaceshipGame() {
 
     // Update resize handler
     window.addEventListener('resize', resizeCanvas);
+
+    // Update the lives drawing code
+    function drawLives() {
+        const lifeBar = document.querySelector('.life-bar');
+        lifeBar.innerHTML = '';
+        for (let i = 0; i < player.lives; i++) {
+            const lifeIcon = document.createElement('div');
+            lifeIcon.style.width = '20px';
+            lifeIcon.style.height = '20px';
+            lifeIcon.style.backgroundColor = player.color;
+            lifeIcon.style.borderRadius = '50%';
+            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
+            lifeBar.appendChild(lifeIcon);
+        }
+    }
 
     update();
 }
