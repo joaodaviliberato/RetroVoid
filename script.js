@@ -40,7 +40,7 @@ function initSpaceshipGame() {
             enemyShootRate: 0.01,
             playerShootDelay: 30,
             enemySpeed: 0.8,
-            playerShield: 150,
+            playerShield: 200,
             enemyBulletSpeed: 3,
             bulletDamage: 15
         },
@@ -51,7 +51,7 @@ function initSpaceshipGame() {
             enemyShootRate: 0.02,
             playerShootDelay: 40,
             enemySpeed: 1,
-            playerShield: 100,
+            playerShield: 200,
             enemyBulletSpeed: 5,
             bulletDamage: 25
         },
@@ -62,7 +62,7 @@ function initSpaceshipGame() {
             enemyShootRate: 0.03,
             playerShootDelay: 50,
             enemySpeed: 1.2,
-            playerShield: 75,
+            playerShield: 200,
             enemyBulletSpeed: 7,
             bulletDamage: 35
         }
@@ -670,7 +670,28 @@ function initSpaceshipGame() {
                 ctx.strokeStyle = '#fff';
                 ctx.strokeRect(10, 10, 200, 10);
             } else {
-                showGameOver();
+                ctx.fillStyle = '#ff2d55';
+                ctx.font = '30px "Courier New"';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+                ctx.font = '20px "Courier New"';
+                ctx.fillText('Press SPACE to return to menu', canvas.width / 2, canvas.height / 2 + 40);
+                
+                if (gameState.keys[' ']) {
+                    // Reset game
+                    score = 0;
+                    scoreElement.textContent = score;
+                    gameState.gameOver = false;
+                    gameState.enemies = [];
+                    gameState.bullets = [];
+                    gameState.enemyBullets = [];
+                    gameState.particles = [];
+                    player.x = canvas.width / 2;
+                    player.lives = 3;
+                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                    currentState = GAME_STATE.MENU;
+                    selectedDifficulty = null;
+                }
             }
         }
         requestAnimationFrame(update);
@@ -912,17 +933,8 @@ function showGameOver() {
         existingTitle.remove();
     }
     
-    // Add new game over title with glitch effect
+    // Add new game over title
     const gameOverTitle = document.createElement('h3');
     gameOverTitle.textContent = 'GAME OVER';
     gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
-    
-    // Add return to menu text
-    const menuText = document.createElement('p');
-    menuText.textContent = 'Press SPACE to continue';
-    menuText.style.color = '#0ff';
-    menuText.style.fontSize = '1.5rem';
-    menuText.style.marginTop = '2rem';
-    menuText.style.textShadow = '0 0 10px #0ff';
-    gameOverOverlay.insertBefore(menuText, gameOverOverlay.children[1]);
 } 
