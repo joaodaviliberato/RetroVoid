@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Void - Cyberpunk Arcade</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="neon-overlay"></div>
+    
+    <header>
+        <h1 class="neon-text">Pixel Void</h1>
+        <p class="subtitle">Enter the Digital Realm</p>
+    </header>
+
+    <main class="arcade">
+        <div class="cabinet" data-game="puzzle">
+            <div class="cabinet-screen">
+                <h2>Neural Puzzle</h2>
+                <div class="cabinet-content">
+                    <canvas id="puzzle-canvas"></canvas>
+                </div>
+            </div>
+            <div class="cabinet-base"></div>
+        </div>
+
+        <div class="cabinet" data-game="shooter">
+            <div class="cabinet-screen">
+                <h2>Cyber Shooter</h2>
+                <div class="cabinet-content">
+                    <canvas id="shooter-canvas"></canvas>
+                </div>
+            </div>
+            <div class="cabinet-base"></div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 Pixel Void - Jack into the Matrix</p>
+    </footer>
+</body>
+</html> 
