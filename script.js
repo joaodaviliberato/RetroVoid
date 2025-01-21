@@ -868,13 +868,9 @@ function initSpaceshipGame() {
         const lifeBar = document.querySelector('.life-bar');
         lifeBar.innerHTML = '';
         for (let i = 0; i < player.lives; i++) {
-            const lifeIcon = document.createElement('div');
-            lifeIcon.style.width = '20px';
-            lifeIcon.style.height = '20px';
-            lifeIcon.style.backgroundColor = player.color;
-            lifeIcon.style.borderRadius = '50%';
-            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
-            lifeBar.appendChild(lifeIcon);
+            const heart = document.createElement('span');
+            heart.textContent = '❤️';
+            lifeBar.appendChild(heart);
         }
     }
 
@@ -924,4 +920,21 @@ function playGameMusic() {
     menuMusic.pause();
     menuMusic.currentTime = 0;
     gameMusic.play();
+}
+
+// Update the showGameOver function
+function showGameOver() {
+    const gameOverOverlay = document.querySelector('.game-over-overlay');
+    gameOverOverlay.classList.remove('hidden');
+    
+    // Remove any existing h3 elements
+    const existingTitle = gameOverOverlay.querySelector('h3');
+    if (existingTitle) {
+        existingTitle.remove();
+    }
+    
+    // Add new game over title
+    const gameOverTitle = document.createElement('h3');
+    gameOverTitle.textContent = 'GAME OVER';
+    gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
 } 
