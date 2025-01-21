@@ -26,11 +26,13 @@ function initSpaceshipGame() {
         speed: 6,
         color: '#ff2d55',
         shield: 100,
+        lives: 3,
         powerups: []
     };
 
     const gameState = {
         bullets: [],
+        enemyBullets: [],
         enemies: [],
         particles: [],
         stars: [],
@@ -38,7 +40,8 @@ function initSpaceshipGame() {
         gameOver: false,
         bulletCooldown: 0,
         level: 1,
-        enemySpawnRate: 0.02
+        enemySpawnRate: 0.01,
+        enemyShootRate: 0.02
     };
 
     // Create initial stars
@@ -68,26 +71,41 @@ function initSpaceshipGame() {
             ctx.stroke();
         }
         
-        // Draw spaceship body
+        // Improved player spaceship design
         ctx.beginPath();
+        // Main body
         ctx.moveTo(0, -30);
+        ctx.lineTo(-20, 10);
         ctx.lineTo(-25, 20);
-        ctx.lineTo(-15, 15);
-        ctx.lineTo(-10, 30);
-        ctx.lineTo(10, 30);
-        ctx.lineTo(15, 15);
+        ctx.lineTo(-10, 15);
+        ctx.lineTo(-8, 30);
+        ctx.lineTo(8, 30);
+        ctx.lineTo(10, 15);
         ctx.lineTo(25, 20);
+        ctx.lineTo(20, 10);
         ctx.closePath();
         ctx.fillStyle = player.color;
         ctx.fill();
+
+        // Wing details
+        ctx.beginPath();
+        ctx.moveTo(-20, 10);
+        ctx.lineTo(-35, 0);
+        ctx.lineTo(-20, -10);
+        ctx.moveTo(20, 10);
+        ctx.lineTo(35, 0);
+        ctx.lineTo(20, -10);
+        ctx.strokeStyle = '#ff0066';
+        ctx.lineWidth = 2;
+        ctx.stroke();
         
-        // Draw cockpit
+        // Cockpit
         ctx.beginPath();
         ctx.ellipse(0, 0, 8, 15, 0, 0, Math.PI * 2);
         ctx.fillStyle = '#0ff';
         ctx.fill();
         
-        // Draw engine glow
+        // Engine glow
         const engineGlow = ctx.createRadialGradient(0, 25, 0, 0, 25, 20);
         engineGlow.addColorStop(0, '#0ff');
         engineGlow.addColorStop(1, 'transparent');
@@ -100,63 +118,87 @@ function initSpaceshipGame() {
     function createEnemy() {
         const types = [
             {
-                width: 40,
-                height: 40,
-                speed: 2 + Math.random() * 2,
-                health: 1,
+                width: 50,
+                height: 50,
+                speed: 1,
+                health: 2,
                 color: '#b026ff',
                 points: 100,
+                shootRate: 0.02,
                 draw: function(ctx, x, y) {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Draw enemy ship body
+                    // Improved enemy design - Type 1
                     ctx.beginPath();
-                    ctx.moveTo(0, -20);
-                    ctx.lineTo(-20, 10);
-                    ctx.lineTo(-10, 15);
-                    ctx.lineTo(10, 15);
-                    ctx.lineTo(20, 10);
+                    ctx.moveTo(0, -25);
+                    ctx.lineTo(-25, -15);
+                    ctx.lineTo(-20, 0);
+                    ctx.lineTo(-25, 15);
+                    ctx.lineTo(-15, 25);
+                    ctx.lineTo(0, 20);
+                    ctx.lineTo(15, 25);
+                    ctx.lineTo(25, 15);
+                    ctx.lineTo(20, 0);
+                    ctx.lineTo(25, -15);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Draw enemy cockpit
+                    // Enemy details
                     ctx.beginPath();
-                    ctx.arc(0, 0, 5, 0, Math.PI * 2);
+                    ctx.arc(0, 0, 8, 0, Math.PI * 2);
                     ctx.fillStyle = '#ff0066';
+                    ctx.fill();
+                    
+                    // Wing lights
+                    ctx.fillStyle = '#0ff';
+                    ctx.beginPath();
+                    ctx.arc(-20, 0, 3, 0, Math.PI * 2);
+                    ctx.arc(20, 0, 3, 0, Math.PI * 2);
                     ctx.fill();
                     
                     ctx.restore();
                 }
             },
             {
-                width: 60,
+                width: 70,
                 height: 60,
-                speed: 1.5 + Math.random() * 1.5,
-                health: 2,
+                speed: 0.8,
+                health: 3,
                 color: '#ff0066',
                 points: 200,
+                shootRate: 0.03,
                 draw: function(ctx, x, y) {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Draw boss-type enemy
+                    // Improved enemy design - Type 2
                     ctx.beginPath();
-                    ctx.moveTo(0, -25);
-                    ctx.lineTo(-30, 0);
+                    ctx.moveTo(0, -30);
+                    ctx.lineTo(-35, -10);
+                    ctx.lineTo(-30, 10);
                     ctx.lineTo(-20, 20);
+                    ctx.lineTo(0, 25);
                     ctx.lineTo(20, 20);
-                    ctx.lineTo(30, 0);
+                    ctx.lineTo(30, 10);
+                    ctx.lineTo(35, -10);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Draw enemy details
+                    // Core
                     ctx.beginPath();
-                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
                     ctx.fillStyle = '#b026ff';
                     ctx.fill();
+                    
+                    // Energy rings
+                    ctx.strokeStyle = '#0ff';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 18, 0, Math.PI * 2);
+                    ctx.stroke();
                     
                     ctx.restore();
                 }
@@ -167,6 +209,7 @@ function initSpaceshipGame() {
         return {
             x: Math.random() * (canvas.width - type.width) + type.width/2,
             y: -type.height,
+            targetY: Math.random() * (canvas.height/3),
             ...type
         };
     }
@@ -201,6 +244,19 @@ function initSpaceshipGame() {
                rect1.x + rect1.width > rect2.x &&
                rect1.y < rect2.y + rect2.height &&
                rect1.y + rect1.height > rect2.y;
+    }
+
+    function enemyShoot(enemy) {
+        if (Math.random() < enemy.shootRate) {
+            gameState.enemyBullets.push({
+                x: enemy.x,
+                y: enemy.y + enemy.height/2,
+                width: 4,
+                height: 12,
+                speed: 5,
+                color: enemy.color
+            });
+        }
     }
 
     function update() {
@@ -285,9 +341,42 @@ function initSpaceshipGame() {
                 }
             });
 
-            // Update enemies with new drawing method
+            // Update enemy bullets
+            gameState.enemyBullets.forEach((bullet, index) => {
+                bullet.y += bullet.speed;
+                
+                // Check player collision with enemy bullets
+                if (checkCollision(bullet, player)) {
+                    gameState.enemyBullets.splice(index, 1);
+                    if (player.shield > 0) {
+                        player.shield -= 25;
+                    } else {
+                        player.lives--;
+                        player.shield = 100;
+                        
+                        if (player.lives <= 0) {
+                            gameState.gameOver = true;
+                            for (let i = 0; i < 20; i++) {
+                                gameState.particles.push(createParticle(player.x, player.y, player.color));
+                            }
+                        }
+                    }
+                }
+                
+                if (bullet.y > canvas.height) {
+                    gameState.enemyBullets.splice(index, 1);
+                }
+            });
+
+            // Update enemies with new movement
             gameState.enemies.forEach((enemy, index) => {
-                enemy.y += enemy.speed;
+                // Move towards target Y position only
+                if (enemy.y < enemy.targetY) {
+                    enemy.y += enemy.speed;
+                }
+                
+                // Enemy shooting
+                enemyShoot(enemy);
                 
                 if (checkCollision(enemy, player)) {
                     if (player.shield > 0) {
@@ -314,6 +403,21 @@ function initSpaceshipGame() {
                 if (particle.life <= 0) {
                     gameState.particles.splice(index, 1);
                 }
+            });
+
+            // Draw lives
+            for (let i = 0; i < player.lives; i++) {
+                ctx.save();
+                ctx.translate(30 + i * 30, canvas.height - 30);
+                ctx.scale(0.4, 0.4);
+                drawPlayer();
+                ctx.restore();
+            }
+
+            // Draw enemy bullets
+            gameState.enemyBullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
             });
 
             // Level progression
