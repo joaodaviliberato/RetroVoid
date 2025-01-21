@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initSpaceshipGame();
+    createFlyingShips();
 });
 
 function getHighScore() {
@@ -744,6 +745,13 @@ function initSpaceshipGame() {
         difficultyBtns.forEach(btn => btn.classList.remove('selected'));
         difficultyInfo.textContent = 'Choose your challenge level';
         currentState = GAME_STATE.MENU;
+        
+        // Recreate flying ships
+        const existingShips = document.querySelector('.flying-ships');
+        if (existingShips) {
+            existingShips.remove();
+        }
+        createFlyingShips();
     }
 
     menuBtn.addEventListener('click', () => {
@@ -887,6 +895,46 @@ function initSpaceshipGame() {
         const shieldPercent = Math.max(0, Math.min(100, (player.shield / maxShield) * 100));
         const shieldBarFill = shieldBar.querySelector('.shield-bar-fill');
         shieldBarFill.style.width = `${shieldPercent}%`;
+    }
+
+    // Add this function to create flying ships in the background
+    function createFlyingShips() {
+        const flyingShipsContainer = document.createElement('div');
+        flyingShipsContainer.className = 'flying-ships';
+        document.querySelector('.background-effects').appendChild(flyingShipsContainer);
+
+        // Create multiple ships
+        for (let i = 0; i < 5; i++) {
+            const ship = document.createElement('div');
+            ship.className = 'flying-ship';
+            
+            // Set random vertical position and delay
+            const yPos = Math.random() * window.innerHeight;
+            const delay = Math.random() * -15; // Negative delay for initial stagger
+            
+            ship.style.cssText = `
+                --y: ${yPos}px;
+                animation-delay: ${delay}s;
+                top: 0;
+                left: 0;
+            `;
+
+            // Create ship SVG
+            ship.innerHTML = `
+                <svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 15L20 5L50 15L20 25Z" fill="${Math.random() > 0.5 ? '#ff2d55' : '#b026ff'}" 
+                          filter="url(#glow)"/>
+                    <defs>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="1" result="glow"/>
+                            <feComposite in="SourceGraphic" in2="glow" operator="over"/>
+                        </filter>
+                    </defs>
+                </svg>
+            `;
+
+            flyingShipsContainer.appendChild(ship);
+        }
     }
 
     update();
