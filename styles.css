@@ -265,7 +265,7 @@ footer.hidden {
     display: none;
 }
 
-/* Add styles for game over overlay */
+/* Update game over overlay styles */
 .game-over-overlay {
     position: absolute;
     top: 0;
@@ -276,19 +276,33 @@ footer.hidden {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.95);
     z-index: 25;
-}
-
-.game-over-overlay.hidden {
-    display: none;
+    gap: 2rem;
 }
 
 .game-over-overlay h3 {
     color: var(--neon-pink);
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px var(--neon-pink);
+    font-size: 4rem;
+    text-shadow: 0 0 10px var(--neon-pink),
+                 0 0 20px var(--neon-pink),
+                 0 0 30px var(--neon-pink);
+    animation: gameOverPulse 2s infinite alternate;
+    letter-spacing: 4px;
+}
+
+@keyframes gameOverPulse {
+    0% {
+        text-shadow: 0 0 10px var(--neon-pink),
+                     0 0 20px var(--neon-pink);
+        transform: scale(1);
+    }
+    100% {
+        text-shadow: 0 0 15px var(--neon-pink),
+                     0 0 25px var(--neon-pink),
+                     0 0 35px var(--neon-pink);
+        transform: scale(1.05);
+    }
 }
 
 /* Main Menu Styles */
