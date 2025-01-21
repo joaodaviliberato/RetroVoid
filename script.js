@@ -132,46 +132,18 @@ function initSpaceshipGame() {
             ctx.stroke();
         }
         
-        // Improved player spaceship design
+        // Retro triangle spaceship
         ctx.beginPath();
-        // Main body
-        ctx.moveTo(0, -30);
-        ctx.lineTo(-20, 10);
-        ctx.lineTo(-25, 20);
-        ctx.lineTo(-10, 15);
-        ctx.lineTo(-8, 30);
-        ctx.lineTo(8, 30);
-        ctx.lineTo(10, 15);
-        ctx.lineTo(25, 20);
-        ctx.lineTo(20, 10);
+        ctx.moveTo(0, -20);  // Top point
+        ctx.lineTo(-15, 15); // Bottom left
+        ctx.lineTo(15, 15);  // Bottom right
         ctx.closePath();
         ctx.fillStyle = player.color;
         ctx.fill();
-
-        // Wing details
-        ctx.beginPath();
-        ctx.moveTo(-20, 10);
-        ctx.lineTo(-35, 0);
-        ctx.lineTo(-20, -10);
-        ctx.moveTo(20, 10);
-        ctx.lineTo(35, 0);
-        ctx.lineTo(20, -10);
-        ctx.strokeStyle = '#ff0066';
-        ctx.lineWidth = 2;
-        ctx.stroke();
         
-        // Cockpit
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 8, 15, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#0ff';
-        ctx.fill();
-        
-        // Engine glow
-        const engineGlow = ctx.createRadialGradient(0, 25, 0, 0, 25, 20);
-        engineGlow.addColorStop(0, '#0ff');
-        engineGlow.addColorStop(1, 'transparent');
-        ctx.fillStyle = engineGlow;
-        ctx.fillRect(-15, 25, 30, 20);
+        // Simple engine glow
+        ctx.fillStyle = '#ff0';
+        ctx.fillRect(-8, 15, 16, 5);
         
         ctx.restore();
     }
@@ -179,172 +151,39 @@ function initSpaceshipGame() {
     function createEnemy() {
         const types = [
             {
-                width: 50,
-                height: 50,
+                width: 30,
+                height: 30,
                 speed: 1,
-                health: 2,
-                color: '#b026ff',
+                health: 1,
+                color: '#ff0',
                 points: 100,
                 shootRate: 0.02,
                 draw: function(ctx, x, y) {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Scout Ship
-                    // Main body
+                    // Simple invader-style enemy
                     ctx.beginPath();
-                    ctx.moveTo(0, -25);
-                    ctx.lineTo(-15, -10);
-                    ctx.lineTo(-20, 10);
-                    ctx.lineTo(-10, 20);
-                    ctx.lineTo(10, 20);
-                    ctx.lineTo(20, 10);
-                    ctx.lineTo(15, -10);
-                    ctx.closePath();
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                    
-                    // Wings
-                    ctx.beginPath();
-                    ctx.moveTo(-20, 10);
-                    ctx.lineTo(-35, 0);
-                    ctx.lineTo(-20, -5);
-                    ctx.moveTo(20, 10);
-                    ctx.lineTo(35, 0);
-                    ctx.lineTo(20, -5);
-                    ctx.strokeStyle = '#ff0066';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // Engine glow
-                    const engineGlow = ctx.createRadialGradient(0, 15, 0, 0, 15, 10);
-                    engineGlow.addColorStop(0, '#0ff');
-                    engineGlow.addColorStop(1, 'transparent');
-                    ctx.fillStyle = engineGlow;
-                    ctx.fillRect(-10, 15, 20, 10);
-                    
-                    ctx.restore();
-                }
-            },
-            {
-                width: 70,
-                height: 70,
-                speed: 0.8,
-                health: 3,
-                color: '#ff0066',
-                points: 200,
-                shootRate: 0.03,
-                draw: function(ctx, x, y) {
-                    ctx.save();
-                    ctx.translate(x, y);
-                    
-                    // Heavy Battleship
-                    // Main hull
-                    ctx.beginPath();
-                    ctx.moveTo(0, -35);
-                    ctx.lineTo(-15, -25);
-                    ctx.lineTo(-25, -10);
-                    ctx.lineTo(-30, 10);
-                    ctx.lineTo(-20, 25);
-                    ctx.lineTo(0, 30);
-                    ctx.lineTo(20, 25);
-                    ctx.lineTo(30, 10);
-                    ctx.lineTo(25, -10);
-                    ctx.lineTo(15, -25);
-                    ctx.closePath();
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                    
-                    // Side cannons
-                    ctx.fillStyle = '#b026ff';
-                    ctx.fillRect(-35, -5, 10, 20);
-                    ctx.fillRect(25, -5, 10, 20);
-                    
-                    // Bridge
-                    ctx.beginPath();
-                    ctx.ellipse(0, -10, 8, 15, 0, 0, Math.PI * 2);
-                    ctx.fillStyle = '#0ff';
-                    ctx.fill();
-                    
-                    // Engine trails
-                    const gradient = ctx.createLinearGradient(0, 25, 0, 40);
-                    gradient.addColorStop(0, '#ff0066');
-                    gradient.addColorStop(1, 'transparent');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(-15, 25, 8, 15);
-                    ctx.fillRect(7, 25, 8, 15);
-                    
-                    ctx.restore();
-                }
-            },
-            {
-                width: 60,
-                height: 60,
-                speed: 1.2,
-                health: 2,
-                color: '#9400D3',
-                points: 150,
-                shootRate: 0.02,
-                draw: function(ctx, x, y) {
-                    ctx.save();
-                    ctx.translate(x, y);
-                    
-                    // Stealth Fighter
-                    // Main body
-                    ctx.beginPath();
-                    ctx.moveTo(0, -30);
-                    ctx.lineTo(-30, 10);
+                    ctx.moveTo(-15, -15);
+                    ctx.lineTo(15, -15);
+                    ctx.lineTo(15, 15);
                     ctx.lineTo(-15, 15);
-                    ctx.lineTo(0, 20);
-                    ctx.lineTo(15, 15);
-                    ctx.lineTo(30, 10);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Cockpit
-                    ctx.beginPath();
-                    ctx.moveTo(0, -15);
-                    ctx.lineTo(-8, 0);
-                    ctx.lineTo(8, 0);
-                    ctx.closePath();
-                    ctx.fillStyle = '#0ff';
-                    ctx.fill();
-                    
-                    // Energy lines
-                    ctx.beginPath();
-                    ctx.moveTo(-30, 10);
-                    ctx.lineTo(-20, 10);
-                    ctx.moveTo(-15, 15);
-                    ctx.lineTo(-5, 15);
-                    ctx.moveTo(5, 15);
-                    ctx.lineTo(15, 15);
-                    ctx.moveTo(20, 10);
-                    ctx.lineTo(30, 10);
-                    ctx.strokeStyle = '#ff0066';
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
-                    
-                    // Engine glow
-                    const engineGlow = ctx.createRadialGradient(0, 15, 0, 0, 15, 15);
-                    engineGlow.addColorStop(0, '#0ff');
-                    engineGlow.addColorStop(1, 'transparent');
-                    ctx.fillStyle = engineGlow;
-                    ctx.beginPath();
-                    ctx.arc(0, 15, 8, 0, Math.PI * 2);
-                    ctx.fill();
-                    
                     ctx.restore();
                 }
-            }
+            },
+            // ... add more simple enemy types if desired
         ];
         
         const type = types[Math.floor(Math.random() * types.length)];
         return {
+            ...type,
             x: Math.random() * (canvas.width - type.width) + type.width/2,
             y: -type.height,
-            targetY: Math.random() * (canvas.height/4),
-            ...type
+            targetY: Math.random() * (canvas.height/3)
         };
     }
 
@@ -434,214 +273,38 @@ function initSpaceshipGame() {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Update and draw stars
-        gameState.stars.forEach((star, index) => {
-            star.y += star.speed;
-            if (star.y > canvas.height) {
-                star.y = 0;
-                star.x = Math.random() * canvas.width;
-            }
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(star.x, star.y, star.size, star.size);
-        });
-
         if (currentState === GAME_STATE.PLAYING) {
-            // Handle player movement
-            if (gameState.keys['ArrowLeft'] && player.x > player.width/2) {
-                player.x -= player.speed;
-            }
-            if (gameState.keys['ArrowRight'] && player.x < canvas.width - player.width/2) {
-                player.x += player.speed;
-            }
-
-            // Automatic shooting (slower)
-            player.autoShootCooldown--;
-            if (player.autoShootCooldown <= 0) {
-                gameState.bullets.push(
-                    {
-                        x: player.x - 15,
-                        y: player.y - 20,
-                        width: 4,
-                        height: 15,
-                        color: '#0ff'
-                    },
-                    {
-                        x: player.x + 15,
-                        y: player.y - 20,
-                        width: 4,
-                        height: 15,
-                        color: '#0ff'
-                    }
-                );
-                player.autoShootCooldown = player.shootDelay;
-            }
-            
-            // Spawn enemies based on level
+            // Spawn enemies
             if (Math.random() < gameState.enemySpawnRate) {
                 gameState.enemies.push(createEnemy());
             }
 
-            // Update bullets
-            gameState.bullets.forEach((bullet, bulletIndex) => {
-                bullet.y -= 7;
-                
-                // Check enemy collisions
-                gameState.enemies.forEach((enemy, enemyIndex) => {
-                    if (checkCollision(bullet, enemy)) {
-                        // Create explosion particles
-                        for (let i = 0; i < 10; i++) {
-                            gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
-                        }
-                        
-                        gameState.bullets.splice(bulletIndex, 1);
-                        gameState.enemies.splice(enemyIndex, 1);
-                        score += 100;
-                        scoreElement.textContent = score;
-                    }
+            // Auto-shoot
+            if (player.autoShootCooldown <= 0) {
+                gameState.bullets.push({
+                    x: player.x,
+                    y: player.y - 20,
+                    width: 4,
+                    height: 12,
+                    color: '#0f0'
                 });
+                player.autoShootCooldown = player.shootDelay;
+            }
+            player.autoShootCooldown--;
 
-                // Remove off-screen bullets
-                if (bullet.y < 0) {
-                    gameState.bullets.splice(bulletIndex, 1);
-                }
-            });
-
-            // Update enemy bullets
-            gameState.enemyBullets.forEach((bullet, index) => {
-                bullet.y += bullet.speed;
-                
-                // Check player collision with enemy bullets
-                if (checkCollision(bullet, player)) {
-                    gameState.enemyBullets.splice(index, 1);
-                    if (player.shield > 0) {
-                        player.shield -= gameState.bulletDamage;
-                        if (player.shield < 0) player.shield = 0;
-                    } else {
-                        player.lives--;
-                        if (player.lives > 0) {
-                            player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                        } else {
-                            gameState.gameOver = true;
-                            for (let i = 0; i < 20; i++) {
-                                gameState.particles.push(createParticle(player.x, player.y, player.color));
-                            }
-                        }
-                    }
-                }
-                
-                if (bullet.y > canvas.height) {
-                    gameState.enemyBullets.splice(index, 1);
-                }
-            });
-
-            // Update enemies with new movement
-            gameState.enemies.forEach((enemy, index) => {
-                // Move towards target Y position only
-                if (enemy.y < enemy.targetY) {
-                    enemy.y += enemy.speed;
-                }
-                
-                // Enemy shooting - Fixed shooting mechanism
-                if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
-                    gameState.enemyBullets.push({
-                        x: enemy.x,
-                        y: enemy.y + enemy.height/2,
-                        width: 4,
-                        height: 12,
-                        speed: DIFFICULTY[selectedDifficulty].enemyBulletSpeed,
-                        color: enemy.color
-                    });
-                }
-                
-                if (checkCollision(enemy, player)) {
-                    if (player.shield > 0) {
-                        player.shield -= gameState.bulletDamage * 2;
-                        if (player.shield < 0) player.shield = 0;
-                        gameState.enemies.splice(index, 1);
-                    } else {
-                        gameState.gameOver = true;
-                        for (let i = 0; i < 20; i++) {
-                            gameState.particles.push(createParticle(player.x, player.y, player.color));
-                        }
-                    }
-                }
-                
-                if (enemy.y > canvas.height) {
-                    gameState.enemies.splice(index, 1);
-                }
-            });
-
-            // Update particles
-            gameState.particles.forEach((particle, index) => {
-                particle.x += Math.cos(particle.angle) * particle.speed;
-                particle.y += Math.sin(particle.angle) * particle.speed;
-                particle.life -= 0.02;
-                if (particle.life <= 0) {
-                    gameState.particles.splice(index, 1);
-                }
-            });
-
-            // Draw lives
-            for (let i = 0; i < player.lives; i++) {
-                ctx.save();
-                ctx.translate(30 + i * 30, canvas.height - 30);
-                ctx.scale(0.4, 0.4);
-                drawPlayer();
-                ctx.restore();
+            // Update player position
+            if (gameState.keys['ArrowLeft']) {
+                player.x = Math.max(player.width/2, player.x - player.speed);
+            }
+            if (gameState.keys['ArrowRight']) {
+                player.x = Math.min(canvas.width - player.width/2, player.x + player.speed);
             }
 
-            // Draw enemy bullets
-            gameState.enemyBullets.forEach(bullet => {
-                ctx.fillStyle = bullet.color;
-                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
-            });
-
-            // Level progression
-            if (score > gameState.level * 1000) {
-                gameState.level++;
-                gameState.enemySpawnRate += 0.005;
-            }
-        }
-
-        // Draw everything
-        gameState.particles.forEach(drawParticle);
-        gameState.bullets.forEach(bullet => {
-            ctx.fillStyle = bullet.color;
-            ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
-        });
-        gameState.enemies.forEach(enemy => enemy.draw(ctx, enemy.x, enemy.y));
-        
-        if (!gameState.gameOver) {
+            // Update and draw everything
+            updateBullets();
+            updateEnemies();
             drawPlayer();
-            
-            // Draw shield bar
-            ctx.fillStyle = '#0ff';
-            ctx.fillRect(10, 10, player.shield * 2, 10);
-            ctx.strokeStyle = '#fff';
-            ctx.strokeRect(10, 10, 200, 10);
-        } else {
-            ctx.fillStyle = '#ff2d55';
-            ctx.font = '30px "Courier New"';
-            ctx.textAlign = 'center';
-            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-            ctx.font = '20px "Courier New"';
-            ctx.fillText('Press SPACE to return to menu', canvas.width / 2, canvas.height / 2 + 40);
-            
-            if (gameState.keys[' ']) {
-                // Reset game
-                score = 0;
-                scoreElement.textContent = score;
-                gameState.gameOver = false;
-                gameState.enemies = [];
-                gameState.bullets = [];
-                gameState.enemyBullets = [];
-                gameState.particles = [];
-                player.x = canvas.width / 2;
-                player.lives = 3;
-                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                currentState = GAME_STATE.MENU;
-                selectedDifficulty = null;
-            }
+            drawUI();
         }
 
         requestAnimationFrame(update);
@@ -739,38 +402,15 @@ function initSpaceshipGame() {
             const difficulty = DIFFICULTY[difficultyKey];
             selectedDifficulty = difficultyKey;
             
-            // Update button styles
-            difficultyBtns.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+            // Apply settings and reset game state
+            applyDifficultySettings(difficulty);
+            resetGameState();
             
-            // Show difficulty description
-            difficultyInfo.textContent = difficulty.description;
-            
-            // Apply difficulty settings
-            gameState.enemySpawnRate = difficulty.enemySpawnRate;
-            gameState.enemyShootRate = difficulty.enemyShootRate;
-            player.shootDelay = difficulty.playerShootDelay;
-            player.shield = difficulty.playerShield;
-            gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Reset game state
-            score = 0;
-            scoreElement.textContent = score;
-            gameState.enemies = [];
-            gameState.bullets = [];
-            gameState.enemyBullets = [];
-            gameState.particles = [];
-            player.x = canvas.width / 2;
-            player.lives = 3;
-            player.autoShootCooldown = 0;
-            gameState.gameOver = false;
-            
-            // Start hyperspace effect
+            // Start game immediately after hyperspace effect
             createHyperspaceEffect();
             hyperspaceEffect.classList.remove('hidden');
             hyperspaceEffect.classList.add('active');
             
-            // Start game after effect
             setTimeout(() => {
                 difficultyOverlay.classList.add('hidden');
                 hyperspaceEffect.classList.remove('active');
