@@ -42,7 +42,8 @@ function initSpaceshipGame() {
             enemySpeed: 0.8,
             playerShield: 200,
             enemyBulletSpeed: 3,
-            bulletDamage: 15
+            bulletDamage: 15,
+            lives: 5
         },
         NORMAL: {
             name: 'NORMAL',
@@ -53,7 +54,8 @@ function initSpaceshipGame() {
             enemySpeed: 1,
             playerShield: 200,
             enemyBulletSpeed: 5,
-            bulletDamage: 25
+            bulletDamage: 25,
+            lives: 4
         },
         HARD: {
             name: 'HARD',
@@ -64,7 +66,8 @@ function initSpaceshipGame() {
             enemySpeed: 1.2,
             playerShield: 200,
             enemyBulletSpeed: 7,
-            bulletDamage: 35
+            bulletDamage: 35,
+            lives: 3
         }
     };
 
@@ -145,6 +148,7 @@ function initSpaceshipGame() {
                         gameState.enemyShootRate = difficulty.enemyShootRate;
                         player.shootDelay = difficulty.playerShootDelay;
                         player.shield = difficulty.playerShield;
+                        player.lives = difficulty.lives;
                         gameState.bulletDamage = difficulty.bulletDamage;
                         
                         // Start the game
@@ -687,7 +691,7 @@ function initSpaceshipGame() {
                     gameState.enemyBullets = [];
                     gameState.particles = [];
                     player.x = canvas.width / 2;
-                    player.lives = 3;
+                    player.lives = DIFFICULTY[selectedDifficulty].lives;
                     player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
@@ -715,12 +719,16 @@ function initSpaceshipGame() {
             // Show difficulty description
             difficultyInfo.textContent = difficulty.description;
             
-            // Apply difficulty settings
+            // Apply difficulty settings including lives
             gameState.enemySpawnRate = difficulty.enemySpawnRate;
             gameState.enemyShootRate = difficulty.enemyShootRate;
             player.shootDelay = difficulty.playerShootDelay;
             player.shield = difficulty.playerShield;
+            player.lives = difficulty.lives;
             gameState.bulletDamage = difficulty.bulletDamage;
+            
+            // Update the life display
+            drawLives();
             
             // Hide header and footer
             document.querySelector('.game-header').classList.add('hidden');
@@ -761,8 +769,8 @@ function initSpaceshipGame() {
         gameState.enemyBullets = [];
         gameState.particles = [];
         player.x = canvas.width / 2;
-        player.lives = 3;
-        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        player.lives = selectedDifficulty ? DIFFICULTY[selectedDifficulty].lives : 3;
+        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 200;
         player.autoShootCooldown = 0;
         
         // Stop game music and reset menu music
