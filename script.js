@@ -430,136 +430,96 @@ function initSpaceshipGame() {
     }
 
     function update() {
-        if (currentState === GAME_STATE.MENU) {
-            drawMenu();
-        } else if (currentState === GAME_STATE.PLAYING) {
-            // Clear canvas
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Clear canvas
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Update and draw stars
-            gameState.stars.forEach(star => {
-                star.y += star.speed;
-                if (star.y > canvas.height) {
-                    star.y = 0;
-                    star.x = Math.random() * canvas.width;
+        // Update and draw stars
+        gameState.stars.forEach((star, index) => {
+            star.y += star.speed;
+            if (star.y > canvas.height) {
+                star.y = 0;
+                star.x = Math.random() * canvas.width;
+            }
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(star.x, star.y, star.size, star.size);
+        });
+
+        if (currentState === GAME_STATE.PLAYING) {
+            // Handle player movement
+            if (gameState.keys['ArrowLeft'] && player.x > player.width/2) {
+                player.x -= player.speed;
+            }
+            if (gameState.keys['ArrowRight'] && player.x < canvas.width - player.width/2) {
+                player.x += player.speed;
+            }
+
+            // Automatic shooting (slower)
+            player.autoShootCooldown--;
+            if (player.autoShootCooldown <= 0) {
+                gameState.bullets.push(
+                    {
+                        x: player.x - 15,
+                        y: player.y - 20,
+                        width: 4,
+                        height: 15,
+                        color: '#0ff'
+                    },
+                    {
+                        x: player.x + 15,
+                        y: player.y - 20,
+                        width: 4,
+                        height: 15,
+                        color: '#0ff'
+                    }
+                );
+                player.autoShootCooldown = player.shootDelay;
+            }
+            
+            // Spawn enemies based on level
+            if (Math.random() < gameState.enemySpawnRate) {
+                gameState.enemies.push(createEnemy());
+            }
+
+            // Update bullets
+            gameState.bullets.forEach((bullet, bulletIndex) => {
+                bullet.y -= 7;
+                
+                // Check enemy collisions
+                gameState.enemies.forEach((enemy, enemyIndex) => {
+                    if (checkCollision(bullet, enemy)) {
+                        // Create explosion particles
+                        for (let i = 0; i < 10; i++) {
+                            gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
+                        }
+                        
+                        gameState.bullets.splice(bulletIndex, 1);
+                        gameState.enemies.splice(enemyIndex, 1);
+                        score += 100;
+                        scoreElement.textContent = score;
+                    }
+                });
+
+                // Remove off-screen bullets
+                if (bullet.y < 0) {
+                    gameState.bullets.splice(bulletIndex, 1);
                 }
             });
-            drawStars();
 
-            if (!gameState.gameOver) {
-                // Update player position
-                if (gameState.keys['ArrowLeft']) {
-                    player.x = Math.max(player.width / 2, player.x - player.speed);
-                }
-                if (gameState.keys['ArrowRight']) {
-                    player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
-                }
-
-                // Automatic shooting (slower)
-                player.autoShootCooldown--;
-                if (player.autoShootCooldown <= 0) {
-                    gameState.bullets.push(
-                        {
-                            x: player.x - 15,
-                            y: player.y - 20,
-                            width: 4,
-                            height: 15,
-                            color: '#0ff'
-                        },
-                        {
-                            x: player.x + 15,
-                            y: player.y - 20,
-                            width: 4,
-                            height: 15,
-                            color: '#0ff'
-                        }
-                    );
-                    player.autoShootCooldown = player.shootDelay;
-                }
+            // Update enemy bullets
+            gameState.enemyBullets.forEach((bullet, index) => {
+                bullet.y += bullet.speed;
                 
-                // Spawn enemies based on level
-                if (Math.random() < gameState.enemySpawnRate) {
-                    gameState.enemies.push(createEnemy());
-                }
-
-                // Update bullets
-                gameState.bullets.forEach((bullet, bulletIndex) => {
-                    bullet.y -= 7;
-                    
-                    // Check enemy collisions
-                    gameState.enemies.forEach((enemy, enemyIndex) => {
-                        if (checkCollision(bullet, enemy)) {
-                            // Create explosion particles
-                            for (let i = 0; i < 10; i++) {
-                                gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
-                            }
-                            
-                            gameState.bullets.splice(bulletIndex, 1);
-                            gameState.enemies.splice(enemyIndex, 1);
-                            score += 100;
-                            scoreElement.textContent = score;
-                        }
-                    });
-
-                    // Remove off-screen bullets
-                    if (bullet.y < 0) {
-                        gameState.bullets.splice(bulletIndex, 1);
-                    }
-                });
-
-                // Update enemy bullets
-                gameState.enemyBullets.forEach((bullet, index) => {
-                    bullet.y += bullet.speed;
-                    
-                    // Check player collision with enemy bullets
-                    if (checkCollision(bullet, player)) {
-                        gameState.enemyBullets.splice(index, 1);
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage;
-                            if (player.shield < 0) player.shield = 0;
-                        } else {
-                            player.lives--;
-                            if (player.lives > 0) {
-                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                            } else {
-                                gameState.gameOver = true;
-                                for (let i = 0; i < 20; i++) {
-                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
-                                }
-                            }
-                        }
-                    }
-                    
-                    if (bullet.y > canvas.height) {
-                        gameState.enemyBullets.splice(index, 1);
-                    }
-                });
-
-                // Update enemies with new movement
-                gameState.enemies.forEach((enemy, index) => {
-                    // Move towards target Y position only
-                    if (enemy.y < enemy.targetY) {
-                        enemy.y += enemy.speed;
-                    }
-                    
-                    // Enemy shooting - Fixed shooting mechanism
-                    if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
-                        gameState.enemyBullets.push({
-                            x: enemy.x,
-                            y: enemy.y + enemy.height/2,
-                            width: 4,
-                            height: 12,
-                            speed: DIFFICULTY[selectedDifficulty].enemyBulletSpeed,
-                            color: enemy.color
-                        });
-                    }
-                    
-                    if (checkCollision(enemy, player)) {
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage * 2;
-                            if (player.shield < 0) player.shield = 0;
-                            gameState.enemies.splice(index, 1);
+                // Check player collision with enemy bullets
+                if (checkCollision(bullet, player)) {
+                    gameState.enemyBullets.splice(index, 1);
+                    if (player.shield > 0) {
+                        player.shield -= gameState.bulletDamage;
+                        if (player.shield < 0) player.shield = 0;
+                    } else {
+                        player.lives--;
+                        if (player.lives > 0) {
+                            player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                         } else {
                             gameState.gameOver = true;
                             for (let i = 0; i < 20; i++) {
@@ -567,85 +527,123 @@ function initSpaceshipGame() {
                             }
                         }
                     }
-                    
-                    if (enemy.y > canvas.height) {
+                }
+                
+                if (bullet.y > canvas.height) {
+                    gameState.enemyBullets.splice(index, 1);
+                }
+            });
+
+            // Update enemies with new movement
+            gameState.enemies.forEach((enemy, index) => {
+                // Move towards target Y position only
+                if (enemy.y < enemy.targetY) {
+                    enemy.y += enemy.speed;
+                }
+                
+                // Enemy shooting - Fixed shooting mechanism
+                if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
+                    gameState.enemyBullets.push({
+                        x: enemy.x,
+                        y: enemy.y + enemy.height/2,
+                        width: 4,
+                        height: 12,
+                        speed: DIFFICULTY[selectedDifficulty].enemyBulletSpeed,
+                        color: enemy.color
+                    });
+                }
+                
+                if (checkCollision(enemy, player)) {
+                    if (player.shield > 0) {
+                        player.shield -= gameState.bulletDamage * 2;
+                        if (player.shield < 0) player.shield = 0;
                         gameState.enemies.splice(index, 1);
+                    } else {
+                        gameState.gameOver = true;
+                        for (let i = 0; i < 20; i++) {
+                            gameState.particles.push(createParticle(player.x, player.y, player.color));
+                        }
                     }
-                });
-
-                // Update particles
-                gameState.particles.forEach((particle, index) => {
-                    particle.x += Math.cos(particle.angle) * particle.speed;
-                    particle.y += Math.sin(particle.angle) * particle.speed;
-                    particle.life -= 0.02;
-                    if (particle.life <= 0) {
-                        gameState.particles.splice(index, 1);
-                    }
-                });
-
-                // Draw lives
-                for (let i = 0; i < player.lives; i++) {
-                    ctx.save();
-                    ctx.translate(30 + i * 30, canvas.height - 30);
-                    ctx.scale(0.4, 0.4);
-                    drawPlayer();
-                    ctx.restore();
                 }
-
-                // Draw enemy bullets
-                gameState.enemyBullets.forEach(bullet => {
-                    ctx.fillStyle = bullet.color;
-                    ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
-                });
-
-                // Level progression
-                if (score > gameState.level * 1000) {
-                    gameState.level++;
-                    gameState.enemySpawnRate += 0.005;
+                
+                if (enemy.y > canvas.height) {
+                    gameState.enemies.splice(index, 1);
                 }
+            });
+
+            // Update particles
+            gameState.particles.forEach((particle, index) => {
+                particle.x += Math.cos(particle.angle) * particle.speed;
+                particle.y += Math.sin(particle.angle) * particle.speed;
+                particle.life -= 0.02;
+                if (particle.life <= 0) {
+                    gameState.particles.splice(index, 1);
+                }
+            });
+
+            // Draw lives
+            for (let i = 0; i < player.lives; i++) {
+                ctx.save();
+                ctx.translate(30 + i * 30, canvas.height - 30);
+                ctx.scale(0.4, 0.4);
+                drawPlayer();
+                ctx.restore();
             }
 
-            // Draw everything
-            gameState.particles.forEach(drawParticle);
-            gameState.bullets.forEach(bullet => {
+            // Draw enemy bullets
+            gameState.enemyBullets.forEach(bullet => {
                 ctx.fillStyle = bullet.color;
-                ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
+                ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
             });
-            gameState.enemies.forEach(enemy => enemy.draw(ctx, enemy.x, enemy.y));
-            
-            if (!gameState.gameOver) {
-                drawPlayer();
-                
-                // Draw shield bar
-                ctx.fillStyle = '#0ff';
-                ctx.fillRect(10, 10, player.shield * 2, 10);
-                ctx.strokeStyle = '#fff';
-                ctx.strokeRect(10, 10, 200, 10);
-            } else {
-                ctx.fillStyle = '#ff2d55';
-                ctx.font = '30px "Courier New"';
-                ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-                ctx.font = '20px "Courier New"';
-                ctx.fillText('Press SPACE to return to menu', canvas.width / 2, canvas.height / 2 + 40);
-                
-                if (gameState.keys[' ']) {
-                    // Reset game
-                    score = 0;
-                    scoreElement.textContent = score;
-                    gameState.gameOver = false;
-                    gameState.enemies = [];
-                    gameState.bullets = [];
-                    gameState.enemyBullets = [];
-                    gameState.particles = [];
-                    player.x = canvas.width / 2;
-                    player.lives = 3;
-                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                    currentState = GAME_STATE.MENU;
-                    selectedDifficulty = null;
-                }
+
+            // Level progression
+            if (score > gameState.level * 1000) {
+                gameState.level++;
+                gameState.enemySpawnRate += 0.005;
             }
         }
+
+        // Draw everything
+        gameState.particles.forEach(drawParticle);
+        gameState.bullets.forEach(bullet => {
+            ctx.fillStyle = bullet.color;
+            ctx.fillRect(bullet.x - bullet.width / 2, bullet.y, bullet.width, bullet.height);
+        });
+        gameState.enemies.forEach(enemy => enemy.draw(ctx, enemy.x, enemy.y));
+        
+        if (!gameState.gameOver) {
+            drawPlayer();
+            
+            // Draw shield bar
+            ctx.fillStyle = '#0ff';
+            ctx.fillRect(10, 10, player.shield * 2, 10);
+            ctx.strokeStyle = '#fff';
+            ctx.strokeRect(10, 10, 200, 10);
+        } else {
+            ctx.fillStyle = '#ff2d55';
+            ctx.font = '30px "Courier New"';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
+            ctx.font = '20px "Courier New"';
+            ctx.fillText('Press SPACE to return to menu', canvas.width / 2, canvas.height / 2 + 40);
+            
+            if (gameState.keys[' ']) {
+                // Reset game
+                score = 0;
+                scoreElement.textContent = score;
+                gameState.gameOver = false;
+                gameState.enemies = [];
+                gameState.bullets = [];
+                gameState.enemyBullets = [];
+                gameState.particles = [];
+                player.x = canvas.width / 2;
+                player.lives = 3;
+                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                currentState = GAME_STATE.MENU;
+                selectedDifficulty = null;
+            }
+        }
+
         requestAnimationFrame(update);
     }
 
@@ -755,6 +753,18 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
+            // Reset game state
+            score = 0;
+            scoreElement.textContent = score;
+            gameState.enemies = [];
+            gameState.bullets = [];
+            gameState.enemyBullets = [];
+            gameState.particles = [];
+            player.x = canvas.width / 2;
+            player.lives = 3;
+            player.autoShootCooldown = 0;
+            gameState.gameOver = false;
+            
             // Start hyperspace effect
             createHyperspaceEffect();
             hyperspaceEffect.classList.remove('hidden');
@@ -766,8 +776,6 @@ function initSpaceshipGame() {
                 hyperspaceEffect.classList.remove('active');
                 hyperspaceEffect.classList.add('hidden');
                 currentState = GAME_STATE.PLAYING;
-                score = 0;
-                scoreElement.textContent = score;
             }, 2000);
         });
 
@@ -778,5 +786,6 @@ function initSpaceshipGame() {
         });
     });
 
+    // Start the game loop
     update();
 } 
