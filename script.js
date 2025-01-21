@@ -2,13 +2,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initSpaceshipGame();
 });
 
+function getHighScore() {
+    return localStorage.getItem('highScore') || 0;
+}
+
+function setHighScore(newScore) {
+    localStorage.setItem('highScore', newScore);
+}
+
 function initSpaceshipGame() {
     const canvas = document.getElementById('spaceship-canvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
     
-    // Remove high score related variables
     let score = 0;
+    let highScore = getHighScore();
+    const highScoreElement = document.createElement('div');
+    highScoreElement.className = 'high-score';
+    highScoreElement.innerHTML = `RECORD: <span>${highScore}</span>`;
+    document.querySelector('.game-overlay').appendChild(highScoreElement);
 
     // Game states
     const GAME_STATE = {
@@ -534,6 +546,13 @@ function initSpaceshipGame() {
                             gameState.enemies.splice(enemyIndex, 1);
                             score += 100;
                             scoreElement.textContent = score;
+                            
+                            // Update high score if needed
+                            if (score > highScore) {
+                                highScore = score;
+                                setHighScore(highScore);
+                                highScoreElement.querySelector('span').textContent = highScore;
+                            }
                         }
                     });
 
@@ -865,18 +884,33 @@ function initSpaceshipGame() {
 // Add at the beginning of initSpaceshipGame
 const gameMusic = document.getElementById('game-music');
 const menuMusic = document.getElementById('menu-music');
-const toggleMusicBtn = document.getElementById('toggle-music');
+const toggleMusicBtn = document.getElementById('game-toggle-music');
+const menuToggleMusicBtn = document.getElementById('toggle-music');
 let isMuted = false;
 
-// Music control
-toggleMusicBtn.addEventListener('click', () => {
+function updateMuteButtons() {
+    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+        btn.classList.toggle('muted', isMuted);
+        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    });
+}
+
+function toggleMute() {
     isMuted = !isMuted;
-    toggleMusicBtn.classList.toggle('muted');
-    toggleMusicBtn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
-    
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
     });
+    updateMuteButtons();
+}
+
+// Add click handlers for both mute buttons
+[toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+    btn.addEventListener('click', toggleMute);
+});
+
+// Start menu music when game loads
+window.addEventListener('load', () => {
+    menuMusic.play();
 });
 
 // Handle music transitions

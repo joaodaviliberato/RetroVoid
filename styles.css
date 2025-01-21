@@ -533,4 +533,17 @@ footer.hidden {
     z-index: 5;
     display: flex;
     gap: 10px;
+}
+
+/* Add styles for high score */
+.high-score {
+    position: fixed;
+    top: 20px;
+    right: 150px; /* Position it to the left of the score */
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid var(--neon-purple);
+    border-radius: 4px;
+    color: var(--neon-purple);
+    text-shadow: 0 0 5px var(--neon-purple);
 } 
