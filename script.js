@@ -28,7 +28,8 @@ function initSpaceshipGame() {
         shield: 100,
         lives: 3,
         powerups: [],
-        autoShootCooldown: 0
+        autoShootCooldown: 0,
+        shootDelay: 40
     };
 
     const gameState = {
@@ -130,27 +131,38 @@ function initSpaceshipGame() {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // UFO-style enemy
+                    // Scout Ship
+                    // Main body
                     ctx.beginPath();
-                    // Draw dome
-                    ctx.ellipse(0, -10, 25, 15, 0, Math.PI, 0);
+                    ctx.moveTo(0, -25);
+                    ctx.lineTo(-15, -10);
+                    ctx.lineTo(-20, 10);
+                    ctx.lineTo(-10, 20);
+                    ctx.lineTo(10, 20);
+                    ctx.lineTo(20, 10);
+                    ctx.lineTo(15, -10);
+                    ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Draw base
+                    // Wings
                     ctx.beginPath();
-                    ctx.ellipse(0, 0, 25, 8, 0, 0, Math.PI * 2);
-                    ctx.fillStyle = '#ff0066';
-                    ctx.fill();
+                    ctx.moveTo(-20, 10);
+                    ctx.lineTo(-35, 0);
+                    ctx.lineTo(-20, -5);
+                    ctx.moveTo(20, 10);
+                    ctx.lineTo(35, 0);
+                    ctx.lineTo(20, -5);
+                    ctx.strokeStyle = '#ff0066';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
                     
-                    // Draw lights
-                    const lightPositions = [-20, -10, 0, 10, 20];
-                    lightPositions.forEach(pos => {
-                        ctx.beginPath();
-                        ctx.arc(pos, 0, 3, 0, Math.PI * 2);
-                        ctx.fillStyle = '#0ff';
-                        ctx.fill();
-                    });
+                    // Engine glow
+                    const engineGlow = ctx.createRadialGradient(0, 15, 0, 0, 15, 10);
+                    engineGlow.addColorStop(0, '#0ff');
+                    engineGlow.addColorStop(1, 'transparent');
+                    ctx.fillStyle = engineGlow;
+                    ctx.fillRect(-10, 15, 20, 10);
                     
                     ctx.restore();
                 }
@@ -167,28 +179,41 @@ function initSpaceshipGame() {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Triangle Warship
+                    // Heavy Battleship
+                    // Main hull
                     ctx.beginPath();
                     ctx.moveTo(0, -35);
-                    ctx.lineTo(-30, 15);
-                    ctx.lineTo(30, 15);
+                    ctx.lineTo(-15, -25);
+                    ctx.lineTo(-25, -10);
+                    ctx.lineTo(-30, 10);
+                    ctx.lineTo(-20, 25);
+                    ctx.lineTo(0, 30);
+                    ctx.lineTo(20, 25);
+                    ctx.lineTo(30, 10);
+                    ctx.lineTo(25, -10);
+                    ctx.lineTo(15, -25);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Energy shield effect
-                    ctx.beginPath();
-                    ctx.arc(0, 0, 35, 0, Math.PI * 2);
-                    ctx.strokeStyle = '#0ff';
-                    ctx.lineWidth = 2;
-                    ctx.setLineDash([5, 5]);
-                    ctx.stroke();
-                    
-                    // Core
-                    ctx.beginPath();
-                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+                    // Side cannons
                     ctx.fillStyle = '#b026ff';
+                    ctx.fillRect(-35, -5, 10, 20);
+                    ctx.fillRect(25, -5, 10, 20);
+                    
+                    // Bridge
+                    ctx.beginPath();
+                    ctx.ellipse(0, -10, 8, 15, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = '#0ff';
                     ctx.fill();
+                    
+                    // Engine trails
+                    const gradient = ctx.createLinearGradient(0, 25, 0, 40);
+                    gradient.addColorStop(0, '#ff0066');
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(-15, 25, 8, 15);
+                    ctx.fillRect(7, 25, 8, 15);
                     
                     ctx.restore();
                 }
@@ -205,36 +230,50 @@ function initSpaceshipGame() {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Hexagonal Cruiser
+                    // Stealth Fighter
+                    // Main body
                     ctx.beginPath();
-                    for(let i = 0; i < 6; i++) {
-                        const angle = (i * Math.PI * 2) / 6;
-                        const x = Math.cos(angle) * 25;
-                        const y = Math.sin(angle) * 25;
-                        if(i === 0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    }
+                    ctx.moveTo(0, -30);
+                    ctx.lineTo(-30, 10);
+                    ctx.lineTo(-15, 15);
+                    ctx.lineTo(0, 20);
+                    ctx.lineTo(15, 15);
+                    ctx.lineTo(30, 10);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Inner details
+                    // Cockpit
                     ctx.beginPath();
-                    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+                    ctx.moveTo(0, -15);
+                    ctx.lineTo(-8, 0);
+                    ctx.lineTo(8, 0);
+                    ctx.closePath();
+                    ctx.fillStyle = '#0ff';
+                    ctx.fill();
+                    
+                    // Energy lines
+                    ctx.beginPath();
+                    ctx.moveTo(-30, 10);
+                    ctx.lineTo(-20, 10);
+                    ctx.moveTo(-15, 15);
+                    ctx.lineTo(-5, 15);
+                    ctx.moveTo(5, 15);
+                    ctx.lineTo(15, 15);
+                    ctx.moveTo(20, 10);
+                    ctx.lineTo(30, 10);
                     ctx.strokeStyle = '#ff0066';
-                    ctx.lineWidth = 3;
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                     
-                    // Energy points
-                    for(let i = 0; i < 3; i++) {
-                        const angle = (i * Math.PI * 2) / 3;
-                        const x = Math.cos(angle) * 10;
-                        const y = Math.sin(angle) * 10;
-                        ctx.beginPath();
-                        ctx.arc(x, y, 3, 0, Math.PI * 2);
-                        ctx.fillStyle = '#0ff';
-                        ctx.fill();
-                    }
+                    // Engine glow
+                    const engineGlow = ctx.createRadialGradient(0, 15, 0, 0, 15, 15);
+                    engineGlow.addColorStop(0, '#0ff');
+                    engineGlow.addColorStop(1, 'transparent');
+                    ctx.fillStyle = engineGlow;
+                    ctx.beginPath();
+                    ctx.arc(0, 15, 8, 0, Math.PI * 2);
+                    ctx.fill();
                     
                     ctx.restore();
                 }
@@ -319,7 +358,7 @@ function initSpaceshipGame() {
                 player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
             }
 
-            // Automatic shooting
+            // Automatic shooting (slower)
             player.autoShootCooldown--;
             if (player.autoShootCooldown <= 0) {
                 gameState.bullets.push(
@@ -338,7 +377,7 @@ function initSpaceshipGame() {
                         color: '#0ff'
                     }
                 );
-                player.autoShootCooldown = 15;
+                player.autoShootCooldown = player.shootDelay;
             }
             
             // Spawn enemies based on level
