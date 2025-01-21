@@ -56,6 +56,10 @@ function initSpaceshipGame() {
         }
     };
 
+    // Add these variables at the top of initSpaceshipGame
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    const difficultyInfo = document.getElementById('difficulty-info');
+
     // Set canvas size
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
@@ -678,64 +682,55 @@ function initSpaceshipGame() {
 
     const mainMenuOverlay = document.querySelector('.main-menu-overlay');
     const difficultyOverlay = document.querySelector('.difficulty-overlay');
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    const difficultyInfo = document.getElementById('difficulty-info');
     const playBtn = document.querySelector('.play-btn');
     const hyperspaceEffect = document.querySelector('.hyperspace-effect');
-    const menuBtn = document.querySelector('.menu-btn');
 
-    // Create light speed effect lines
-    function createLightSpeedEffect() {
-        hyperspaceEffect.innerHTML = ''; // Clear existing lines
-        for (let i = 0; i < 50; i++) {
-            const line = document.createElement('div');
-            line.className = 'light-speed-lines';
-            line.style.left = `${Math.random() * 100}%`;
-            line.style.animationDelay = `${Math.random() * 2}s`;
-            hyperspaceEffect.appendChild(line);
-        }
+    // Create star background for menu
+    const starsContainer = document.querySelector('.stars-container');
+    for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 2}s`;
+        starsContainer.appendChild(star);
     }
 
-    // Add difficulty button handlers
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const difficulty = DIFFICULTY[btn.dataset.difficulty];
-            selectedDifficulty = btn.dataset.difficulty;
+    function createHyperspaceEffect() {
+        const hyperspaceEffect = document.querySelector('.hyperspace-effect');
+        hyperspaceEffect.innerHTML = ''; // Clear previous effect
+        
+        // Create star field
+        const starField = document.createElement('div');
+        starField.className = 'star-field';
+        
+        // Create 3D star field
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'hyperspace-star';
             
-            // Update button styles
-            difficultyBtns.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
+            // Random 3D position
+            const z = Math.random() * 1000;
+            const x = (Math.random() - 0.5) * 2000;
+            const y = (Math.random() - 0.5) * 2000;
             
-            // Show difficulty description
-            difficultyInfo.textContent = difficulty.description;
-            
-            // Apply difficulty settings
-            gameState.enemySpawnRate = difficulty.enemySpawnRate;
-            gameState.enemyShootRate = difficulty.enemyShootRate;
-            player.shootDelay = difficulty.playerShootDelay;
-            player.shield = difficulty.playerShield;
-            gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Start game after delay
-            setTimeout(() => {
-                difficultyOverlay.classList.add('hidden');
-                currentState = GAME_STATE.PLAYING;
-            }, 500);
-        });
-
-        // Show difficulty info on hover
-        btn.addEventListener('mouseenter', () => {
-            difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
-        });
-    });
+            star.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+            starField.appendChild(star);
+        }
+        
+        // Create tunnel effect
+        const tunnel = document.createElement('div');
+        tunnel.className = 'hyperspace-tunnel';
+        
+        hyperspaceEffect.appendChild(starField);
+        hyperspaceEffect.appendChild(tunnel);
+    }
 
     playBtn.addEventListener('click', () => {
-        // Start light speed effect
+        createHyperspaceEffect();
         hyperspaceEffect.classList.remove('hidden');
         hyperspaceEffect.classList.add('active');
-        createLightSpeedEffect();
-
-        // After effect, show difficulty selection
+        
         setTimeout(() => {
             mainMenuOverlay.classList.add('hidden');
             difficultyOverlay.classList.remove('hidden');
@@ -778,6 +773,39 @@ function initSpaceshipGame() {
     if (gameState.gameOver) {
         gameOverOverlay.classList.remove('hidden');
     }
+
+    // Add the difficulty button handlers
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const difficulty = DIFFICULTY[btn.dataset.difficulty];
+            selectedDifficulty = btn.dataset.difficulty;
+            
+            // Update button styles
+            difficultyBtns.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            // Show difficulty description
+            difficultyInfo.textContent = difficulty.description;
+            
+            // Apply difficulty settings
+            gameState.enemySpawnRate = difficulty.enemySpawnRate;
+            gameState.enemyShootRate = difficulty.enemyShootRate;
+            player.shootDelay = difficulty.playerShootDelay;
+            player.shield = difficulty.playerShield;
+            gameState.bulletDamage = difficulty.bulletDamage;
+            
+            createHyperspaceEffect();
+            hyperspaceEffect.classList.remove('hidden');
+            hyperspaceEffect.classList.add('active');
+            
+            setTimeout(() => {
+                difficultyOverlay.classList.add('hidden');
+                hyperspaceEffect.classList.remove('active');
+                hyperspaceEffect.classList.add('hidden');
+                currentState = GAME_STATE.PLAYING;
+            }, 2000);
+        });
+    });
 
     update();
 } 

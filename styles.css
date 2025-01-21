@@ -356,50 +356,72 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
+    perspective: 1000px;
     background: black;
     z-index: 15;
-    perspective: 500px;
     overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
 }
 
-.hyperspace-effect.active {
-    opacity: 1;
-    animation: none;
-}
-
-.light-speed-lines {
-    position: absolute;
-    width: 4px;
-    height: 100vh;
-    background: linear-gradient(to bottom, transparent, var(--neon-blue), transparent);
-    animation: lightSpeed 0.8s linear infinite;
-}
-
-@keyframes lightSpeed {
-    0% {
-        transform: translateX(100vw) translateZ(-100px);
-        opacity: 0;
-    }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateX(-100vw) translateZ(500px);
-        opacity: 0;
-    }
-}
-
-.stars-container {
+.star-field {
     position: absolute;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    z-index: -1;
+    transform-style: preserve-3d;
+    animation: hyperspace-travel 2s ease-in-out forwards;
+}
+
+.hyperspace-star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    transform-style: preserve-3d;
+}
+
+@keyframes hyperspace-travel {
+    0% {
+        transform: translateZ(0) rotateX(0deg);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateZ(1000px) rotateX(45deg);
+        opacity: 0;
+    }
+}
+
+.hyperspace-tunnel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 50%, 
+        transparent 0%,
+        rgba(0, 255, 255, 0.1) 10%,
+        rgba(176, 38, 255, 0.2) 20%,
+        transparent 30%
+    );
+    animation: tunnel-effect 2s ease-in-out forwards;
+}
+
+@keyframes tunnel-effect {
+    0% {
+        transform: scale(1);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(0.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
 }
 
 @keyframes glow {
@@ -442,4 +464,5 @@ footer {
 .hidden {
     display: none;
     opacity: 0;
+} 
 } 
