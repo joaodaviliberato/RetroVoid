@@ -878,6 +878,52 @@ function initSpaceshipGame() {
         }
     }
 
+    // Update the life bar initialization
+    function initLifeBar() {
+        const lifeBar = document.querySelector('.life-bar');
+        lifeBar.innerHTML = ''; // Clear existing life bar
+        const lifeBarWidth = 150; // Total width of life bar
+        const lifeBarBackground = document.createElement('div');
+        lifeBarBackground.style.cssText = `
+            width: ${lifeBarWidth}px;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 2px;
+            overflow: hidden;
+        `;
+        
+        const lifeBarFill = document.createElement('div');
+        lifeBarFill.style.cssText = `
+            width: 100%;
+            height: 100%;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            transition: width 0.3s ease;
+        `;
+        
+        lifeBarBackground.appendChild(lifeBarFill);
+        lifeBar.appendChild(lifeBarBackground);
+        return lifeBarFill;
+    }
+
+    // Update the updateLifeBar function
+    function updateLifeBar(currentLife, maxLife) {
+        const lifeBarFill = document.querySelector('.life-bar div div');
+        if (lifeBarFill) {
+            const percentage = (currentLife / maxLife) * 100;
+            lifeBarFill.style.width = `${percentage}%`;
+            
+            // Update color based on life percentage
+            if (percentage > 60) {
+                lifeBarFill.style.background = 'var(--neon-blue)';
+            } else if (percentage > 30) {
+                lifeBarFill.style.background = 'var(--neon-purple)';
+            } else {
+                lifeBarFill.style.background = 'var(--neon-pink)';
+            }
+        }
+    }
+
     update();
 }
 
