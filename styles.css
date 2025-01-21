@@ -150,8 +150,14 @@ footer.hidden {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    z-index: 10;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: 'Courier New', monospace;
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue);
+    z-index: 5;
 }
 
 .controls-hint {
@@ -176,8 +182,8 @@ footer.hidden {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.85);
-    z-index: 20;
+    background: rgb(0, 0, 0);
+    z-index: 10;
 }
 
 .menu-overlay.hidden {
@@ -252,7 +258,7 @@ footer.hidden {
     justify-content: center;
     align-items: center;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 15;
+    z-index: 25;
 }
 
 .game-over-overlay.hidden {
@@ -273,11 +279,11 @@ footer.hidden {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgb(0, 0, 0);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 30;
+    z-index: 20;
 }
 
 .menu-content {
@@ -349,7 +355,7 @@ footer.hidden {
     width: 100%;
     height: 100%;
     background: #000;
-    z-index: 25;
+    z-index: 15;
     overflow: hidden;
 }
 
@@ -385,8 +391,7 @@ footer.hidden {
 
 /* Hide class */
 .hidden {
-    display: none !important;
-    pointer-events: none;
+    display: none;
 }
 
 /* Background Effects */
