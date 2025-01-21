@@ -533,12 +533,17 @@ footer.hidden {
     position: static;
 }
 
-/* Update life bar position and styling */
+/* Update life bar position */
 .life-bar {
-    display: none;  /* Hide the life bar completely */
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 5;
+    display: flex;
+    gap: 10px;
 }
 
-/* Update score position to be next to life bar */
+/* Update score position */
 .score {
     position: fixed;
     top: 20px;

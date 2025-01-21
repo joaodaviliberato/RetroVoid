@@ -35,14 +35,14 @@ function initSpaceshipGame() {
     const DIFFICULTY = {
         EASY: {
             name: 'EASY',
-            description: 'Perfect for beginners. Slower enemies, stronger shield.',
+            description: 'Perfect for beginners. Slower enemies, more shields.',
             enemySpawnRate: 0.003,
             enemyShootRate: 0.01,
             playerShootDelay: 30,
             enemySpeed: 0.8,
             playerShield: 150,
             enemyBulletSpeed: 3,
-            bulletDamage: 5
+            bulletDamage: 15
         },
         NORMAL: {
             name: 'NORMAL',
@@ -53,18 +53,18 @@ function initSpaceshipGame() {
             enemySpeed: 1,
             playerShield: 100,
             enemyBulletSpeed: 5,
-            bulletDamage: 10
+            bulletDamage: 25
         },
         HARD: {
             name: 'HARD',
-            description: 'For veteran pilots. Fast enemies, weaker shield.',
+            description: 'For veteran pilots. Fast enemies, deadly shots.',
             enemySpawnRate: 0.007,
             enemyShootRate: 0.03,
             playerShootDelay: 50,
             enemySpeed: 1.2,
-            playerShield: 100,
+            playerShield: 75,
             enemyBulletSpeed: 7,
-            bulletDamage: 15
+            bulletDamage: 35
         }
     };
 
@@ -75,17 +75,18 @@ function initSpaceshipGame() {
     // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 100,
+        y: canvas.height - 100,  // Start a bit higher
         width: 60,
         height: 60,
         speed: 6,
         color: '#ff2d55',
-        shield: 100,  // This is now our only health indicator
+        shield: 100,
+        lives: 3,
         powerups: [],
         autoShootCooldown: 0,
         shootDelay: 40,
-        minY: canvas.height * 0.5,
-        maxY: canvas.height - 100
+        minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
+        maxY: canvas.height - 100   // Restrict downward movement
     };
 
     const gameState = {
@@ -568,14 +569,18 @@ function initSpaceshipGame() {
                     // Check player collision with enemy bullets
                     if (checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
-                        player.shield -= DIFFICULTY[selectedDifficulty].bulletDamage;
-                        
-                        // Game over when shield reaches 0
-                        if (player.shield <= 0) {
-                            player.shield = 0;
-                            gameState.gameOver = true;
-                            for (let i = 0; i < 20; i++) {
-                                gameState.particles.push(createParticle(player.x, player.y, player.color));
+                        if (player.shield > 0) {
+                            player.shield -= gameState.bulletDamage;
+                            if (player.shield < 0) player.shield = 0;
+                        } else {
+                            player.lives--;
+                            if (player.lives > 0) {
+                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                            } else {
+                                gameState.gameOver = true;
+                                for (let i = 0; i < 20; i++) {
+                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
+                                }
                             }
                         }
                     }
@@ -587,13 +592,13 @@ function initSpaceshipGame() {
 
                 // Update enemies with new movement
                 gameState.enemies.forEach((enemy, index) => {
-                    // Move towards target Y position
+                    // Move towards target Y position only
                     if (enemy.y < enemy.targetY) {
                         enemy.y += enemy.speed;
                     }
                     
-                    // Enemy shooting - Enhanced shooting mechanism
-                    if (currentState === GAME_STATE.PLAYING && Math.random() < DIFFICULTY[selectedDifficulty].enemyShootRate) {
+                    // Enemy shooting - Fixed shooting mechanism
+                    if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
                         gameState.enemyBullets.push({
                             x: enemy.x,
                             y: enemy.y + enemy.height/2,
@@ -604,13 +609,12 @@ function initSpaceshipGame() {
                         });
                     }
                     
-                    // Collision with player
                     if (checkCollision(enemy, player)) {
-                        player.shield -= DIFFICULTY[selectedDifficulty].bulletDamage * 2;
-                        gameState.enemies.splice(index, 1);
-                        
-                        if (player.shield <= 0) {
-                            player.shield = 0;
+                        if (player.shield > 0) {
+                            player.shield -= gameState.bulletDamage * 2;
+                            if (player.shield < 0) player.shield = 0;
+                            gameState.enemies.splice(index, 1);
+                        } else {
                             gameState.gameOver = true;
                             for (let i = 0; i < 20; i++) {
                                 gameState.particles.push(createParticle(player.x, player.y, player.color));
@@ -632,6 +636,21 @@ function initSpaceshipGame() {
                         gameState.particles.splice(index, 1);
                     }
                 });
+
+                // Draw lives
+                drawLives();
+
+                // Draw enemy bullets
+                gameState.enemyBullets.forEach(bullet => {
+                    ctx.fillStyle = bullet.color;
+                    ctx.fillRect(bullet.x - bullet.width/2, bullet.y, bullet.width, bullet.height);
+                });
+
+                // Level progression
+                if (score > gameState.level * 1000) {
+                    gameState.level++;
+                    gameState.enemySpawnRate += 0.005;
+                }
             }
 
             // Draw everything
@@ -668,9 +687,8 @@ function initSpaceshipGame() {
                     gameState.enemyBullets = [];
                     gameState.particles = [];
                     player.x = canvas.width / 2;
-                    player.y = canvas.height - 100;
-                    player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
-                    player.autoShootCooldown = 0;
+                    player.lives = 3;
+                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
                 }
@@ -743,7 +761,7 @@ function initSpaceshipGame() {
         gameState.enemyBullets = [];
         gameState.particles = [];
         player.x = canvas.width / 2;
-        player.y = canvas.height - 100;
+        player.lives = 3;
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
@@ -844,6 +862,21 @@ function initSpaceshipGame() {
 
     // Update resize handler
     window.addEventListener('resize', resizeCanvas);
+
+    // Update the lives drawing code
+    function drawLives() {
+        const lifeBar = document.querySelector('.life-bar');
+        lifeBar.innerHTML = '';
+        for (let i = 0; i < player.lives; i++) {
+            const lifeIcon = document.createElement('div');
+            lifeIcon.style.width = '20px';
+            lifeIcon.style.height = '20px';
+            lifeIcon.style.backgroundColor = player.color;
+            lifeIcon.style.borderRadius = '50%';
+            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
+            lifeBar.appendChild(lifeIcon);
+        }
+    }
 
     update();
 }
