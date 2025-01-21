@@ -63,7 +63,7 @@ function initSpaceshipGame() {
     // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 50,
+        y: canvas.height - 100,  // Start a bit higher
         width: 60,
         height: 60,
         speed: 6,
@@ -72,7 +72,9 @@ function initSpaceshipGame() {
         lives: 3,
         powerups: [],
         autoShootCooldown: 0,
-        shootDelay: 40
+        shootDelay: 40,
+        minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
+        maxY: canvas.height - 100   // Restrict downward movement
     };
 
     const gameState = {
@@ -370,7 +372,7 @@ function initSpaceshipGame() {
         return {
             x: Math.random() * (canvas.width - type.width) + type.width/2,
             y: -type.height,
-            targetY: Math.random() * (canvas.height/4),
+            targetY: Math.random() * (canvas.height/3), // Allow enemies to use more vertical space
             ...type
         };
     }
@@ -475,12 +477,18 @@ function initSpaceshipGame() {
             drawStars();
 
             if (!gameState.gameOver) {
-                // Update player position
+                // Update player position with vertical movement
                 if (gameState.keys['ArrowLeft']) {
                     player.x = Math.max(player.width / 2, player.x - player.speed);
                 }
                 if (gameState.keys['ArrowRight']) {
                     player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
+                }
+                if (gameState.keys['ArrowUp']) {
+                    player.y = Math.max(player.minY, player.y - player.speed);
+                }
+                if (gameState.keys['ArrowDown']) {
+                    player.y = Math.min(player.maxY, player.y + player.speed);
                 }
 
                 // Automatic shooting (slower)
@@ -803,6 +811,23 @@ function initSpaceshipGame() {
     // Show main menu initially
     mainMenuOverlay.classList.remove('hidden');
     menuOverlay.classList.add('hidden');
+
+    // Update the controls hint text
+    document.querySelector('.controls-hint').textContent = '← → ↑ ↓ to move | Automatic shooting';
+
+    // Add canvas resize handler to maintain fullscreen
+    window.addEventListener('resize', () => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        
+        // Update player boundaries
+        player.minY = canvas.height * 0.5;
+        player.maxY = canvas.height - 100;
+        
+        // Keep player in bounds after resize
+        player.x = Math.min(Math.max(player.width / 2, player.x), canvas.width - player.width / 2);
+        player.y = Math.min(Math.max(player.minY, player.y), player.maxY);
+    });
 
     update();
 } 
