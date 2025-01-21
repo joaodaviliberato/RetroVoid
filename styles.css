@@ -280,4 +280,156 @@ footer {
     font-size: 3rem;
     margin-bottom: 1rem;
     text-shadow: 0 0 10px var(--neon-pink);
+}
+
+.main-menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10;
+}
+
+.main-menu-overlay h1 {
+    color: var(--neon-pink);
+    font-size: 4rem;
+    text-shadow: 0 0 20px var(--neon-pink);
+    margin-bottom: 1rem;
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.tagline {
+    color: var(--neon-blue);
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px var(--neon-blue);
+    margin-bottom: 3rem;
+    opacity: 0.8;
+}
+
+.play-btn {
+    background: transparent;
+    border: 3px solid var(--neon-purple);
+    color: var(--neon-purple);
+    padding: 1rem 4rem;
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 5px var(--neon-purple);
+    box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.play-btn:hover {
+    background: var(--neon-purple);
+    color: #000;
+    box-shadow: 0 0 30px var(--neon-purple);
+}
+
+.play-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(176, 38, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: shine 2s infinite;
+}
+
+.hyperspace-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 15;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hyperspace-effect.active {
+    animation: hyperspace 2s ease-in-out forwards;
+}
+
+.stars-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px var(--neon-pink),
+                     0 0 20px var(--neon-pink),
+                     0 0 30px var(--neon-pink);
+    }
+    to {
+        text-shadow: 0 0 20px var(--neon-pink),
+                     0 0 30px var(--neon-pink),
+                     0 0 40px var(--neon-pink);
+    }
+}
+
+@keyframes shine {
+    from {
+        transform: rotate(45deg) translateX(-100%);
+    }
+    to {
+        transform: rotate(45deg) translateX(100%);
+    }
+}
+
+@keyframes hyperspace {
+    0% {
+        opacity: 0;
+        transform: scale(1);
+        background: black;
+    }
+    50% {
+        opacity: 1;
+        transform: scale(2);
+        background: radial-gradient(circle, white, var(--neon-blue), black);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+        background: black;
+    }
+}
+
+.difficulty-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10;
+    transition: opacity 0.5s ease;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
 } 

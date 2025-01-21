@@ -676,52 +676,37 @@ function initSpaceshipGame() {
         requestAnimationFrame(update);
     }
 
-    const menuOverlay = document.querySelector('.menu-overlay');
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    const difficultyInfo = document.getElementById('difficulty-info');
-    const menuBtn = document.querySelector('.menu-btn');
+    const mainMenuOverlay = document.querySelector('.main-menu-overlay');
+    const difficultyOverlay = document.querySelector('.difficulty-overlay');
+    const playBtn = document.querySelector('.play-btn');
+    const hyperspaceEffect = document.querySelector('.hyperspace-effect');
 
-    // Add click handlers for difficulty buttons
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const difficulty = DIFFICULTY[btn.dataset.difficulty];
-            selectedDifficulty = btn.dataset.difficulty;
-            
-            // Update button styles
-            difficultyBtns.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            
-            // Show difficulty description
-            difficultyInfo.textContent = difficulty.description;
-            
-            // Apply difficulty settings
-            gameState.enemySpawnRate = difficulty.enemySpawnRate;
-            gameState.enemyShootRate = difficulty.enemyShootRate;
-            player.shootDelay = difficulty.playerShootDelay;
-            player.shield = difficulty.playerShield;
-            gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Start game after delay
-            setTimeout(() => {
-                menuOverlay.classList.add('hidden');
-                currentState = GAME_STATE.PLAYING;
-            }, 500);
-        });
-
-        // Show difficulty info on hover
-        btn.addEventListener('mouseenter', () => {
-            difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
-        });
-    });
-
-    // Show menu when returning from game over
-    function showMenu() {
-        menuOverlay.classList.remove('hidden');
-        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-        difficultyInfo.textContent = 'Choose your challenge level';
-        currentState = GAME_STATE.MENU;
+    // Create star background for menu
+    const starsContainer = document.querySelector('.stars-container');
+    for (let i = 0; i < 50; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 2}s`;
+        starsContainer.appendChild(star);
     }
 
+    playBtn.addEventListener('click', () => {
+        // Start hyperspace effect
+        hyperspaceEffect.classList.remove('hidden');
+        hyperspaceEffect.classList.add('active');
+
+        // After hyperspace effect, show difficulty selection
+        setTimeout(() => {
+            mainMenuOverlay.classList.add('hidden');
+            difficultyOverlay.classList.remove('hidden');
+            hyperspaceEffect.classList.remove('active');
+            hyperspaceEffect.classList.add('hidden');
+        }, 2000);
+    });
+
+    // Modify menu button to return to main menu
     menuBtn.addEventListener('click', () => {
         // Reset game state
         score = 0;
@@ -736,17 +721,14 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Hide game over overlay
+        // Hide all overlays
         gameOverOverlay.classList.add('hidden');
+        difficultyOverlay.classList.add('hidden');
         
-        // Show menu overlay and update state
-        menuOverlay.classList.remove('hidden');
+        // Show main menu
+        mainMenuOverlay.classList.remove('hidden');
         currentState = GAME_STATE.MENU;
         selectedDifficulty = null;
-        
-        // Reset difficulty buttons
-        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-        difficultyInfo.textContent = 'Choose your challenge level';
     });
 
     // Initial menu show
