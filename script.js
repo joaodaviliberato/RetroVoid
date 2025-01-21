@@ -59,9 +59,8 @@ function initSpaceshipGame() {
     canvas.height = canvas.offsetHeight;
 
     // Game state
-    let score = 0;
-    let highScore = localStorage.getItem('highScore') || 0;
-    highScoreElement.textContent = highScore;
+    const highScores = getHighScores();
+    let currentHighScore = 0;
 
     // Game objects
     const player = {
@@ -470,6 +469,19 @@ function initSpaceshipGame() {
         ctx.fillStyle = '#ff2d55';
         ctx.font = '16px "Courier New"';
         ctx.fillText('↑↓ to select, SPACE to start', canvas.width / 2, canvas.height * 0.8);
+
+        // Draw high scores
+        ctx.fillStyle = '#0ff';
+        ctx.font = '16px "Courier New"';
+        ctx.textAlign = 'center';
+        
+        const yStart = canvas.height * 0.65;
+        ctx.fillText('HIGH SCORES:', canvas.width / 2, yStart);
+        
+        Object.entries(highScores).forEach(([diff, score], index) => {
+            ctx.fillStyle = selectedDifficulty === diff ? '#ff2d55' : '#0ff';
+            ctx.fillText(`${diff}: ${score}`, canvas.width / 2, yStart + 25 * (index + 1));
+        });
     }
 
     function update() {
@@ -543,10 +555,21 @@ function initSpaceshipGame() {
                             score += 100;
                             scoreElement.textContent = score;
                             
-                            if (score > highScore) {
-                                highScore = score;
-                                highScoreElement.textContent = highScore;
-                                localStorage.setItem('highScore', highScore);
+                            if (score > currentHighScore) {
+                                if (saveHighScore(selectedDifficulty, score)) {
+                                    currentHighScore = score;
+                                    highScoreElement.textContent = score;
+                                    
+                                    // Add visual feedback for new high score
+                                    const highScoreText = document.createElement('div');
+                                    highScoreText.className = 'high-score-alert';
+                                    highScoreText.textContent = 'NEW HIGH SCORE!';
+                                    document.querySelector('.cabinet-screen').appendChild(highScoreText);
+                                    
+                                    setTimeout(() => {
+                                        highScoreText.remove();
+                                    }, 2000);
+                                }
                             }
                         }
                     });
@@ -676,6 +699,7 @@ function initSpaceshipGame() {
                     gameState.gameOver = false;
                     gameState.enemies = [];
                     gameState.bullets = [];
+                    gameState.enemyBullets = [];
                     gameState.particles = [];
                     player.x = canvas.width / 2;
                     player.lives = 3;
@@ -691,11 +715,13 @@ function initSpaceshipGame() {
     const menuOverlay = document.querySelector('.menu-overlay');
     const difficultyBtns = document.querySelectorAll('.difficulty-btn');
     const difficultyInfo = document.getElementById('difficulty-info');
+    const menuBtn = document.querySelector('.menu-btn');
 
     // Add click handlers for difficulty buttons
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const difficulty = DIFFICULTY[btn.dataset.difficulty];
+            selectedDifficulty = btn.dataset.difficulty;
             
             // Update button styles
             difficultyBtns.forEach(b => b.classList.remove('selected'));
@@ -711,7 +737,10 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
-            // Start game after short delay
+            // Update high score display for selected difficulty
+            updateHighScoreDisplay();
+            
+            // Start game after delay
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
                 currentState = GAME_STATE.PLAYING;
@@ -729,10 +758,61 @@ function initSpaceshipGame() {
         menuOverlay.classList.remove('hidden');
         difficultyBtns.forEach(btn => btn.classList.remove('selected'));
         difficultyInfo.textContent = 'Choose your challenge level';
+        currentState = GAME_STATE.MENU;
     }
+
+    menuBtn.addEventListener('click', () => {
+        // Reset game state
+        score = 0;
+        scoreElement.textContent = score;
+        gameState.gameOver = false;
+        gameState.enemies = [];
+        gameState.bullets = [];
+        gameState.enemyBullets = [];
+        gameState.particles = [];
+        player.x = canvas.width / 2;
+        player.lives = 3;
+        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        
+        // Show menu overlay
+        menuOverlay.classList.remove('hidden');
+        currentState = GAME_STATE.MENU;
+        selectedDifficulty = null;
+        
+        // Reset difficulty buttons
+        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+        difficultyInfo.textContent = 'Choose your challenge level';
+    });
 
     // Initial menu show
     showMenu();
 
+    // Update high score display
+    function updateHighScoreDisplay() {
+        if (selectedDifficulty) {
+            currentHighScore = highScores[selectedDifficulty];
+            highScoreElement.textContent = currentHighScore;
+        }
+    }
+
     update();
+}
+
+function getHighScores() {
+    const savedScores = localStorage.getItem('pixelVoidHighScores');
+    return savedScores ? JSON.parse(savedScores) : {
+        EASY: 0,
+        NORMAL: 0,
+        HARD: 0
+    };
+}
+
+function saveHighScore(difficulty, newScore) {
+    const highScores = getHighScores();
+    if (newScore > highScores[difficulty]) {
+        highScores[difficulty] = newScore;
+        localStorage.setItem('pixelVoidHighScores', JSON.stringify(highScores));
+        return true;
+    }
+    return false;
 } 
