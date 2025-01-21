@@ -6,7 +6,9 @@ function initSpaceshipGame() {
     const canvas = document.getElementById('spaceship-canvas');
     const ctx = canvas.getContext('2d');
     const scoreElement = document.getElementById('score');
-    const highScoreElement = document.getElementById('high-score');
+    
+    // Remove high score related variables
+    let score = 0;
 
     // Game states
     const GAME_STATE = {
@@ -57,10 +59,6 @@ function initSpaceshipGame() {
     // Set canvas size
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
-
-    // Game state
-    const highScores = getHighScores();
-    let currentHighScore = 0;
 
     // Game objects
     const player = {
@@ -456,19 +454,6 @@ function initSpaceshipGame() {
         ctx.fillStyle = '#ff2d55';
         ctx.font = '16px "Courier New"';
         ctx.fillText('↑↓ to select, SPACE to start', canvas.width / 2, canvas.height * 0.8);
-
-        // Draw high scores
-        ctx.fillStyle = '#0ff';
-        ctx.font = '16px "Courier New"';
-        ctx.textAlign = 'center';
-        
-        const yStart = canvas.height * 0.65;
-        ctx.fillText('HIGH SCORES:', canvas.width / 2, yStart);
-        
-        Object.entries(highScores).forEach(([diff, score], index) => {
-            ctx.fillStyle = selectedDifficulty === diff ? '#ff2d55' : '#0ff';
-            ctx.fillText(`${diff}: ${score}`, canvas.width / 2, yStart + 25 * (index + 1));
-        });
     }
 
     function update() {
@@ -716,9 +701,6 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
-            // Update high score display for selected difficulty
-            updateHighScoreDisplay();
-            
             // Start game after delay
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
@@ -770,14 +752,6 @@ function initSpaceshipGame() {
     // Initial menu show
     showMenu();
 
-    // Update high score display
-    function updateHighScoreDisplay() {
-        if (selectedDifficulty) {
-            currentHighScore = highScores[selectedDifficulty];
-            highScoreElement.textContent = currentHighScore;
-        }
-    }
-
     const gameOverOverlay = document.querySelector('.game-over-overlay');
     
     // Modify update function game over handling
@@ -786,23 +760,4 @@ function initSpaceshipGame() {
     }
 
     update();
-}
-
-function getHighScores() {
-    const savedScores = localStorage.getItem('pixelVoidHighScores');
-    return savedScores ? JSON.parse(savedScores) : {
-        EASY: 0,
-        NORMAL: 0,
-        HARD: 0
-    };
-}
-
-function saveHighScore(difficulty, newScore) {
-    const highScores = getHighScores();
-    if (newScore > highScores[difficulty]) {
-        highScores[difficulty] = newScore;
-        localStorage.setItem('pixelVoidHighScores', JSON.stringify(highScores));
-        return true;
-    }
-    return false;
 } 
