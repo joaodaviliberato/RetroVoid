@@ -409,19 +409,6 @@ function initSpaceshipGame() {
                rect1.y + rect1.height > rect2.y;
     }
 
-    function enemyShoot(enemy) {
-        if (Math.random() < enemy.shootRate) {
-            gameState.enemyBullets.push({
-                x: enemy.x,
-                y: enemy.y + enemy.height/2,
-                width: 4,
-                height: 12,
-                speed: enemy.enemyBulletSpeed,
-                color: enemy.color
-            });
-        }
-    }
-
     function drawMenu() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -559,16 +546,6 @@ function initSpaceshipGame() {
                                 if (saveHighScore(selectedDifficulty, score)) {
                                     currentHighScore = score;
                                     highScoreElement.textContent = score;
-                                    
-                                    // Add visual feedback for new high score
-                                    const highScoreText = document.createElement('div');
-                                    highScoreText.className = 'high-score-alert';
-                                    highScoreText.textContent = 'NEW HIGH SCORE!';
-                                    document.querySelector('.cabinet-screen').appendChild(highScoreText);
-                                    
-                                    setTimeout(() => {
-                                        highScoreText.remove();
-                                    }, 2000);
                                 }
                             }
                         }
@@ -615,8 +592,17 @@ function initSpaceshipGame() {
                         enemy.y += enemy.speed;
                     }
                     
-                    // Enemy shooting
-                    enemyShoot(enemy);
+                    // Enemy shooting - Fixed shooting mechanism
+                    if (currentState === GAME_STATE.PLAYING && Math.random() < enemy.shootRate) {
+                        gameState.enemyBullets.push({
+                            x: enemy.x,
+                            y: enemy.y + enemy.height/2,
+                            width: 4,
+                            height: 12,
+                            speed: DIFFICULTY[selectedDifficulty].enemyBulletSpeed,
+                            color: enemy.color
+                        });
+                    }
                     
                     if (checkCollision(enemy, player)) {
                         if (player.shield > 0) {
@@ -773,8 +759,9 @@ function initSpaceshipGame() {
         player.x = canvas.width / 2;
         player.lives = 3;
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        player.autoShootCooldown = 0;
         
-        // Show menu overlay
+        // Show menu overlay and update state
         menuOverlay.classList.remove('hidden');
         currentState = GAME_STATE.MENU;
         selectedDifficulty = null;
@@ -782,6 +769,10 @@ function initSpaceshipGame() {
         // Reset difficulty buttons
         difficultyBtns.forEach(btn => btn.classList.remove('selected'));
         difficultyInfo.textContent = 'Choose your challenge level';
+
+        // Update high score display
+        document.querySelector('.high-score').setAttribute('data-difficulty', '');
+        highScoreElement.textContent = '0';
     });
 
     // Initial menu show
