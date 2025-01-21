@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     initSpaceshipGame();
+    createSpaceBackground();
     createFlyingShips();
 });
 
@@ -746,11 +747,7 @@ function initSpaceshipGame() {
         difficultyInfo.textContent = 'Choose your challenge level';
         currentState = GAME_STATE.MENU;
         
-        // Recreate flying ships
-        const existingShips = document.querySelector('.flying-ships');
-        if (existingShips) {
-            existingShips.remove();
-        }
+        createSpaceBackground();
         createFlyingShips();
     }
 
@@ -899,18 +896,16 @@ function initSpaceshipGame() {
 
     // Add this function to create flying ships in the background
     function createFlyingShips() {
-        const flyingShipsContainer = document.createElement('div');
-        flyingShipsContainer.className = 'flying-ships';
-        document.querySelector('.background-effects').appendChild(flyingShipsContainer);
+        const flyingShipsContainer = document.querySelector('.flying-ships');
+        flyingShipsContainer.innerHTML = ''; // Clear existing ships
 
         // Create multiple ships
         for (let i = 0; i < 5; i++) {
             const ship = document.createElement('div');
             ship.className = 'flying-ship';
             
-            // Set random vertical position and delay
             const yPos = Math.random() * window.innerHeight;
-            const delay = Math.random() * -15; // Negative delay for initial stagger
+            const delay = Math.random() * -15;
             
             ship.style.cssText = `
                 --y: ${yPos}px;
@@ -919,21 +914,62 @@ function initSpaceshipGame() {
                 left: 0;
             `;
 
-            // Create ship SVG
+            // Enhanced ship design with more detail
             ship.innerHTML = `
                 <svg viewBox="0 0 60 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M0 15L20 5L50 15L20 25Z" fill="${Math.random() > 0.5 ? '#ff2d55' : '#b026ff'}" 
-                          filter="url(#glow)"/>
                     <defs>
-                        <filter id="glow">
-                            <feGaussianBlur stdDeviation="1" result="glow"/>
+                        <filter id="ship-glow-${i}">
+                            <feGaussianBlur stdDeviation="2" result="glow"/>
                             <feComposite in="SourceGraphic" in2="glow" operator="over"/>
                         </filter>
                     </defs>
+                    <path d="M0 15L15 5L40 15L15 25Z" fill="${Math.random() > 0.5 ? '#ff2d55' : '#b026ff'}" 
+                          filter="url(#ship-glow-${i})"/>
+                    <path d="M40 15L50 12L55 15L50 18L40 15" fill="#0ff" 
+                          filter="url(#ship-glow-${i})"/>
+                    <circle cx="15" cy="15" r="3" fill="#fff"/>
                 </svg>
             `;
 
             flyingShipsContainer.appendChild(ship);
+        }
+    }
+
+    // Add function to create space background
+    function createSpaceBackground() {
+        const spaceContainer = document.querySelector('.space-objects');
+        spaceContainer.innerHTML = ''; // Clear existing objects
+
+        // Add stars
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.cssText = `
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                width: ${Math.random() * 3}px;
+                height: ${Math.random() * 3}px;
+                animation-delay: ${Math.random() * 2}s;
+            `;
+            spaceContainer.appendChild(star);
+        }
+
+        // Add planets
+        const planetColors = ['#ff2d55', '#0ff', '#b026ff', '#ff6b6b'];
+        for (let i = 0; i < 3; i++) {
+            const planet = document.createElement('div');
+            planet.className = 'planet';
+            const size = 20 + Math.random() * 40;
+            planet.style.cssText = `
+                left: ${20 + Math.random() * 60}%;
+                top: ${20 + Math.random() * 60}%;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${planetColors[Math.floor(Math.random() * planetColors.length)]};
+                opacity: 0.6;
+                animation-delay: ${Math.random() * 4}s;
+            `;
+            spaceContainer.appendChild(planet);
         }
     }
 
