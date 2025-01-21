@@ -75,13 +75,18 @@ function initSpaceshipGame() {
     // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 50,
-        width: 50,
-        height: 50,
-        speed: 5,
+        y: canvas.height - 100,  // Start a bit higher
+        width: 60,
+        height: 60,
+        speed: 6,
         color: '#ff2d55',
+        shield: 100,
         lives: 3,
-        isInvincible: false
+        powerups: [],
+        autoShootCooldown: 0,
+        shootDelay: 40,
+        minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
+        maxY: canvas.height - 100   // Restrict downward movement
     };
 
     const gameState = {
@@ -562,9 +567,22 @@ function initSpaceshipGame() {
                     bullet.y += bullet.speed;
                     
                     // Check player collision with enemy bullets
-                    if (!player.isInvincible && checkCollision(bullet, player)) {
+                    if (checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
-                        handleCollision();
+                        if (player.shield > 0) {
+                            player.shield -= gameState.bulletDamage;
+                            if (player.shield < 0) player.shield = 0;
+                        } else {
+                            player.lives--;
+                            if (player.lives > 0) {
+                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                            } else {
+                                gameState.gameOver = true;
+                                for (let i = 0; i < 20; i++) {
+                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
+                                }
+                            }
+                        }
                     }
                     
                     if (bullet.y > canvas.height) {
@@ -591,13 +609,16 @@ function initSpaceshipGame() {
                         });
                     }
                     
-                    if (!player.isInvincible && checkCollision(enemy, player)) {
-                        handleCollision();
-                        gameState.enemies.splice(index, 1);
-                        
-                        // Create explosion particles
-                        for (let i = 0; i < 10; i++) {
-                            gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
+                    if (checkCollision(enemy, player)) {
+                        if (player.shield > 0) {
+                            player.shield -= gameState.bulletDamage * 2;
+                            if (player.shield < 0) player.shield = 0;
+                            gameState.enemies.splice(index, 1);
+                        } else {
+                            gameState.gameOver = true;
+                            for (let i = 0; i < 20; i++) {
+                                gameState.particles.push(createParticle(player.x, player.y, player.color));
+                            }
                         }
                     }
                     
@@ -617,7 +638,7 @@ function initSpaceshipGame() {
                 });
 
                 // Draw lives
-                updateLives();
+                drawLives();
 
                 // Draw enemy bullets
                 gameState.enemyBullets.forEach(bullet => {
@@ -667,8 +688,7 @@ function initSpaceshipGame() {
                     gameState.particles = [];
                     player.x = canvas.width / 2;
                     player.lives = 3;
-                    player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
-                    player.autoShootCooldown = 0;
+                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
                 }
@@ -844,38 +864,18 @@ function initSpaceshipGame() {
     window.addEventListener('resize', resizeCanvas);
 
     // Update the lives drawing code
-    function updateLives() {
-        const hearts = document.querySelectorAll('.heart');
-        hearts.forEach((heart, index) => {
-            if (index < player.lives) {
-                heart.classList.remove('lost');
-            } else {
-                heart.classList.add('lost');
-            }
-        });
-    }
-
-    function handleCollision() {
-        if (player.isInvincible) return;
-        
-        player.lives--;
-        updateLives();
-        
-        if (player.lives <= 0) {
-            gameOver();
-            return;
+    function drawLives() {
+        const lifeBar = document.querySelector('.life-bar');
+        lifeBar.innerHTML = '';
+        for (let i = 0; i < player.lives; i++) {
+            const lifeIcon = document.createElement('div');
+            lifeIcon.style.width = '20px';
+            lifeIcon.style.height = '20px';
+            lifeIcon.style.backgroundColor = player.color;
+            lifeIcon.style.borderRadius = '50%';
+            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
+            lifeBar.appendChild(lifeIcon);
         }
-        
-        // Flash the player to show invincibility
-        player.isInvincible = true;
-        setTimeout(() => {
-            player.isInvincible = false;
-        }, 2000); // 2 seconds of invincibility after being hit
-    }
-
-    function gameOver() {
-        gameState.gameOver = true;
-        gameOverOverlay.classList.remove('hidden');
     }
 
     update();
