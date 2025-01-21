@@ -439,7 +439,7 @@ function initSpaceshipGame() {
         ctx.fillStyle = '#ff2d55';
         ctx.font = 'bold 40px "Courier New"';
         ctx.textAlign = 'center';
-        ctx.fillText('PIXEL VOID', canvas.width / 2, canvas.height / 3);
+        ctx.fillText('RETRO VOID', canvas.width / 2, canvas.height / 3);
         
         // Draw subtitle
         ctx.fillStyle = '#0ff';
@@ -670,28 +670,7 @@ function initSpaceshipGame() {
                 ctx.strokeStyle = '#fff';
                 ctx.strokeRect(10, 10, 200, 10);
             } else {
-                ctx.fillStyle = '#ff2d55';
-                ctx.font = '30px "Courier New"';
-                ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2);
-                ctx.font = '20px "Courier New"';
-                ctx.fillText('Press SPACE to return to menu', canvas.width / 2, canvas.height / 2 + 40);
-                
-                if (gameState.keys[' ']) {
-                    // Reset game
-                    score = 0;
-                    scoreElement.textContent = score;
-                    gameState.gameOver = false;
-                    gameState.enemies = [];
-                    gameState.bullets = [];
-                    gameState.enemyBullets = [];
-                    gameState.particles = [];
-                    player.x = canvas.width / 2;
-                    player.lives = 3;
-                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                    currentState = GAME_STATE.MENU;
-                    selectedDifficulty = null;
-                }
+                showGameOver();
             }
         }
         requestAnimationFrame(update);
@@ -933,8 +912,17 @@ function showGameOver() {
         existingTitle.remove();
     }
     
-    // Add new game over title
+    // Add new game over title with glitch effect
     const gameOverTitle = document.createElement('h3');
     gameOverTitle.textContent = 'GAME OVER';
     gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
+    
+    // Add return to menu text
+    const menuText = document.createElement('p');
+    menuText.textContent = 'Press SPACE to continue';
+    menuText.style.color = '#0ff';
+    menuText.style.fontSize = '1.5rem';
+    menuText.style.marginTop = '2rem';
+    menuText.style.textShadow = '0 0 10px #0ff';
+    gameOverOverlay.insertBefore(menuText, gameOverOverlay.children[1]);
 } 
