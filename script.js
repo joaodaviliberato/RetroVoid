@@ -745,7 +745,7 @@ function initSpaceshipGame() {
         gameState.particles = [];
         player.x = canvas.width / 2;
         player.lives = 3;
-        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        player.shield = 100;
         player.autoShootCooldown = 0;
         
         // Stop game music and reset menu music
@@ -759,6 +759,10 @@ function initSpaceshipGame() {
         gameOverOverlay.classList.add('hidden');
         currentState = GAME_STATE.MENU;
         selectedDifficulty = null;
+        
+        // Reset difficulty buttons
+        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+        difficultyInfo.textContent = 'Choose your challenge level';
     });
 
     // Initial menu show
@@ -842,35 +846,31 @@ function initSpaceshipGame() {
     // Update resize handler
     window.addEventListener('resize', resizeCanvas);
 
-    update();
-}
+    const gameMusic = document.getElementById('game-music');
+    const menuMusic = document.getElementById('menu-music');
+    const menuToggleMusic = document.getElementById('toggle-music');
+    const gameToggleMusic = document.getElementById('game-toggle-music');
+    let isMuted = false;
 
-// Add at the beginning of initSpaceshipGame
-const gameMusic = document.getElementById('game-music');
-const menuMusic = document.getElementById('menu-music');
-const toggleMusicBtn = document.getElementById('toggle-music');
-let isMuted = false;
+    // Sync both music toggle buttons
+    function updateMusicButtons() {
+        const icon = isMuted ? '🔈' : '🔊';
+        menuToggleMusic.querySelector('.icon').textContent = icon;
+        gameToggleMusic.querySelector('.icon').textContent = icon;
+        menuToggleMusic.classList.toggle('muted', isMuted);
+        gameToggleMusic.classList.toggle('muted', isMuted);
+    }
 
-// Music control
-toggleMusicBtn.addEventListener('click', () => {
-    isMuted = !isMuted;
-    toggleMusicBtn.classList.toggle('muted');
-    toggleMusicBtn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
-    
-    [gameMusic, menuMusic].forEach(audio => {
-        audio.muted = isMuted;
+    // Music control for both buttons
+    [menuToggleMusic, gameToggleMusic].forEach(btn => {
+        btn.addEventListener('click', () => {
+            isMuted = !isMuted;
+            [gameMusic, menuMusic].forEach(audio => {
+                audio.muted = isMuted;
+            });
+            updateMusicButtons();
+        });
     });
-});
 
-// Handle music transitions
-function playMenuMusic() {
-    gameMusic.pause();
-    gameMusic.currentTime = 0;
-    menuMusic.play();
-}
-
-function playGameMusic() {
-    menuMusic.pause();
-    menuMusic.currentTime = 0;
-    gameMusic.play();
+    update();
 } 
