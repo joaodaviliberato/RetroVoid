@@ -664,12 +664,6 @@ function initSpaceshipGame() {
             if (!gameState.gameOver) {
                 drawPlayer();
                 drawShieldBar();
-                
-                // Draw shield bar
-                ctx.fillStyle = '#0ff';
-                ctx.fillRect(10, 10, player.shield * 2, 10);
-                ctx.strokeStyle = '#fff';
-                ctx.strokeRect(10, 10, 200, 10);
             } else {
                 ctx.fillStyle = '#ff2d55';
                 ctx.font = '30px "Courier New"';
@@ -888,8 +882,9 @@ function initSpaceshipGame() {
             document.querySelector('.game-overlay').appendChild(shieldBar);
         }
 
-        // Update shield bar fill
-        const shieldPercent = Math.max(0, Math.min(100, (player.shield / DIFFICULTY[selectedDifficulty].playerShield) * 100));
+        // Update shield bar fill with proper shield value calculation
+        const maxShield = DIFFICULTY[selectedDifficulty].playerShield;
+        const shieldPercent = Math.max(0, Math.min(100, (player.shield / maxShield) * 100));
         const shieldBarFill = shieldBar.querySelector('.shield-bar-fill');
         shieldBarFill.style.width = `${shieldPercent}%`;
     }

@@ -697,8 +697,8 @@ footer.hidden {
 /* Update shield bar styles */
 .shield-bar {
     position: fixed;
-    bottom: 20px;
-    left: 120px; /* Position it next to the hearts */
+    bottom: 55px;  /* Position it above the hearts */
+    left: 20px;    /* Align with hearts */
     z-index: 5;
     width: 200px;
     height: 20px;
