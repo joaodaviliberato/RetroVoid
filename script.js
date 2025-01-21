@@ -75,10 +75,10 @@ function initSpaceshipGame() {
     // Game objects
     const player = {
         x: canvas.width / 2,
-        y: canvas.height - 100,  // Start a bit higher
-        width: 60,
-        height: 60,
-        speed: 6,
+        y: canvas.height - 50,
+        width: 50,
+        height: 50,
+        speed: 5,
         color: '#ff2d55',
         shield: 100,
         lives: 3,
@@ -86,7 +86,8 @@ function initSpaceshipGame() {
         autoShootCooldown: 0,
         shootDelay: 40,
         minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
-        maxY: canvas.height - 100   // Restrict downward movement
+        maxY: canvas.height - 100,   // Restrict downward movement
+        isInvincible: false
     };
 
     const gameState = {
@@ -573,15 +574,7 @@ function initSpaceshipGame() {
                             player.shield -= gameState.bulletDamage;
                             if (player.shield < 0) player.shield = 0;
                         } else {
-                            player.lives--;
-                            if (player.lives > 0) {
-                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                            } else {
-                                gameState.gameOver = true;
-                                for (let i = 0; i < 20; i++) {
-                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
-                                }
-                            }
+                            handleCollision();
                         }
                     }
                     
@@ -615,10 +608,7 @@ function initSpaceshipGame() {
                             if (player.shield < 0) player.shield = 0;
                             gameState.enemies.splice(index, 1);
                         } else {
-                            gameState.gameOver = true;
-                            for (let i = 0; i < 20; i++) {
-                                gameState.particles.push(createParticle(player.x, player.y, player.color));
-                            }
+                            handleCollision();
                         }
                     }
                     
@@ -638,7 +628,7 @@ function initSpaceshipGame() {
                 });
 
                 // Draw lives
-                drawLives();
+                updateLives();
 
                 // Draw enemy bullets
                 gameState.enemyBullets.forEach(bullet => {
@@ -864,18 +854,36 @@ function initSpaceshipGame() {
     window.addEventListener('resize', resizeCanvas);
 
     // Update the lives drawing code
-    function drawLives() {
-        const lifeBar = document.querySelector('.life-bar');
-        lifeBar.innerHTML = '';
-        for (let i = 0; i < player.lives; i++) {
-            const lifeIcon = document.createElement('div');
-            lifeIcon.style.width = '20px';
-            lifeIcon.style.height = '20px';
-            lifeIcon.style.backgroundColor = player.color;
-            lifeIcon.style.borderRadius = '50%';
-            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
-            lifeBar.appendChild(lifeIcon);
+    function updateLives() {
+        const hearts = document.querySelectorAll('.heart');
+        hearts.forEach((heart, index) => {
+            if (index < player.lives) {
+                heart.classList.remove('lost');
+            } else {
+                heart.classList.add('lost');
+            }
+        });
+    }
+
+    function handleCollision() {
+        player.lives--;
+        updateLives();
+        
+        if (player.lives <= 0) {
+            gameOver();
+            return;
         }
+        
+        // Flash the player to show invincibility
+        player.isInvincible = true;
+        setTimeout(() => {
+            player.isInvincible = false;
+        }, 2000); // 2 seconds of invincibility after being hit
+    }
+
+    function gameOver() {
+        gameState.gameOver = true;
+        gameOverOverlay.classList.remove('hidden');
     }
 
     update();

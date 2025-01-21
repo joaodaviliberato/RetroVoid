@@ -540,7 +540,26 @@ footer.hidden {
     left: 20px;
     z-index: 5;
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    font-size: 24px;
+    color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.heart {
+    transition: all 0.3s ease;
+}
+
+.heart.lost {
+    opacity: 0.2;
+    text-shadow: none;
+    transform: scale(0.9);
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 /* Update score position */
