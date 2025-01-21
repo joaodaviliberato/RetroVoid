@@ -86,7 +86,8 @@ function initSpaceshipGame() {
         autoShootCooldown: 0,
         shootDelay: 40,
         minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
-        maxY: canvas.height - 100   // Restrict downward movement
+        maxY: canvas.height - 100,   // Restrict downward movement
+        invulnerable: false
     };
 
     const gameState = {
@@ -573,15 +574,7 @@ function initSpaceshipGame() {
                             player.shield -= gameState.bulletDamage;
                             if (player.shield < 0) player.shield = 0;
                         } else {
-                            player.lives--;
-                            if (player.lives > 0) {
-                                player.shield = DIFFICULTY[selectedDifficulty].playerShield;
-                            } else {
-                                gameState.gameOver = true;
-                                for (let i = 0; i < 20; i++) {
-                                    gameState.particles.push(createParticle(player.x, player.y, player.color));
-                                }
-                            }
+                            handlePlayerHit();
                         }
                     }
                     
@@ -615,10 +608,7 @@ function initSpaceshipGame() {
                             if (player.shield < 0) player.shield = 0;
                             gameState.enemies.splice(index, 1);
                         } else {
-                            gameState.gameOver = true;
-                            for (let i = 0; i < 20; i++) {
-                                gameState.particles.push(createParticle(player.x, player.y, player.color));
-                            }
+                            handlePlayerHit();
                         }
                     }
                     
@@ -638,7 +628,7 @@ function initSpaceshipGame() {
                 });
 
                 // Draw lives
-                drawLives();
+                updateLives();
 
                 // Draw enemy bullets
                 gameState.enemyBullets.forEach(bullet => {
@@ -864,18 +854,38 @@ function initSpaceshipGame() {
     window.addEventListener('resize', resizeCanvas);
 
     // Update the lives drawing code
-    function drawLives() {
+    function updateLives() {
         const lifeBar = document.querySelector('.life-bar');
-        lifeBar.innerHTML = '';
-        for (let i = 0; i < player.lives; i++) {
-            const lifeIcon = document.createElement('div');
-            lifeIcon.style.width = '20px';
-            lifeIcon.style.height = '20px';
-            lifeIcon.style.backgroundColor = player.color;
-            lifeIcon.style.borderRadius = '50%';
-            lifeIcon.style.boxShadow = `0 0 10px ${player.color}`;
-            lifeBar.appendChild(lifeIcon);
+        lifeBar.innerHTML = ''; // Clear existing hearts
+        
+        // Create hearts based on max lives (3)
+        for (let i = 0; i < 3; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            if (i >= player.lives) {
+                heart.classList.add('lost');
+            }
+            lifeBar.appendChild(heart);
         }
+    }
+
+    // Update the player hit function to remove one full heart
+    function handlePlayerHit() {
+        if (player.invulnerable) return;
+        
+        player.lives--;
+        updateLives();
+        
+        if (player.lives <= 0) {
+            gameOver();
+            return;
+        }
+        
+        // Make player invulnerable briefly
+        player.invulnerable = true;
+        setTimeout(() => {
+            player.invulnerable = false;
+        }, 2000);
     }
 
     update();
