@@ -829,5 +829,26 @@ function initSpaceshipGame() {
         player.y = Math.min(Math.max(player.minY, player.y), player.maxY);
     });
 
+    // Add this function for proper canvas sizing
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+        
+        // Update game boundaries
+        player.minY = canvas.height * 0.5;
+        player.maxY = canvas.height - 100;
+        
+        // Keep player in bounds
+        player.x = Math.min(Math.max(player.width / 2, player.x), canvas.width - player.width / 2);
+        player.y = Math.min(Math.max(player.minY, player.y), player.maxY);
+    }
+
+    // Call on initialization
+    resizeCanvas();
+
+    // Update resize handler
+    window.addEventListener('resize', resizeCanvas);
+
     update();
 } 
