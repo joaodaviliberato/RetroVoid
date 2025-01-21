@@ -27,7 +27,8 @@ function initSpaceshipGame() {
         color: '#ff2d55',
         shield: 100,
         lives: 3,
-        powerups: []
+        powerups: [],
+        autoShootCooldown: 0
     };
 
     const gameState = {
@@ -40,7 +41,7 @@ function initSpaceshipGame() {
         gameOver: false,
         bulletCooldown: 0,
         level: 1,
-        enemySpawnRate: 0.01,
+        enemySpawnRate: 0.005,
         enemyShootRate: 0.02
     };
 
@@ -129,41 +130,34 @@ function initSpaceshipGame() {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Improved enemy design - Type 1
+                    // UFO-style enemy
                     ctx.beginPath();
-                    ctx.moveTo(0, -25);
-                    ctx.lineTo(-25, -15);
-                    ctx.lineTo(-20, 0);
-                    ctx.lineTo(-25, 15);
-                    ctx.lineTo(-15, 25);
-                    ctx.lineTo(0, 20);
-                    ctx.lineTo(15, 25);
-                    ctx.lineTo(25, 15);
-                    ctx.lineTo(20, 0);
-                    ctx.lineTo(25, -15);
-                    ctx.closePath();
+                    // Draw dome
+                    ctx.ellipse(0, -10, 25, 15, 0, Math.PI, 0);
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
-                    // Enemy details
+                    // Draw base
                     ctx.beginPath();
-                    ctx.arc(0, 0, 8, 0, Math.PI * 2);
+                    ctx.ellipse(0, 0, 25, 8, 0, 0, Math.PI * 2);
                     ctx.fillStyle = '#ff0066';
                     ctx.fill();
                     
-                    // Wing lights
-                    ctx.fillStyle = '#0ff';
-                    ctx.beginPath();
-                    ctx.arc(-20, 0, 3, 0, Math.PI * 2);
-                    ctx.arc(20, 0, 3, 0, Math.PI * 2);
-                    ctx.fill();
+                    // Draw lights
+                    const lightPositions = [-20, -10, 0, 10, 20];
+                    lightPositions.forEach(pos => {
+                        ctx.beginPath();
+                        ctx.arc(pos, 0, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = '#0ff';
+                        ctx.fill();
+                    });
                     
                     ctx.restore();
                 }
             },
             {
                 width: 70,
-                height: 60,
+                height: 70,
                 speed: 0.8,
                 health: 3,
                 color: '#ff0066',
@@ -173,32 +167,74 @@ function initSpaceshipGame() {
                     ctx.save();
                     ctx.translate(x, y);
                     
-                    // Improved enemy design - Type 2
+                    // Triangle Warship
                     ctx.beginPath();
-                    ctx.moveTo(0, -30);
-                    ctx.lineTo(-35, -10);
-                    ctx.lineTo(-30, 10);
-                    ctx.lineTo(-20, 20);
-                    ctx.lineTo(0, 25);
-                    ctx.lineTo(20, 20);
-                    ctx.lineTo(30, 10);
-                    ctx.lineTo(35, -10);
+                    ctx.moveTo(0, -35);
+                    ctx.lineTo(-30, 15);
+                    ctx.lineTo(30, 15);
                     ctx.closePath();
                     ctx.fillStyle = this.color;
                     ctx.fill();
                     
+                    // Energy shield effect
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 35, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#0ff';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    
                     // Core
                     ctx.beginPath();
-                    ctx.arc(0, 0, 12, 0, Math.PI * 2);
+                    ctx.arc(0, 0, 10, 0, Math.PI * 2);
                     ctx.fillStyle = '#b026ff';
                     ctx.fill();
                     
-                    // Energy rings
-                    ctx.strokeStyle = '#0ff';
-                    ctx.lineWidth = 2;
+                    ctx.restore();
+                }
+            },
+            {
+                width: 60,
+                height: 60,
+                speed: 1.2,
+                health: 2,
+                color: '#9400D3',
+                points: 150,
+                shootRate: 0.02,
+                draw: function(ctx, x, y) {
+                    ctx.save();
+                    ctx.translate(x, y);
+                    
+                    // Hexagonal Cruiser
                     ctx.beginPath();
-                    ctx.arc(0, 0, 18, 0, Math.PI * 2);
+                    for(let i = 0; i < 6; i++) {
+                        const angle = (i * Math.PI * 2) / 6;
+                        const x = Math.cos(angle) * 25;
+                        const y = Math.sin(angle) * 25;
+                        if(i === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath();
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // Inner details
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 15, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#ff0066';
+                    ctx.lineWidth = 3;
                     ctx.stroke();
+                    
+                    // Energy points
+                    for(let i = 0; i < 3; i++) {
+                        const angle = (i * Math.PI * 2) / 3;
+                        const x = Math.cos(angle) * 10;
+                        const y = Math.sin(angle) * 10;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fillStyle = '#0ff';
+                        ctx.fill();
+                    }
                     
                     ctx.restore();
                 }
@@ -209,7 +245,7 @@ function initSpaceshipGame() {
         return {
             x: Math.random() * (canvas.width - type.width) + type.width/2,
             y: -type.height,
-            targetY: Math.random() * (canvas.height/3),
+            targetY: Math.random() * (canvas.height/4),
             ...type
         };
     }
@@ -283,9 +319,9 @@ function initSpaceshipGame() {
                 player.x = Math.min(canvas.width - player.width / 2, player.x + player.speed);
             }
 
-            // Shooting mechanics
-            if (gameState.keys[' '] && gameState.bulletCooldown <= 0) {
-                // Double bullets
+            // Automatic shooting
+            player.autoShootCooldown--;
+            if (player.autoShootCooldown <= 0) {
                 gameState.bullets.push(
                     {
                         x: player.x - 15,
@@ -302,7 +338,7 @@ function initSpaceshipGame() {
                         color: '#0ff'
                     }
                 );
-                gameState.bulletCooldown = 8;
+                player.autoShootCooldown = 15;
             }
             
             // Spawn enemies based on level
