@@ -1,4 +1,4 @@
-:root {
+                                                                                                                    :root {
     --neon-pink: #ff2d55;
     --neon-blue: #0ff;
     --neon-purple: #b026ff;
@@ -319,13 +319,13 @@ footer.hidden {
 }
 
 .game-title {
-    font-size: 4.5rem;
+    font-size: 5rem;
     color: var(--neon-pink);
     text-shadow: 0 0 10px var(--neon-pink),
                  0 0 20px var(--neon-pink),
                  0 0 30px var(--neon-pink),
                  0 0 40px var(--neon-pink);
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     animation: titlePulse 2s infinite alternate;
     letter-spacing: 4px;
 }
@@ -347,15 +347,7 @@ footer.hidden {
 }
 
 .game-desc {
-    color: var(--neon-blue);
-    font-size: 1.4rem;
-    margin-bottom: 3rem;
-    text-shadow: 0 0 8px var(--neon-blue);
-    opacity: 0.9;
-    line-height: 1.6;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
+    display: none;
 }
 
 .play-btn {
@@ -544,7 +536,6 @@ footer.hidden {
     font-size: 24px;
     color: var(--neon-pink);
     text-shadow: 0 0 10px var(--neon-pink);
-    animation: heartbeat 1.5s ease-in-out infinite;
 }
 
 .heart {
@@ -555,22 +546,6 @@ footer.hidden {
     opacity: 0.2;
     text-shadow: none;
     transform: scale(0.9);
-}
-
-@keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Update score position */
-.score {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 0.5rem 1rem;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid var(--neon-blue);
-    border-radius: 4px;
 }
 
 /* Update menu and sound buttons container */

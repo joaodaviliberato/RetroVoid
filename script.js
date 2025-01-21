@@ -80,13 +80,7 @@ function initSpaceshipGame() {
         height: 50,
         speed: 5,
         color: '#ff2d55',
-        shield: 100,
         lives: 3,
-        powerups: [],
-        autoShootCooldown: 0,
-        shootDelay: 40,
-        minY: canvas.height * 0.5,  // Restrict upward movement to half the screen
-        maxY: canvas.height - 100,   // Restrict downward movement
         isInvincible: false
     };
 
@@ -568,14 +562,9 @@ function initSpaceshipGame() {
                     bullet.y += bullet.speed;
                     
                     // Check player collision with enemy bullets
-                    if (checkCollision(bullet, player)) {
+                    if (!player.isInvincible && checkCollision(bullet, player)) {
                         gameState.enemyBullets.splice(index, 1);
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage;
-                            if (player.shield < 0) player.shield = 0;
-                        } else {
-                            handleCollision();
-                        }
+                        handleCollision();
                     }
                     
                     if (bullet.y > canvas.height) {
@@ -602,13 +591,13 @@ function initSpaceshipGame() {
                         });
                     }
                     
-                    if (checkCollision(enemy, player)) {
-                        if (player.shield > 0) {
-                            player.shield -= gameState.bulletDamage * 2;
-                            if (player.shield < 0) player.shield = 0;
-                            gameState.enemies.splice(index, 1);
-                        } else {
-                            handleCollision();
+                    if (!player.isInvincible && checkCollision(enemy, player)) {
+                        handleCollision();
+                        gameState.enemies.splice(index, 1);
+                        
+                        // Create explosion particles
+                        for (let i = 0; i < 10; i++) {
+                            gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
                         }
                     }
                     
@@ -678,7 +667,8 @@ function initSpaceshipGame() {
                     gameState.particles = [];
                     player.x = canvas.width / 2;
                     player.lives = 3;
-                    player.shield = DIFFICULTY[selectedDifficulty].playerShield;
+                    player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+                    player.autoShootCooldown = 0;
                     currentState = GAME_STATE.MENU;
                     selectedDifficulty = null;
                 }
@@ -866,6 +856,8 @@ function initSpaceshipGame() {
     }
 
     function handleCollision() {
+        if (player.isInvincible) return;
+        
         player.lives--;
         updateLives();
         
