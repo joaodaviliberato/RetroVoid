@@ -282,33 +282,40 @@ footer {
     text-shadow: 0 0 10px var(--neon-pink);
 }
 
+/* Main Menu Styles */
 .main-menu-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 10;
+    z-index: 20;
 }
 
-.main-menu-overlay h1 {
+.menu-content {
+    text-align: center;
+    padding: 2rem;
+}
+
+.game-title {
+    font-size: 3rem;
     color: var(--neon-pink);
-    font-size: 4rem;
-    text-shadow: 0 0 20px var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink),
+                 0 0 20px var(--neon-pink),
+                 0 0 30px var(--neon-pink);
     margin-bottom: 1rem;
-    animation: glow 1.5s ease-in-out infinite alternate;
+    animation: pulse 1.5s infinite alternate;
 }
 
-.tagline {
+.game-desc {
     color: var(--neon-blue);
-    font-size: 1.5rem;
-    text-shadow: 0 0 10px var(--neon-blue);
-    margin-bottom: 3rem;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 5px var(--neon-blue);
     opacity: 0.8;
 }
 
@@ -331,138 +338,68 @@ footer {
     background: var(--neon-purple);
     color: #000;
     box-shadow: 0 0 30px var(--neon-purple);
+    transform: scale(1.1);
 }
 
-.play-btn::after {
+.play-btn::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(176, 38, 255, 0.1),
-        transparent
-    );
-    transform: rotate(45deg);
-    animation: shine 2s infinite;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(45deg, transparent, rgba(176, 38, 255, 0.3), transparent);
+    transition: all 0.5s ease;
 }
 
-.hyperspace-effect {
+.play-btn:hover::before {
+    top: -50%;
+    left: -50%;
+}
+
+/* Light Speed Effect */
+.lightspeed-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    perspective: 1000px;
-    background: black;
+    background: #000;
     z-index: 15;
     overflow: hidden;
 }
 
-.star-field {
+.stars {
     position: absolute;
     width: 100%;
     height: 100%;
-    transform-style: preserve-3d;
-    animation: hyperspace-travel 2s ease-in-out forwards;
-}
-
-.hyperspace-star {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: white;
-    border-radius: 50%;
+    perspective: 400px;
     transform-style: preserve-3d;
 }
 
-@keyframes hyperspace-travel {
+@keyframes lightspeed {
     0% {
-        transform: translateZ(0) rotateX(0deg);
-        opacity: 0;
-    }
-    20% {
-        opacity: 1;
-    }
-    80% {
-        opacity: 1;
-    }
-    100% {
-        transform: translateZ(1000px) rotateX(45deg);
-        opacity: 0;
-    }
-}
-
-.hyperspace-tunnel {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 50%, 
-        transparent 0%,
-        rgba(0, 255, 255, 0.1) 10%,
-        rgba(176, 38, 255, 0.2) 20%,
-        transparent 30%
-    );
-    animation: tunnel-effect 2s ease-in-out forwards;
-}
-
-@keyframes tunnel-effect {
-    0% {
-        transform: scale(1);
+        transform: translateZ(0) scale(1);
         opacity: 0;
     }
     50% {
-        transform: scale(0.1);
         opacity: 1;
     }
     100% {
-        transform: scale(5);
+        transform: translateZ(400px) scale(0);
         opacity: 0;
     }
 }
 
-@keyframes glow {
-    from {
-        text-shadow: 0 0 10px var(--neon-pink),
-                     0 0 20px var(--neon-pink),
-                     0 0 30px var(--neon-pink);
-    }
-    to {
-        text-shadow: 0 0 20px var(--neon-pink),
-                     0 0 30px var(--neon-pink),
-                     0 0 40px var(--neon-pink);
-    }
-}
-
-@keyframes shine {
-    from {
-        transform: rotate(45deg) translateX(-100%);
-    }
-    to {
-        transform: rotate(45deg) translateX(100%);
-    }
-}
-
-.difficulty-overlay {
+.star {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 10;
-    transition: opacity 0.5s ease;
+    width: 2px;
+    height: 2px;
+    background: #fff;
+    animation: lightspeed 1s linear;
 }
 
+/* Hide class */
 .hidden {
     display: none;
-    opacity: 0;
-} 
 } 

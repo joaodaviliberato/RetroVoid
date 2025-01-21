@@ -24,13 +24,23 @@
                     <div class="game-overlay">
                         <div class="score">SCORE: <span id="score">0</span></div>
                     </div>
+                    
+                    <!-- Main Menu Overlay -->
                     <div class="main-menu-overlay">
-                        <h1>PIXEL VOID</h1>
-                        <p class="tagline">Enter the Digital Frontier</p>
-                        <button class="play-btn">PLAY</button>
-                        <div class="stars-container"></div>
+                        <div class="menu-content">
+                            <h2 class="game-title">NEON VOYAGER</h2>
+                            <p class="game-desc">Navigate through cyber space, defeat enemy ships, become the ultimate pilot</p>
+                            <button class="play-btn">PLAY</button>
+                        </div>
                     </div>
-                    <div class="difficulty-overlay hidden">
+
+                    <!-- Light Speed Effect Overlay -->
+                    <div class="lightspeed-overlay hidden">
+                        <div class="stars"></div>
+                    </div>
+
+                    <!-- Difficulty Selection Overlay -->
+                    <div class="menu-overlay hidden">
                         <h3>SELECT DIFFICULTY</h3>
                         <div class="difficulty-buttons">
                             <button class="difficulty-btn" data-difficulty="EASY">EASY</button>
@@ -41,11 +51,12 @@
                             <p id="difficulty-info">Choose your challenge level</p>
                         </div>
                     </div>
+
+                    <!-- Game Over Overlay -->
                     <div class="game-over-overlay hidden">
                         <h3>GAME OVER</h3>
                         <button class="menu-btn">BACK TO MENU</button>
                     </div>
-                    <div class="hyperspace-effect hidden"></div>
                 </div>
             </div>
             <div class="cabinet-base">
