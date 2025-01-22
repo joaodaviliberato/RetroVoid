@@ -726,7 +726,9 @@ function initSpaceshipGame() {
             // Switch from menu music to game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
-            gameMusic.play();
+            if (!isMuted) {
+                gameMusic.play();
+            }
 
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
@@ -771,10 +773,13 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Stop game music and reset menu music
+        // Stop game music and start menu music
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
+        if (!isMuted) {
+            menuMusic.play();
+        }
         
         // Show header and footer
         document.querySelector('.game-header').classList.remove('hidden');
@@ -822,9 +827,8 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Don't restart menu music here since it's already playing
-        // Just ensure it's playing if it was stopped
-        if (!isMuted && menuMusic.paused) {
+        // Keep menu music playing (it's already playing from initial load)
+        if (!isMuted) {
             menuMusic.play();
         }
 
@@ -999,17 +1003,27 @@ function initSpaceshipGame() {
     update();
 }
 
-// Add at the beginning of initSpaceshipGame
+// Update the music control code at the beginning of the file
 const gameMusic = document.getElementById('game-music');
 const menuMusic = document.getElementById('menu-music');
 const toggleMusicBtn = document.getElementById('game-toggle-music');
 const menuToggleMusicBtn = document.getElementById('toggle-music');
 let isMuted = false;
 
+// Add the new difficulty screen mute button
+const difficultyToggleMusicBtn = document.createElement('button');
+difficultyToggleMusicBtn.className = 'sound-btn';
+difficultyToggleMusicBtn.id = 'difficulty-toggle-music';
+difficultyToggleMusicBtn.innerHTML = '<span class="icon">🔊</span>';
+document.querySelector('.menu-overlay .sound-controls')?.appendChild(difficultyToggleMusicBtn);
+
 function updateMuteButtons() {
-    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-        btn.classList.toggle('muted', isMuted);
-        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    // Update all mute buttons
+    [toggleMusicBtn, menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
+        if (btn) {
+            btn.classList.toggle('muted', isMuted);
+            btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+        }
     });
 }
 
@@ -1017,25 +1031,20 @@ function toggleMute() {
     isMuted = !isMuted;
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
-        // If unmuting and on initial screen or menu, ensure music is playing
-        if (!isMuted && (currentState === GAME_STATE.MENU || !currentState)) {
-            menuMusic.play();
-        }
     });
     updateMuteButtons();
 }
 
-// Add click handlers for both mute buttons
-[toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-    btn.addEventListener('click', toggleMute);
+// Add click handlers for all mute buttons
+[toggleMusicBtn, menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
+    if (btn) {
+        btn.addEventListener('click', toggleMute);
+    }
 });
 
 // Start menu music when game loads
 window.addEventListener('load', () => {
-    // Start menu music immediately when the game loads
-    if (!isMuted) {
-        menuMusic.play();
-    }
+    menuMusic.play();
 });
 
 // Handle music transitions

@@ -799,4 +799,35 @@ footer.hidden {
 /* Remove header title */
 .game-header {
     display: none;
+}
+
+/* Add styles for difficulty screen sound controls */
+.menu-overlay .sound-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.menu-overlay .sound-btn {
+    background: transparent;
+    border: 2px solid var(--neon-blue);
+    color: var(--neon-blue);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-overlay .sound-btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+.menu-overlay .sound-btn.muted .icon {
+    opacity: 0.5;
 } 
