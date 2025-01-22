@@ -4,33 +4,36 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarsAndPlanets();
     createFlyingShips();
     
-    // Start menu music
+    // Get menu music element
     const menuMusic = document.getElementById('menu-music');
     menuMusic.volume = 0.7;
     
-    // Try to play music immediately
-    const playMusic = () => {
-        menuMusic.play()
-            .then(() => {
-                console.log('Music started successfully');
-            })
-            .catch(() => {
-                // If autoplay is blocked, add a one-time click listener to the document
-                const startAudio = () => {
-                    if (!isMuted) {
-                        menuMusic.play();
-                    }
-                    document.removeEventListener('click', startAudio);
-                };
-                document.addEventListener('click', startAudio);
-                console.log('Autoplay prevented - waiting for user interaction');
-            });
+    // Function to start playing menu music
+    const startMenuMusic = () => {
+        if (!isMuted) {
+            menuMusic.play()
+                .then(() => {
+                    console.log('Menu music started successfully');
+                })
+                .catch(error => {
+                    console.log('Autoplay prevented, waiting for user interaction');
+                });
+        }
     };
-    
-    // Try to play immediately and set up click handler if needed
-    if (!isMuted) {
-        playMusic();
-    }
+
+    // Try to play music immediately
+    startMenuMusic();
+
+    // Add click listener to the entire document for first interaction
+    const handleFirstInteraction = () => {
+        startMenuMusic();
+        document.removeEventListener('click', handleFirstInteraction);
+    };
+    document.addEventListener('click', handleFirstInteraction);
+
+    // Also try to play when the play button is clicked
+    const playBtn = document.querySelector('.play-btn');
+    playBtn.addEventListener('click', startMenuMusic, { once: true });
 });
 
 function getHighScore() {
@@ -1130,9 +1133,11 @@ function toggleMute() {
 // Handle music transitions
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (!isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play();
+        menuMusic.play().catch(error => {
+            console.log('Could not play menu music:', error);
+        });
     }
 }
 
@@ -1162,8 +1167,10 @@ function showGameOver() {
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (!isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play();
+        menuMusic.play().catch(error => {
+            console.log('Could not play menu music:', error);
+        });
     }
 } 
