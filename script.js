@@ -1,22 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Start with muted audio
+    // Start with muted music
     const menuMusic = document.getElementById('menu-music');
     const gameMusic = document.getElementById('game-music');
     menuMusic.volume = 0.7;
     gameMusic.volume = 0.7;
-    
-    // Set initial muted state
     menuMusic.muted = true;
     gameMusic.muted = true;
-    isMuted = true;
-    
-    // Update all mute buttons to show muted state
-    updateMuteButtons();
     
     // Initialize the game
     initSpaceshipGame();
     createStarsAndPlanets();
     createFlyingShips();
+    
+    // Update mute button icons to show muted state
+    updateMuteButtons();
 });
 
 function getHighScore() {
@@ -762,6 +759,8 @@ function initSpaceshipGame() {
         difficultyInfo.textContent = 'Choose your challenge level';
         currentState = GAME_STATE.MENU;
         
+        initDifficultyMenu(); // Initialize difficulty menu with mute button
+        
         // Recreate background effects
         const existingShips = document.querySelector('.flying-ships');
         const existingStars = document.querySelector('.background-stars');
@@ -1010,22 +1009,11 @@ function initSpaceshipGame() {
         }
     }
 
-    // Add mute button to difficulty menu
-    function addDifficultyMenuMuteButton() {
-        const menuOverlay = document.querySelector('.menu-overlay');
-        const soundControls = document.createElement('div');
-        soundControls.className = 'sound-controls';
-        
-        const muteBtn = document.createElement('button');
-        muteBtn.className = 'sound-btn' + (isMuted ? ' muted' : '');
-        muteBtn.innerHTML = `<span class="icon">${isMuted ? '��' : '🔊'}</span>`;
-        muteBtn.addEventListener('click', toggleMute);
-        
-        soundControls.appendChild(muteBtn);
-        menuOverlay.appendChild(soundControls);
-    }
+    // Update the music initialization at the start of the file
+    const toggleMusicBtn = document.getElementById('game-toggle-music');
+    const menuToggleMusicBtn = document.getElementById('toggle-music');
+    let isMuted = true; // Start muted
 
-    // Update the updateMuteButtons function
     function updateMuteButtons() {
         const allMuteButtons = document.querySelectorAll('.sound-btn');
         allMuteButtons.forEach(btn => {
@@ -1034,38 +1022,43 @@ function initSpaceshipGame() {
         });
     }
 
-    // Call this after initializing the difficulty menu
-    addDifficultyMenuMuteButton();
+    function toggleMute() {
+        isMuted = !isMuted;
+        [gameMusic, menuMusic].forEach(audio => {
+            audio.muted = isMuted;
+            if (!isMuted) {
+                // If unmuting, play the appropriate music based on game state
+                if (currentState === GAME_STATE.PLAYING) {
+                    gameMusic.play();
+                } else {
+                    menuMusic.play();
+                }
+            }
+        });
+        updateMuteButtons();
+    }
+
+    // Add the mute button to the difficulty menu
+    function initDifficultyMenu() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        
+        // Create sound controls for difficulty menu if they don't exist
+        if (!menuOverlay.querySelector('.difficulty-sound-controls')) {
+            const soundControls = document.createElement('div');
+            soundControls.className = 'difficulty-sound-controls';
+            
+            const soundBtn = document.createElement('button');
+            soundBtn.className = 'sound-btn';
+            soundBtn.innerHTML = `<span class="icon">${isMuted ? '��' : '🔊'}</span>`;
+            soundBtn.addEventListener('click', toggleMute);
+            
+            soundControls.appendChild(soundBtn);
+            menuOverlay.appendChild(soundControls);
+        }
+    }
 
     update();
 }
-
-// Add at the beginning of initSpaceshipGame
-const gameMusic = document.getElementById('game-music');
-const menuMusic = document.getElementById('menu-music');
-const toggleMusicBtn = document.getElementById('game-toggle-music');
-const menuToggleMusicBtn = document.getElementById('toggle-music');
-let isMuted = false;
-
-function updateMuteButtons() {
-    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-        btn.classList.toggle('muted', isMuted);
-        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
-    });
-}
-
-function toggleMute() {
-    isMuted = !isMuted;
-    [gameMusic, menuMusic].forEach(audio => {
-        audio.muted = isMuted;
-    });
-    updateMuteButtons();
-}
-
-// Add click handlers for both mute buttons
-[toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-    btn.addEventListener('click', toggleMute);
-});
 
 // Handle music transitions
 function playMenuMusic() {
