@@ -1,16 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Start menu music immediately when the page loads
-    const menuMusic = document.getElementById('menu-music');
-    menuMusic.volume = 0.7; // Set a comfortable volume level
-    menuMusic.play().catch(() => {
-        // Handle autoplay restrictions gracefully
-        console.log('Autoplay prevented - waiting for user interaction');
-    });
-    
-    // Initialize the game
+    // Initialize game components
     initSpaceshipGame();
     createStarsAndPlanets();
     createFlyingShips();
+
+    // Get the menu music element
+    const menuMusic = document.getElementById('menu-music');
+    menuMusic.volume = 0.7; // Set a comfortable volume level
+
+    // Add click event listener to the document for user interaction
+    document.addEventListener('click', function initAudio() {
+        menuMusic.play().then(() => {
+            console.log('Menu music started playing');
+        }).catch(error => {
+            console.log('Error playing menu music:', error);
+        });
+        // Remove the click listener after first interaction
+        document.removeEventListener('click', initAudio);
+    }, { once: true });
 });
 
 function getHighScore() {
@@ -732,10 +739,18 @@ function initSpaceshipGame() {
             document.querySelector('.game-header').classList.add('hidden');
             document.querySelector('.game-footer').classList.add('hidden');
 
-            // Switch from menu music to game music
+            // Switch from menu music to game music with proper transition
+            const menuMusic = document.getElementById('menu-music');
+            const gameMusic = document.getElementById('game-music');
+            
             menuMusic.pause();
             menuMusic.currentTime = 0;
-            gameMusic.play();
+            gameMusic.volume = 0.7;
+            gameMusic.play().then(() => {
+                console.log('Game music started playing');
+            }).catch(error => {
+                console.log('Error playing game music:', error);
+            });
 
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
@@ -780,10 +795,19 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Stop game music and reset menu music
+        // Switch back to menu music with proper transition
+        const gameMusic = document.getElementById('game-music');
+        const menuMusic = document.getElementById('menu-music');
+        
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
+        menuMusic.volume = 0.7;
+        menuMusic.play().then(() => {
+            console.log('Menu music resumed');
+        }).catch(error => {
+            console.log('Error playing menu music:', error);
+        });
         
         // Show header and footer
         document.querySelector('.game-header').classList.remove('hidden');
@@ -832,6 +856,7 @@ function initSpaceshipGame() {
         createStars();
         
         // Only play menu music if it's not already playing
+        const menuMusic = document.getElementById('menu-music');
         if (menuMusic.paused) {
             menuMusic.play();
         }
