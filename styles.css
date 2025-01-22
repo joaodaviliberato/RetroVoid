@@ -661,7 +661,7 @@ footer.hidden {
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
     width: 160px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -690,7 +690,7 @@ footer.hidden {
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
     width: 160px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
