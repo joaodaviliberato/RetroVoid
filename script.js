@@ -822,8 +822,11 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Start menu music
-        menuMusic.play();
+        // Don't restart menu music here since it's already playing
+        // Just ensure it's playing if it was stopped
+        if (!isMuted && menuMusic.paused) {
+            menuMusic.play();
+        }
 
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
@@ -1014,6 +1017,10 @@ function toggleMute() {
     isMuted = !isMuted;
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
+        // If unmuting and on initial screen or menu, ensure music is playing
+        if (!isMuted && (currentState === GAME_STATE.MENU || !currentState)) {
+            menuMusic.play();
+        }
     });
     updateMuteButtons();
 }
@@ -1025,7 +1032,10 @@ function toggleMute() {
 
 // Start menu music when game loads
 window.addEventListener('load', () => {
-    menuMusic.play();
+    // Start menu music immediately when the game loads
+    if (!isMuted) {
+        menuMusic.play();
+    }
 });
 
 // Handle music transitions
