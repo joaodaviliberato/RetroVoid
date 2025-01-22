@@ -1,48 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Start menu music as soon as the page loads
-    menuMusic.play().catch(() => {
-        // Handle autoplay restrictions if any
-        console.log('Autoplay prevented. User interaction required.');
-    });
-
-    // Update the mute functionality to handle both musics
-    function toggleMute() {
-        isMuted = !isMuted;
-        [gameMusic, menuMusic].forEach(audio => {
-            audio.muted = isMuted;
-        });
-        updateMuteButtons();
-    }
-
-    // Update all mute buttons to show correct state
-    function updateMuteButtons() {
-        const allMuteButtons = document.querySelectorAll('.sound-btn');
-        allMuteButtons.forEach(btn => {
-            btn.classList.toggle('muted', isMuted);
-            btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
-        });
-    }
-
-    // Add click handlers for all mute buttons
-    document.querySelectorAll('.sound-btn').forEach(btn => {
-        btn.addEventListener('click', toggleMute);
-    });
-
-    // Update the play button click handler to handle music transition
-    const playBtn = document.querySelector('.play-btn');
-    playBtn.addEventListener('click', () => {
-        // Keep the same music playing, just transition to the menu overlay
-        mainMenuOverlay.classList.add('hidden');
-        lightspeedOverlay.classList.remove('hidden');
-        createStars();
-
-        setTimeout(() => {
-            lightspeedOverlay.classList.add('hidden');
-            menuOverlay.classList.remove('hidden');
-        }, 1500);
-    });
-
-    // Initialize the game
     initSpaceshipGame();
     createStarsAndPlanets();
     createFlyingShips();
@@ -843,6 +799,7 @@ function initSpaceshipGame() {
     }
 
     const mainMenuOverlay = document.querySelector('.main-menu-overlay');
+    const playBtn = document.querySelector('.play-btn');
     const lightspeedOverlay = document.querySelector('.lightspeed-overlay');
 
     // Create stars for lightspeed effect
@@ -858,6 +815,21 @@ function initSpaceshipGame() {
             stars.appendChild(star);
         }
     }
+
+    // Handle play button click
+    playBtn.addEventListener('click', () => {
+        mainMenuOverlay.classList.add('hidden');
+        lightspeedOverlay.classList.remove('hidden');
+        createStars();
+        
+        // Start menu music
+        menuMusic.play();
+
+        setTimeout(() => {
+            lightspeedOverlay.classList.add('hidden');
+            menuOverlay.classList.remove('hidden');
+        }, 1500);
+    });
 
     // Update the controls hint text
     document.querySelector('.controls-hint').textContent = '← → ↑ ↓ to move | Automatic shooting';
@@ -1024,64 +996,81 @@ function initSpaceshipGame() {
     update();
 }
 
-// Add at the beginning of initSpaceshipGame
-const gameMusic = document.getElementById('game-music');
-const menuMusic = document.getElementById('menu-music');
-const toggleMusicBtn = document.getElementById('game-toggle-music');
-const menuToggleMusicBtn = document.getElementById('toggle-music');
-let isMuted = false;
+// Update the music handling functions
+function initMusicHandling() {
+    const gameMusic = document.getElementById('game-music');
+    const menuMusic = document.getElementById('menu-music');
+    const toggleMusicBtn = document.getElementById('game-toggle-music');
+    const menuToggleMusicBtn = document.getElementById('toggle-music');
+    let isMuted = false;
 
-function updateMuteButtons() {
-    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-        btn.classList.toggle('muted', isMuted);
-        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    // Start menu music when page loads
+    window.addEventListener('load', () => {
+        menuMusic.play();
+        menuMusic.loop = true;
     });
-}
 
-function toggleMute() {
-    isMuted = !isMuted;
-    [gameMusic, menuMusic].forEach(audio => {
-        audio.muted = isMuted;
-    });
-    updateMuteButtons();
-}
-
-// Add click handlers for both mute buttons
-[toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-    btn.addEventListener('click', toggleMute);
-});
-
-// Start menu music when game loads
-window.addEventListener('load', () => {
-    menuMusic.play();
-});
-
-// Handle music transitions
-function playMenuMusic() {
-    gameMusic.pause();
-    gameMusic.currentTime = 0;
-    menuMusic.play();
-}
-
-function playGameMusic() {
-    menuMusic.pause();
-    menuMusic.currentTime = 0;
-    gameMusic.play();
-}
-
-// Update the showGameOver function
-function showGameOver() {
-    const gameOverOverlay = document.querySelector('.game-over-overlay');
-    gameOverOverlay.classList.remove('hidden');
-    
-    // Remove any existing h3 elements
-    const existingTitle = gameOverOverlay.querySelector('h3');
-    if (existingTitle) {
-        existingTitle.remove();
+    function updateMuteButtons() {
+        [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+            btn.classList.toggle('muted', isMuted);
+            btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+        });
     }
-    
-    // Add new game over title
-    const gameOverTitle = document.createElement('h3');
-    gameOverTitle.textContent = 'GAME OVER';
-    gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
-} 
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        [gameMusic, menuMusic].forEach(audio => {
+            audio.muted = isMuted;
+        });
+        updateMuteButtons();
+    }
+
+    // Add click handlers for both mute buttons
+    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+        btn.addEventListener('click', toggleMute);
+    });
+
+    // Update difficulty button click handlers to handle music transition
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Stop menu music and start game music
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+            gameMusic.currentTime = 0;
+            gameMusic.play();
+            gameMusic.loop = true;
+            gameMusic.muted = isMuted;
+        });
+    });
+
+    // Update menu button click handler to handle music transition
+    document.querySelector('.menu-btn').addEventListener('click', () => {
+        // Stop game music and restart menu music
+        gameMusic.pause();
+        gameMusic.currentTime = 0;
+        menuMusic.currentTime = 0;
+        menuMusic.play();
+        menuMusic.loop = true;
+        menuMusic.muted = isMuted;
+    });
+
+    return {
+        gameMusic,
+        menuMusic,
+        toggleMute,
+        isMuted
+    };
+}
+
+// Call this at the start of your game initialization
+const musicController = initMusicHandling();
+
+// Update the playBtn click handler to ensure menu music continues
+document.querySelector('.play-btn').addEventListener('click', () => {
+    // Menu music should continue playing until difficulty is selected
+    const menuMusic = document.getElementById('menu-music');
+    if (!menuMusic.playing && !musicController.isMuted) {
+        menuMusic.play();
+    }
+    // ... rest of the play button click handler code
+}); 
