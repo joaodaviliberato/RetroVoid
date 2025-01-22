@@ -1,26 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Start menu music immediately when the page loads
-    const menuMusic = document.getElementById('menu-music');
-    menuMusic.volume = 0.7;
-    
-    // Try to play music (will be blocked by some browsers until user interaction)
-    menuMusic.play().catch(() => {
-        console.log('Autoplay prevented - waiting for user interaction');
-    });
-    
-    // Add click event listener to the whole document to start music on first interaction
-    const startMusicOnInteraction = () => {
-        if (menuMusic.paused) {
-            menuMusic.play();
-        }
-        document.removeEventListener('click', startMusicOnInteraction);
-    };
-    document.addEventListener('click', startMusicOnInteraction);
-    
     // Initialize the game
     initSpaceshipGame();
     createStarsAndPlanets();
     createFlyingShips();
+    
+    // Start menu music
+    const menuMusic = document.getElementById('menu-music');
+    menuMusic.volume = 0.7;
+    
+    // Try to play music immediately
+    const playMusic = () => {
+        menuMusic.play()
+            .then(() => {
+                console.log('Music started successfully');
+            })
+            .catch(() => {
+                // If autoplay is blocked, add a one-time click listener to the document
+                const startAudio = () => {
+                    menuMusic.play();
+                    document.removeEventListener('click', startAudio);
+                };
+                document.addEventListener('click', startAudio);
+                console.log('Autoplay prevented - waiting for user interaction');
+            });
+    };
+    
+    // Try to play immediately and set up click handler if needed
+    playMusic();
 });
 
 function getHighScore() {
@@ -744,10 +750,11 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Stop game music and reset menu music
+        // Stop game music and start menu music
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
+        menuMusic.play();
         
         // Show header and footer
         document.querySelector('.game-header').classList.remove('hidden');
@@ -767,6 +774,9 @@ function initSpaceshipGame() {
         menuOverlay.classList.remove('hidden');
         resetDifficultySelection();
         currentState = GAME_STATE.MENU;
+        
+        // Ensure menu music is playing
+        playMenuMusic();
         
         // Recreate background effects
         const existingShips = document.querySelector('.flying-ships');
@@ -1134,4 +1144,13 @@ function showGameOver() {
     const gameOverTitle = document.createElement('h3');
     gameOverTitle.textContent = 'GAME OVER';
     gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
+}
+
+// Add this function to ensure menu music plays when returning to menu
+function playMenuMusic() {
+    const menuMusic = document.getElementById('menu-music');
+    if (menuMusic.paused) {
+        menuMusic.currentTime = 0;
+        menuMusic.play();
+    }
 } 
