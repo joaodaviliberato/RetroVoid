@@ -655,7 +655,7 @@ footer.hidden {
 .score {
     position: fixed;
     top: 20px;
-    right: 20px;
+    right: 400px;
     padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
@@ -679,7 +679,7 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 220px; /* Increased gap between score displays */
+    right: 600px;
     padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
