@@ -1046,17 +1046,17 @@ footer.hidden {
 /* Mobile-friendly styles */
 @media (max-width: 768px) {
     .game-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
 
     .game-desc {
-        font-size: 1rem;
+        font-size: 0.9rem;
         padding: 0 1rem;
     }
 
     .play-btn {
-        padding: 1rem 3rem;
-        font-size: 1.5rem;
+        padding: 0.8rem 2.5rem;
+        font-size: 1.3rem;
     }
 
     .difficulty-buttons {
@@ -1066,74 +1066,93 @@ footer.hidden {
     }
 
     .difficulty-btn {
-        padding: 1rem;
-        font-size: 1rem;
+        padding: 0.8rem;
+        font-size: 0.9rem;
     }
 
     .difficulty-desc {
-        font-size: 1rem;
-        padding: 1rem;
+        font-size: 0.9rem;
+        padding: 0.8rem;
     }
 
     .menu-overlay h3 {
-        font-size: 2.5rem;
+        font-size: 2rem;
     }
 
     .controls-hint {
-        font-size: 0.8rem;
-        padding: 0.3rem 0.8rem;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
         text-align: center;
-        width: 80%;
+        width: 90%;
+        bottom: 60px;
     }
 
     .game-controls {
         gap: 5px;
+        bottom: 10px;
+        right: 10px;
     }
 
     .sound-btn {
-        width: 35px;
-        height: 35px;
+        width: 30px;
+        height: 30px;
     }
 
     .menu-btn {
-        padding: 0.3rem 1rem;
-        font-size: 0.8rem;
+        padding: 0.3rem 0.8rem;
+        font-size: 0.7rem;
     }
 
     .score, .high-score {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         padding: 0.3rem 0.5rem;
-        width: 120px;
+        width: 100px;
+        top: 10px;
     }
 
     .high-score {
-        right: 150px;
+        right: 120px;
     }
 
     .shield-bar {
-        width: 150px;
-        height: 20px;
+        width: 120px;
+        height: 15px;
+        bottom: 10px;
+        left: 10px;
     }
 
     .life-bar {
-        font-size: 18px;
-        left: 180px;
+        font-size: 16px;
+        left: 140px;
+        bottom: 10px;
     }
 
-    /* Adjust game over overlay for mobile */
+    /* Game over overlay for mobile */
     .game-over-overlay h3 {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
 
-    /* Adjust social buttons for mobile */
+    /* Social buttons for mobile */
     .social-links {
-        gap: 15px;
+        gap: 10px;
     }
 
     .social-btn {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.8rem;
-        min-width: 80px;
+        padding: 0.3rem 0.6rem;
+        font-size: 0.7rem;
+        min-width: 70px;
+    }
+
+    /* Add touch control overlay */
+    .touch-controls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 40%;
+        z-index: 4;
+        background: transparent;
+        touch-action: none;
     }
 }
 
@@ -1157,36 +1176,7 @@ footer.hidden {
     }
 }
 
-/* Portrait orientation warning */
+/* Remove the orientation warning styles */
 .orientation-warning {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.9);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-}
-
-@media (max-width: 768px) and (orientation: portrait) {
-    .orientation-warning {
-        display: flex;
-    }
-}
-
-.orientation-warning p {
-    color: var(--neon-pink);
-    font-size: 1.2rem;
-    text-shadow: 0 0 10px var(--neon-pink);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    display: none !important;
 } 

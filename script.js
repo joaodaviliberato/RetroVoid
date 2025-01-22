@@ -1181,49 +1181,52 @@ function playMenuMusic() {
 function initTouchControls() {
     let touchStartX = 0;
     let touchStartY = 0;
-    const moveThreshold = 30; // Minimum distance to trigger movement
-    const canvas = document.getElementById('spaceship-canvas');
+    const touchControls = document.querySelector('.touch-controls');
 
-    canvas.addEventListener('touchstart', (e) => {
+    touchControls.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+        player.x = touchStartX;
+        player.y = Math.max(player.minY, Math.min(player.maxY, touchStartY));
     }, { passive: false });
 
-    canvas.addEventListener('touchmove', (e) => {
+    touchControls.addEventListener('touchmove', (e) => {
         e.preventDefault();
         if (currentState === GAME_STATE.PLAYING && !gameState.gameOver) {
-            const touchX = e.touches[0].clientX;
-            const touchY = e.touches[0].clientY;
-            const deltaX = touchX - touchStartX;
-            const deltaY = touchY - touchStartY;
-
-            // Update player position based on touch movement
-            if (Math.abs(deltaX) > moveThreshold) {
-                const moveX = (deltaX / Math.abs(deltaX)) * player.speed;
-                player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, player.x + moveX));
-            }
-            if (Math.abs(deltaY) > moveThreshold) {
-                const moveY = (deltaY / Math.abs(deltaY)) * player.speed;
-                player.y = Math.max(player.minY, Math.min(player.maxY, player.y + moveY));
-            }
-
-            // Update touch start positions for smooth continuous movement
-            touchStartX = touchX;
-            touchStartY = touchY;
+            const touch = e.touches[0];
+            
+            // Update player position directly to touch position
+            player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, touch.clientX));
+            player.y = Math.max(player.minY, Math.min(player.maxY, touch.clientY));
         }
     }, { passive: false });
 
     // Add touch controls for buttons
     const addTouchFeedback = (element) => {
-        element.addEventListener('touchstart', () => {
+        element.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             element.style.transform = 'scale(0.95)';
-        });
-        element.addEventListener('touchend', () => {
+        }, { passive: false });
+        
+        element.addEventListener('touchend', (e) => {
+            e.preventDefault();
             element.style.transform = 'none';
-        });
+            // Trigger click event for button functionality
+            element.click();
+        }, { passive: false });
     };
 
     // Add touch feedback to all buttons
     document.querySelectorAll('button').forEach(addTouchFeedback);
+
+    // Add touch controls for difficulty selection
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            btn.click();
+        }, { passive: false });
+    });
 } 
