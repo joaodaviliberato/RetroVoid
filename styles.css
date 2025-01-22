@@ -660,16 +660,12 @@ footer.hidden {
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
-    width: 180px;
+    width: 150px;
     font-size: 1.2rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 5px;
-}
-
-.score span:first-child {
-    font-size: 0.9rem;
 }
 
 /* Update menu and sound buttons container */
@@ -686,23 +682,19 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 220px;
+    right: 180px;
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
-    width: 180px;
+    width: 150px;
     font-size: 1.2rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 5px;
-}
-
-.high-score span:first-child {
-    font-size: 0.9rem;
 }
 
 /* Add social links styles */
