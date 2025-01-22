@@ -661,11 +661,11 @@ footer.hidden {
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
     width: 180px;
-    text-align: right;
     font-size: 1.2rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 5px;
 }
 
 /* Update menu and sound buttons container */
@@ -690,11 +690,11 @@ footer.hidden {
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
     width: 180px;
-    text-align: right;
     font-size: 1.2rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: 5px;
 }
 
 /* Add social links styles */
