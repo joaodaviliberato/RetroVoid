@@ -343,38 +343,107 @@ footer.hidden {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.85);
+    background: rgba(0, 0, 0, 0.95);
     z-index: 25;
+    overflow: hidden;
 }
 
-.game-over-overlay.hidden {
-    display: none;
+.game-over-overlay::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        linear-gradient(var(--neon-pink) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-pink) 1px, transparent 1px);
+    background-size: 50px 50px;
+    background-position: center;
+    opacity: 0.1;
+    transform: perspective(500px) rotateX(45deg);
+    animation: gridMove 20s linear infinite;
+    z-index: 1;
+}
+
+.game-over-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 3rem;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid var(--neon-pink);
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
+    animation: glowPulse 2s infinite alternate;
+    max-width: 600px;
+    width: 90%;
 }
 
 .game-over-overlay h3 {
     color: var(--neon-pink);
-    font-size: 4rem;
+    font-size: 5rem;
     margin-bottom: 2rem;
     text-shadow: 0 0 10px var(--neon-pink),
                  0 0 20px var(--neon-pink),
                  0 0 30px var(--neon-pink);
-    animation: gameOverGlow 2s infinite alternate;
-    letter-spacing: 4px;
+    animation: gameOverText 3s infinite alternate;
+    letter-spacing: 8px;
+    transform: skew(-5deg);
 }
 
-@keyframes gameOverGlow {
+.final-score {
+    color: var(--neon-blue);
+    font-size: 2rem;
+    margin: 2rem 0;
+    text-shadow: 0 0 8px var(--neon-blue);
+}
+
+.game-over-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 3rem;
+}
+
+.game-over-btn {
+    background: transparent;
+    border: 2px solid var(--neon-purple);
+    color: var(--neon-purple);
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 8px;
+}
+
+.game-over-btn:hover {
+    background: var(--neon-purple);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-purple);
+    transform: translateY(-2px);
+}
+
+@keyframes gameOverText {
     0% {
-        text-shadow: 0 0 10px var(--neon-pink),
-                     0 0 20px var(--neon-pink),
-                     0 0 30px var(--neon-pink);
-        transform: scale(1);
+        transform: skew(-5deg) scale(1);
     }
     100% {
-        text-shadow: 0 0 15px var(--neon-pink),
-                     0 0 25px var(--neon-pink),
-                     0 0 35px var(--neon-pink),
-                     0 0 45px var(--neon-pink);
-        transform: scale(1.1);
+        transform: skew(-5deg) scale(1.1);
+        text-shadow: 0 0 20px var(--neon-pink),
+                     0 0 40px var(--neon-pink),
+                     0 0 60px var(--neon-pink);
+    }
+}
+
+@keyframes glowPulse {
+    0% {
+        box-shadow: 0 0 30px rgba(255, 45, 85, 0.3);
+    }
+    100% {
+        box-shadow: 0 0 50px rgba(255, 45, 85, 0.5);
     }
 }
 
@@ -661,7 +730,7 @@ footer.hidden {
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
     width: 160px;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -690,7 +759,7 @@ footer.hidden {
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
     width: 160px;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
