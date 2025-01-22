@@ -10,9 +10,6 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <div class="orientation-warning">
-        <p>Please rotate your device to landscape mode for the best gaming experience! 🎮</p>
-    </div>
     <div class="neon-overlay"></div>
     <audio id="game-music" loop>
         <source src="assets/game-music.mp3" type="audio/mp3">
@@ -33,7 +30,7 @@
                     <div class="game-overlay">
                         <div class="score">SCORE: <span id="score">0</span></div>
                         <div class="life-bar"></div>
-                        <div class="controls-hint">Touch and drag to move ship</div>
+                        <div class="controls-hint">← → ↑ ↓ to move | Automatic shooting</div>
                         <div class="game-controls">
                             <button class="sound-btn" id="game-toggle-music">
                                 <span class="icon">🔊</span>
@@ -41,7 +38,6 @@
                             <button class="menu-btn">MENU</button>
                         </div>
                     </div>
-                    <div class="touch-controls"></div>
                     
                     <!-- Main Menu Overlay -->
                     <div class="main-menu-overlay">

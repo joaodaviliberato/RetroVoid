@@ -1181,27 +1181,55 @@ function playMenuMusic() {
 function initTouchControls() {
     let touchStartX = 0;
     let touchStartY = 0;
-    const touchControls = document.querySelector('.touch-controls');
+    const canvas = document.getElementById('spaceship-canvas');
+    let isTouching = false;
 
-    touchControls.addEventListener('touchstart', (e) => {
+    // Function to update player position based on touch
+    function updatePlayerPosition(touchX, touchY) {
+        if (currentState === GAME_STATE.PLAYING && !gameState.gameOver) {
+            // Calculate relative position (0 to 1) within canvas
+            const relativeX = touchX / canvas.width;
+            const relativeY = touchY / canvas.height;
+            
+            // Set player position directly based on touch position
+            player.x = Math.max(player.width / 2, 
+                              Math.min(canvas.width - player.width / 2, 
+                                     canvas.width * relativeX));
+            
+            // Limit Y movement to bottom half of screen
+            const minY = canvas.height * 0.5;  // Start from middle of screen
+            const maxY = canvas.height - 100;  // Keep some distance from bottom
+            const availableHeight = maxY - minY;
+            const targetY = minY + (availableHeight * relativeY);
+            
+            player.y = Math.max(minY, Math.min(maxY, targetY));
+        }
+    }
+
+    canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        isTouching = true;
         const touch = e.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-        player.x = touchStartX;
-        player.y = Math.max(player.minY, Math.min(player.maxY, touchStartY));
+        const rect = canvas.getBoundingClientRect();
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+        updatePlayerPosition(touchX, touchY);
     }, { passive: false });
 
-    touchControls.addEventListener('touchmove', (e) => {
+    canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
-        if (currentState === GAME_STATE.PLAYING && !gameState.gameOver) {
+        if (isTouching) {
             const touch = e.touches[0];
-            
-            // Update player position directly to touch position
-            player.x = Math.max(player.width / 2, Math.min(canvas.width - player.width / 2, touch.clientX));
-            player.y = Math.max(player.minY, Math.min(player.maxY, touch.clientY));
+            const rect = canvas.getBoundingClientRect();
+            const touchX = touch.clientX - rect.left;
+            const touchY = touch.clientY - rect.top;
+            updatePlayerPosition(touchX, touchY);
         }
     }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+        isTouching = false;
+    });
 
     // Add touch feedback for buttons
     const addTouchFeedback = (element) => {
@@ -1213,18 +1241,11 @@ function initTouchControls() {
         element.addEventListener('touchend', (e) => {
             e.preventDefault();
             element.style.transform = 'none';
+            // Trigger click event for button functionality
+            element.click();
         }, { passive: false });
     };
 
     // Add touch feedback to all buttons
     document.querySelectorAll('button').forEach(addTouchFeedback);
-
-    // Add touch controls for difficulty selection
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            btn.click();
-        }, { passive: false });
-    });
 } 

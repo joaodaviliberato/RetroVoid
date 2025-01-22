@@ -1043,8 +1043,12 @@ footer.hidden {
     transform: scale(1.1); /* Added scale effect on hover */
 }
 
-/* Mobile-friendly styles */
+/* Mobile-specific styles */
 @media (max-width: 768px) {
+    .controls-hint {
+        display: none; /* Hide keyboard controls hint on mobile */
+    }
+
     .game-title {
         font-size: 2.5rem;
     }
@@ -1079,14 +1083,6 @@ footer.hidden {
         font-size: 2rem;
     }
 
-    .controls-hint {
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
-        text-align: center;
-        width: 90%;
-        bottom: 60px;
-    }
-
     .game-controls {
         gap: 5px;
         bottom: 10px;
@@ -1094,17 +1090,17 @@ footer.hidden {
     }
 
     .sound-btn {
-        width: 30px;
-        height: 30px;
+        width: 35px;
+        height: 35px;
     }
 
     .menu-btn {
         padding: 0.3rem 0.8rem;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
     }
 
     .score, .high-score {
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         padding: 0.3rem 0.5rem;
         width: 100px;
         top: 10px;
@@ -1139,20 +1135,8 @@ footer.hidden {
 
     .social-btn {
         padding: 0.3rem 0.6rem;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         min-width: 70px;
-    }
-
-    /* Add touch control overlay */
-    .touch-controls {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 40%;
-        z-index: 4;
-        background: transparent;
-        touch-action: none;
     }
 }
 
@@ -1176,7 +1160,7 @@ footer.hidden {
     }
 }
 
-/* Remove the orientation warning styles */
+/* Remove orientation warning styles */
 .orientation-warning {
-    display: none !important;
+    display: none;
 } 
