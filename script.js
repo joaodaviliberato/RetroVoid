@@ -831,14 +831,12 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Only play menu music if it's not already playing
-        if (menuMusic.paused) {
-            menuMusic.play();
-        }
-
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
             menuOverlay.classList.remove('hidden');
+            // Create background effects for difficulty menu
+            createStarsAndPlanets(document.querySelector('.difficulty-background-effects'));
+            createFlyingShips(document.querySelector('.difficulty-background-effects'));
         }, 1500);
     });
 
@@ -912,10 +910,10 @@ function initSpaceshipGame() {
     }
 
     // Add this function to create stars and planets
-    function createStarsAndPlanets() {
+    function createStarsAndPlanets(container = document.querySelector('.background-effects')) {
         const backgroundStars = document.createElement('div');
         backgroundStars.className = 'background-stars';
-        document.querySelector('.background-effects').appendChild(backgroundStars);
+        container.appendChild(backgroundStars);
 
         // Create stars
         for (let i = 0; i < 100; i++) {
@@ -961,10 +959,10 @@ function initSpaceshipGame() {
     }
 
     // Update the createFlyingShips function to enhance ship appearance
-    function createFlyingShips() {
+    function createFlyingShips(container = document.querySelector('.background-effects')) {
         const flyingShipsContainer = document.createElement('div');
         flyingShipsContainer.className = 'flying-ships';
-        document.querySelector('.background-effects').appendChild(flyingShipsContainer);
+        container.appendChild(flyingShipsContainer);
 
         // Create multiple ships
         for (let i = 0; i < 5; i++) {

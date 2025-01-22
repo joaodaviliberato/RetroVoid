@@ -192,17 +192,14 @@ footer.hidden {
 }
 
 .menu-overlay h3 {
-    color: var(--neon-pink);
-    font-size: 3.5rem;
+    position: relative;
+    z-index: 2;
     margin-bottom: 3rem;
-    text-shadow: 0 0 10px var(--neon-pink),
-                 0 0 20px var(--neon-pink),
-                 0 0 30px var(--neon-pink);
-    animation: titlePulse 2s infinite alternate;
-    letter-spacing: 4px;
 }
 
 .difficulty-container {
+    position: relative;
+    z-index: 2;
     background: rgba(0, 0, 0, 0.8);
     border: 2px solid var(--neon-blue);
     border-radius: 10px;
@@ -210,6 +207,7 @@ footer.hidden {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
     width: 100%;
     max-width: 600px;
+    backdrop-filter: blur(5px);
 }
 
 .difficulty-buttons {
@@ -856,4 +854,59 @@ footer.hidden {
 /* Remove header title */
 .game-header {
     display: none;
+}
+
+/* Add background effects container for difficulty menu */
+.difficulty-background-effects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Add grid effect for difficulty menu */
+.difficulty-grid {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background-image: 
+        linear-gradient(var(--neon-blue) 1px, transparent 1px),
+        linear-gradient(90deg, var(--neon-blue) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-position: center;
+    opacity: 0.2;
+    transform: perspective(800px) rotateX(60deg);
+    animation: gridMove 15s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: perspective(800px) rotateX(60deg) translateY(0); }
+    100% { transform: perspective(800px) rotateX(60deg) translateY(40px); }
+}
+
+/* Add scanline effect for difficulty menu */
+.menu-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        transparent 50%,
+        rgba(0, 0, 0, 0.5) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 3;
+    pointer-events: none;
+    animation: scanline 10s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(4px); }
 } 
