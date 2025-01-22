@@ -3,22 +3,25 @@ window.addEventListener('load', () => {
     const menuMusic = document.getElementById('menu-music');
     menuMusic.volume = 0.7;
     
-    // Try to play music immediately
-    menuMusic.play().then(() => {
-        console.log('Menu music started automatically');
-    }).catch(error => {
-        console.log('Error playing menu music:', error);
-        // If autoplay fails, try playing on any user interaction with the page
-        const playOnInteraction = () => {
-            menuMusic.play();
-            document.removeEventListener('click', playOnInteraction);
-            document.removeEventListener('keydown', playOnInteraction);
-            document.removeEventListener('touchstart', playOnInteraction);
-        };
-        
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('keydown', playOnInteraction);
-        document.addEventListener('touchstart', playOnInteraction);
+    // Function to start playing menu music
+    const startMenuMusic = () => {
+        menuMusic.play().then(() => {
+            console.log('Menu music started automatically');
+            // Remove the event listeners once music starts
+            document.removeEventListener('click', startMenuMusic);
+            document.removeEventListener('keydown', startMenuMusic);
+            document.removeEventListener('touchstart', startMenuMusic);
+        }).catch(error => {
+            console.log('Error playing menu music:', error);
+        });
+    };
+
+    // Try to play immediately
+    menuMusic.play().catch(() => {
+        // If autoplay fails, add event listeners for user interaction
+        document.addEventListener('click', startMenuMusic);
+        document.addEventListener('keydown', startMenuMusic);
+        document.addEventListener('touchstart', startMenuMusic);
     });
 });
 
