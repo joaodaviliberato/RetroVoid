@@ -391,13 +391,6 @@ footer.hidden {
     align-items: center;
     z-index: 20;
     overflow: hidden;
-    transition: opacity 1s ease-out, transform 1s ease-out;
-}
-
-.main-menu-overlay.fade-out {
-    opacity: 0;
-    transform: scale(1.1);
-    pointer-events: none;
 }
 
 .menu-content {
@@ -491,12 +484,6 @@ footer.hidden {
     background: #000;
     z-index: 15;
     overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-}
-
-.lightspeed-overlay.active {
-    opacity: 1;
 }
 
 .stars {
@@ -644,14 +631,20 @@ footer.hidden {
 .life-bar {
     position: fixed;
     bottom: 20px;
-    left: 240px; /* Position it right after the shield bar */
+    left: 235px;  /* Position it right of the shield bar */
     z-index: 5;
     display: flex;
-    gap: 10px;
+    gap: 8px;
     font-size: 24px;
     color: var(--neon-pink);
     text-shadow: 0 0 10px var(--neon-pink);
     animation: heartbeat 1.5s ease-in-out infinite;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0 10px;
+    border-radius: 12px;
+    border: 2px solid var(--neon-pink);
+    height: 25px;  /* Match shield bar height */
+    align-items: center;
 }
 
 @keyframes heartbeat {
@@ -784,22 +777,43 @@ footer.hidden {
 /* Update shield bar styles */
 .shield-bar {
     position: fixed;
-    bottom: 20px;  /* Same level as hearts */
-    left: 20px;
+    bottom: 20px;  /* Align with bottom */
+    left: 20px;    /* Keep left alignment */
     z-index: 5;
     width: 200px;
-    height: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    height: 25px;  /* Increased height */
+    background: rgba(0, 0, 0, 0.7);  /* Darker background */
     border: 2px solid var(--neon-blue);
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);  /* Added glow */
+    padding: 2px;  /* Added padding for inner bar */
 }
 
 .shield-bar-fill {
     height: 100%;
-    background: var(--neon-blue);
-    box-shadow: 0 0 10px var(--neon-blue);
+    background: linear-gradient(90deg, 
+        rgba(0, 255, 255, 0.7),
+        var(--neon-blue) 50%,
+        rgba(0, 255, 255, 0.9)
+    );  /* Gradient fill */
+    box-shadow: 0 0 10px var(--neon-blue),
+                inset 0 0 15px rgba(255, 255, 255, 0.5);  /* Inner glow */
+    border-radius: 8px;
     transition: width 0.3s ease;
+    animation: pulsateShield 2s infinite alternate;
+}
+
+/* Add pulsating animation for shield bar */
+@keyframes pulsateShield {
+    0% {
+        box-shadow: 0 0 10px var(--neon-blue),
+                    inset 0 0 15px rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        box-shadow: 0 0 15px var(--neon-blue),
+                    inset 0 0 20px rgba(255, 255, 255, 0.7);
+    }
 }
 
 /* Add flying spaceships styles */

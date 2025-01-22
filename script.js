@@ -869,43 +869,28 @@ function initSpaceshipGame() {
 
     // Update the play button click handler
     playBtn.addEventListener('click', () => {
-        // Start fade out animation for main menu
-        mainMenuOverlay.classList.add('fade-out');
+        mainMenuOverlay.classList.add('hidden');
+        lightspeedOverlay.classList.remove('hidden');
+        createStars();
         
         // Keep menu music playing during transition
         if (menuMusic.paused && !isMuted) {
             menuMusic.play();
         }
         
-        // After menu fades out, show lightspeed effect
-        setTimeout(() => {
-            mainMenuOverlay.classList.add('hidden');
-            lightspeedOverlay.classList.remove('hidden');
-            
-            // Add active class after a brief delay to trigger fade in
-            setTimeout(() => {
-                lightspeedOverlay.classList.add('active');
-                createStars();
-            }, 50);
-            
-            // Recreate background effects
-            const existingShips = document.querySelector('.flying-ships');
-            const existingStars = document.querySelector('.background-stars');
-            if (existingShips) existingShips.remove();
-            if (existingStars) existingStars.remove();
-            
-            createStarsAndPlanets();
-            createFlyingShips();
+        // Recreate background effects before transitioning
+        const existingShips = document.querySelector('.flying-ships');
+        const existingStars = document.querySelector('.background-stars');
+        if (existingShips) existingShips.remove();
+        if (existingStars) existingStars.remove();
+        
+        createStarsAndPlanets();
+        createFlyingShips();
 
-            // Show difficulty menu after lightspeed effect
-            setTimeout(() => {
-                lightspeedOverlay.classList.remove('active');
-                setTimeout(() => {
-                    lightspeedOverlay.classList.add('hidden');
-                    menuOverlay.classList.remove('hidden');
-                }, 500);
-            }, 1500);
-        }, 1000);
+        setTimeout(() => {
+            lightspeedOverlay.classList.add('hidden');
+            menuOverlay.classList.remove('hidden');
+        }, 1500);
     });
 
     // Update the controls hint text
