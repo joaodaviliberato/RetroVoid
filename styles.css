@@ -467,43 +467,47 @@ footer.hidden {
     margin-bottom: 3rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    background: linear-gradient(to right, transparent 50%, var(--neon-purple) 50%);
-    background-size: 200% 100%;
-    background-position: left;
-}
-
-.play-btn:hover {
-    background-position: right;
-    color: #000;
-    box-shadow: 0 0 30px var(--neon-purple);
-    transform: translateY(-2px) scale(1.05);
-}
-
-.play-btn:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 0 50px var(--neon-purple);
 }
 
 .play-btn::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background: linear-gradient(
-        120deg,
+        45deg,
         transparent,
-        rgba(176, 38, 255, 0.4),
+        rgba(176, 38, 255, 0.3),
         transparent
     );
+    transform: translate(-100%, -100%);
     transition: 0.5s;
 }
 
 .play-btn:hover::before {
-    left: 100%;
-    animation: shine 1.5s infinite;
+    transform: translate(0, 0);
+    animation: playButtonGlow 1s ease-out;
+}
+
+@keyframes playButtonGlow {
+    0% {
+        transform: translate(-100%, -100%);
+    }
+    50% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(100%, 100%);
+    }
+}
+
+.play-btn:hover {
+    background: var(--neon-purple);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-purple);
+    transform: translateY(-2px);
 }
 
 /* Light Speed Effect */
@@ -684,10 +688,11 @@ footer.hidden {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 0.8rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
+    font-size: 0.9rem;
 }
 
 /* Update menu and sound buttons container */
@@ -704,13 +709,14 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 150px; /* Position it to the left of the score */
-    padding: 0.5rem 1rem;
+    right: 120px; /* Adjust position due to smaller size */
+    padding: 0.3rem 0.8rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
+    font-size: 0.9rem;
 }
 
 /* Add social links styles */
@@ -752,43 +758,40 @@ footer.hidden {
     font-size: 1.2rem;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-    background: linear-gradient(to right, transparent 50%, var(--neon-purple) 50%);
-    background-size: 200% 100%;
-    background-position: left;
-}
-
-.social-btn.twitter:hover {
-    background-position: right;
-    color: #000;
-    box-shadow: 0 0 30px var(--neon-purple);
-    transform: translateY(-2px) scale(1.05);
-}
-
-.social-btn.twitter:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 0 50px var(--neon-purple);
 }
 
 .social-btn.twitter::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background: linear-gradient(
-        120deg,
+        45deg,
         transparent,
-        rgba(176, 38, 255, 0.4),
+        rgba(176, 38, 255, 0.3),
         transparent
     );
+    transform: translate(-100%, -100%);
     transition: 0.5s;
 }
 
 .social-btn.twitter:hover::before {
-    left: 100%;
-    animation: shine 1.5s infinite;
+    transform: translate(0, 0);
+    animation: twitterButtonGlow 1s ease-out;
+}
+
+@keyframes twitterButtonGlow {
+    0% {
+        transform: translate(-100%, -100%);
+    }
+    50% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(100%, 100%);
+    }
 }
 
 .social-btn.coming-soon {
@@ -1058,27 +1061,14 @@ footer.hidden {
     margin-top: 2rem;
 }
 
-/* Add shine animation */
-@keyframes shine {
-    0% {
-        left: -100%;
-        opacity: 0;
-    }
-    20% {
-        opacity: 0.5;
-    }
-    100% {
-        left: 100%;
-        opacity: 0;
-    }
+/* Click effect for play button */
+.play-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 30px var(--neon-purple);
 }
 
-/* Add pulse animation for active state */
-@keyframes buttonPulse {
-    0% {
-        box-shadow: 0 0 20px var(--neon-purple);
-    }
-    100% {
-        box-shadow: 0 0 40px var(--neon-purple);
-    }
+/* Click effect for Twitter button */
+.social-btn.twitter:active {
+    transform: scale(0.95);
+    box-shadow: 0 0 30px var(--neon-purple);
 } 
