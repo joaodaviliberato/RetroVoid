@@ -17,7 +17,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {
                 // If autoplay is blocked, add a one-time click listener to the document
                 const startAudio = () => {
-                    menuMusic.play();
+                    if (!isMuted) {
+                        menuMusic.play();
+                    }
                     document.removeEventListener('click', startAudio);
                 };
                 document.addEventListener('click', startAudio);
@@ -26,7 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // Try to play immediately and set up click handler if needed
-    playMusic();
+    if (!isMuted) {
+        playMusic();
+    }
 });
 
 function getHighScore() {
@@ -817,7 +821,9 @@ function initSpaceshipGame() {
             // Switch from menu music to game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
-            gameMusic.play();
+            if (!isMuted) {
+                gameMusic.play();
+            }
 
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
@@ -866,6 +872,11 @@ function initSpaceshipGame() {
         mainMenuOverlay.classList.add('hidden');
         lightspeedOverlay.classList.remove('hidden');
         createStars();
+        
+        // Keep menu music playing during transition
+        if (menuMusic.paused && !isMuted) {
+            menuMusic.play();
+        }
         
         // Recreate background effects before transitioning
         const existingShips = document.querySelector('.flying-ships');
@@ -1118,9 +1129,11 @@ function toggleMute() {
 
 // Handle music transitions
 function playMenuMusic() {
-    gameMusic.pause();
-    gameMusic.currentTime = 0;
-    menuMusic.play();
+    const menuMusic = document.getElementById('menu-music');
+    if (menuMusic.paused && !isMuted) {
+        menuMusic.currentTime = 0;
+        menuMusic.play();
+    }
 }
 
 function playGameMusic() {
@@ -1149,7 +1162,7 @@ function showGameOver() {
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused) {
+    if (menuMusic.paused && !isMuted) {
         menuMusic.currentTime = 0;
         menuMusic.play();
     }
