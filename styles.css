@@ -631,7 +631,7 @@ footer.hidden {
 .life-bar {
     position: fixed;
     bottom: 20px;
-    left: 235px;  /* Position it right of the shield bar */
+    left: 235px;
     z-index: 5;
     display: flex;
     gap: 8px;
@@ -639,12 +639,11 @@ footer.hidden {
     color: var(--neon-pink);
     text-shadow: 0 0 10px var(--neon-pink);
     animation: heartbeat 1.5s ease-in-out infinite;
-    background: rgba(0, 0, 0, 0.7);
     padding: 0 10px;
-    border-radius: 12px;
-    border: 2px solid var(--neon-pink);
-    height: 25px;  /* Match shield bar height */
+    height: 25px;
     align-items: center;
+    background: transparent;
+    border: none;
 }
 
 @keyframes heartbeat {
@@ -661,6 +660,8 @@ footer.hidden {
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
+    min-width: 120px;
+    text-align: right;
 }
 
 /* Update menu and sound buttons container */
@@ -677,13 +678,15 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 150px; /* Position it to the left of the score */
+    right: 150px;
     padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
+    min-width: 120px;
+    text-align: right;
 }
 
 /* Add social links styles */
