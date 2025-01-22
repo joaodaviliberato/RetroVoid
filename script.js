@@ -1,27 +1,32 @@
 // Add this at the very beginning of the file, before any other code
 window.addEventListener('load', () => {
     const menuMusic = document.getElementById('menu-music');
-    menuMusic.volume = 0.7;
+    const gameMusic = document.getElementById('game-music');
     
-    // Function to start playing menu music
-    const startMenuMusic = () => {
-        menuMusic.play().then(() => {
-            console.log('Menu music started automatically');
-            // Remove the event listeners once music starts
-            document.removeEventListener('click', startMenuMusic);
-            document.removeEventListener('keydown', startMenuMusic);
-            document.removeEventListener('touchstart', startMenuMusic);
-        }).catch(error => {
-            console.log('Error playing menu music:', error);
-        });
+    // Set initial volume
+    menuMusic.volume = 0.7;
+    gameMusic.volume = 0.7;
+    
+    // Function to try playing menu music
+    const playInitialMusic = () => {
+        menuMusic.play()
+            .then(() => {
+                console.log('Menu music started automatically');
+                document.removeEventListener('click', playInitialMusic);
+                document.removeEventListener('keydown', playInitialMusic);
+                document.removeEventListener('touchstart', playInitialMusic);
+            })
+            .catch(error => {
+                console.log('Error playing menu music:', error);
+            });
     };
 
     // Try to play immediately
     menuMusic.play().catch(() => {
-        // If autoplay fails, add event listeners for user interaction
-        document.addEventListener('click', startMenuMusic);
-        document.addEventListener('keydown', startMenuMusic);
-        document.addEventListener('touchstart', startMenuMusic);
+        // If autoplay fails, wait for any user interaction
+        document.addEventListener('click', playInitialMusic, { once: true });
+        document.addEventListener('keydown', playInitialMusic, { once: true });
+        document.addEventListener('touchstart', playInitialMusic, { once: true });
     });
 });
 
@@ -1118,9 +1123,17 @@ function updateMuteButtons() {
 
 function toggleMute() {
     isMuted = !isMuted;
+    const menuMusic = document.getElementById('menu-music');
+    const gameMusic = document.getElementById('game-music');
+    
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
+        // If unmuting and no music is playing, start menu music
+        if (!isMuted && !menuMusic.playing && !gameMusic.playing) {
+            menuMusic.play();
+        }
     });
+    
     updateMuteButtons();
 }
 
