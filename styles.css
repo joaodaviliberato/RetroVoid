@@ -661,11 +661,15 @@ footer.hidden {
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
     width: 180px;
-    font-size: 1rem;
+    font-size: 1.2rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 5px;
+}
+
+.score span:first-child {
+    font-size: 0.9rem;
 }
 
 /* Update menu and sound buttons container */
@@ -690,11 +694,15 @@ footer.hidden {
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
     width: 180px;
-    font-size: 1rem;
+    font-size: 1.2rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 5px;
+}
+
+.high-score span:first-child {
+    font-size: 0.9rem;
 }
 
 /* Add social links styles */
