@@ -735,6 +735,9 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
+            // Show fullscreen prompt
+            showFullscreenPrompt();
+            
             // Hide header and footer
             document.querySelector('.game-header').classList.add('hidden');
             document.querySelector('.game-footer').classList.add('hidden');
@@ -1028,6 +1031,45 @@ function initSpaceshipGame() {
             flyingShipsContainer.appendChild(ship);
         }
     }
+
+    // Add this function to show the fullscreen prompt
+    function showFullscreenPrompt() {
+        const prompt = document.createElement('div');
+        prompt.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid var(--neon-blue);
+            border-radius: 8px;
+            color: var(--neon-blue);
+            font-size: 24px;
+            text-align: center;
+            z-index: 1000;
+            animation: fadeInOut 2s forwards;
+        `;
+        prompt.textContent = 'Press F11 for Fullscreen';
+        document.body.appendChild(prompt);
+
+        // Remove the prompt after animation
+        setTimeout(() => {
+            prompt.remove();
+        }, 2000);
+    }
+
+    // Add this CSS animation to your styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+        }
+    `;
+    document.head.appendChild(style);
 
     update();
 }
