@@ -656,16 +656,16 @@ footer.hidden {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 0.5rem;
+    padding: 0.5rem 0.8rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
-    width: 150px;
-    font-size: 1.2rem;
+    width: 160px;
+    font-size: 1.3rem;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 /* Update menu and sound buttons container */
@@ -682,19 +682,19 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 180px;
-    padding: 0.5rem;
+    right: 190px;
+    padding: 0.5rem 0.8rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
-    width: 150px;
-    font-size: 1.2rem;
+    width: 160px;
+    font-size: 1.3rem;
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 8px;
 }
 
 /* Add social links styles */
