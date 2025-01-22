@@ -655,14 +655,17 @@ footer.hidden {
 .score {
     position: fixed;
     top: 20px;
-    right: 400px;
-    padding: 0.5rem 1rem;
+    right: 20px;
+    padding: 0.5rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
     width: 180px;
     text-align: right;
     font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Update menu and sound buttons container */
@@ -679,8 +682,8 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 600px;
-    padding: 0.5rem 1rem;
+    right: 220px;
+    padding: 0.5rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
@@ -689,6 +692,9 @@ footer.hidden {
     width: 180px;
     text-align: right;
     font-size: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 /* Add social links styles */
