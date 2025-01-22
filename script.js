@@ -18,6 +18,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const difficultyToggleMusicBtn = document.getElementById('difficulty-toggle-music');
     const gameToggleMusicBtn = document.getElementById('game-toggle-music');
     
+    // Start menu music immediately
+    menuMusic.play().catch(() => {
+        // If autoplay is blocked, add a one-time click listener to the document
+        const startAudio = () => {
+            if (!isMenuMuted) {
+                menuMusic.play();
+            }
+            document.removeEventListener('click', startAudio);
+        };
+        document.addEventListener('click', startAudio);
+    });
+    
     function updateMuteButtons() {
         // Update menu music buttons
         [menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
@@ -57,31 +69,34 @@ document.addEventListener('DOMContentLoaded', () => {
         gameToggleMusicBtn.addEventListener('click', toggleGameMute);
     }
     
-    // Try to play menu music immediately
-    const playMusic = () => {
+    // Update the play button click handler
+    const playBtn = document.querySelector('.play-btn');
+    playBtn.addEventListener('click', () => {
+        mainMenuOverlay.classList.add('hidden');
+        lightspeedOverlay.classList.remove('hidden');
+        createStars();
+        
+        // Keep menu music playing during transition
         if (!isMenuMuted) {
-            menuMusic.play()
-                .then(() => {
-                    console.log('Menu music started successfully');
-                })
-                .catch(() => {
-                    // If autoplay is blocked, add a one-time click listener to the document
-                    const startAudio = () => {
-                        if (!isMenuMuted) {
-                            menuMusic.play();
-                        }
-                        document.removeEventListener('click', startAudio);
-                    };
-                    document.addEventListener('click', startAudio);
-                    console.log('Autoplay prevented - waiting for user interaction');
-                });
+            menuMusic.play();
         }
-    };
-    
-    // Try to play immediately
-    playMusic();
-    
-    // Update the difficulty button click handlers to handle music transition
+        
+        // Recreate background effects before transitioning
+        const existingShips = document.querySelector('.flying-ships');
+        const existingStars = document.querySelector('.background-stars');
+        if (existingShips) existingShips.remove();
+        if (existingStars) existingStars.remove();
+        
+        createStarsAndPlanets();
+        createFlyingShips();
+
+        setTimeout(() => {
+            lightspeedOverlay.classList.add('hidden');
+            menuOverlay.classList.remove('hidden');
+        }, 1500);
+    });
+
+    // Update difficulty button click handlers
     const difficultyBtns = document.querySelectorAll('.difficulty-btn');
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -955,32 +970,6 @@ function initSpaceshipGame() {
             stars.appendChild(star);
         }
     }
-
-    // Update the play button click handler
-    playBtn.addEventListener('click', () => {
-        mainMenuOverlay.classList.add('hidden');
-        lightspeedOverlay.classList.remove('hidden');
-        createStars();
-        
-        // Keep menu music playing during transition
-        if (menuMusic.paused && !isMenuMuted) {
-            menuMusic.play();
-        }
-        
-        // Recreate background effects before transitioning
-        const existingShips = document.querySelector('.flying-ships');
-        const existingStars = document.querySelector('.background-stars');
-        if (existingShips) existingShips.remove();
-        if (existingStars) existingStars.remove();
-        
-        createStarsAndPlanets();
-        createFlyingShips();
-
-        setTimeout(() => {
-            lightspeedOverlay.classList.add('hidden');
-            menuOverlay.classList.remove('hidden');
-        }, 1500);
-    });
 
     // Update the controls hint text
     document.querySelector('.controls-hint').textContent = '← → ↑ ↓ to move | Automatic shooting';
