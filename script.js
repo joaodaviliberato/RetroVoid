@@ -708,14 +708,76 @@ function initSpaceshipGame() {
     const difficultyInfo = document.getElementById('difficulty-info');
     const menuBtn = document.querySelector('.menu-btn');
 
-    // Add click handlers for difficulty buttons
+    // Update the difficulty button handlers
+    function resetDifficultySelection() {
+        difficultyBtns.forEach(btn => {
+            btn.classList.remove('selected');
+            btn.style.transform = 'none';
+            btn.style.boxShadow = 'none';
+        });
+        selectedDifficulty = null;
+        difficultyInfo.textContent = 'Choose your challenge level';
+    }
+
+    // Update the menu button click handler
+    menuBtn.addEventListener('click', () => {
+        // Reset game state
+        score = 0;
+        scoreElement.textContent = score;
+        gameState.gameOver = false;
+        gameState.enemies = [];
+        gameState.bullets = [];
+        gameState.enemyBullets = [];
+        gameState.particles = [];
+        player.x = canvas.width / 2;
+        player.lives = 3;
+        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
+        player.autoShootCooldown = 0;
+        
+        // Stop game music and reset menu music
+        gameMusic.pause();
+        gameMusic.currentTime = 0;
+        menuMusic.currentTime = 0;
+        
+        // Show header and footer
+        document.querySelector('.game-header').classList.remove('hidden');
+        document.querySelector('.game-footer').classList.remove('hidden');
+        
+        resetDifficultySelection();
+        
+        // Show main menu
+        mainMenuOverlay.classList.remove('hidden');
+        menuOverlay.classList.add('hidden');
+        gameOverOverlay.classList.add('hidden');
+        currentState = GAME_STATE.MENU;
+    });
+
+    // Update the showMenu function
+    function showMenu() {
+        menuOverlay.classList.remove('hidden');
+        resetDifficultySelection();
+        currentState = GAME_STATE.MENU;
+        
+        // Recreate background effects
+        const existingShips = document.querySelector('.flying-ships');
+        const existingStars = document.querySelector('.background-stars');
+        if (existingShips) existingShips.remove();
+        if (existingStars) existingStars.remove();
+        
+        createStarsAndPlanets();
+        createFlyingShips();
+        createDifficultyMenuBackground();
+    }
+
+    // Update difficulty button click handlers
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
+            resetDifficultySelection();
+            
             const difficulty = DIFFICULTY[btn.dataset.difficulty];
             selectedDifficulty = btn.dataset.difficulty;
             
             // Update button styles
-            difficultyBtns.forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             
             // Show difficulty description
@@ -745,56 +807,10 @@ function initSpaceshipGame() {
 
         // Show difficulty info on hover
         btn.addEventListener('mouseenter', () => {
-            difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
+            if (!btn.classList.contains('selected')) {
+                difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
+            }
         });
-    });
-
-    // Show menu when returning from game over
-    function showMenu() {
-        menuOverlay.classList.remove('hidden');
-        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-        difficultyInfo.textContent = 'Choose your challenge level';
-        currentState = GAME_STATE.MENU;
-        
-        // Recreate background effects
-        const existingShips = document.querySelector('.flying-ships');
-        const existingStars = document.querySelector('.background-stars');
-        if (existingShips) existingShips.remove();
-        if (existingStars) existingStars.remove();
-        
-        createStarsAndPlanets();
-        createFlyingShips();
-    }
-
-    menuBtn.addEventListener('click', () => {
-        // Reset game state
-        score = 0;
-        scoreElement.textContent = score;
-        gameState.gameOver = false;
-        gameState.enemies = [];
-        gameState.bullets = [];
-        gameState.enemyBullets = [];
-        gameState.particles = [];
-        player.x = canvas.width / 2;
-        player.lives = 3;
-        player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
-        player.autoShootCooldown = 0;
-        
-        // Stop game music and reset menu music
-        gameMusic.pause();
-        gameMusic.currentTime = 0;
-        menuMusic.currentTime = 0;
-        
-        // Show header and footer
-        document.querySelector('.game-header').classList.remove('hidden');
-        document.querySelector('.game-footer').classList.remove('hidden');
-        
-        // Show main menu
-        mainMenuOverlay.classList.remove('hidden');
-        menuOverlay.classList.add('hidden');
-        gameOverOverlay.classList.add('hidden');
-        currentState = GAME_STATE.MENU;
-        selectedDifficulty = null;
     });
 
     // Initial menu show
@@ -825,11 +841,20 @@ function initSpaceshipGame() {
         }
     }
 
-    // Handle play button click
+    // Update the play button click handler
     playBtn.addEventListener('click', () => {
         mainMenuOverlay.classList.add('hidden');
         lightspeedOverlay.classList.remove('hidden');
         createStars();
+        
+        // Recreate background effects before transitioning
+        const existingShips = document.querySelector('.flying-ships');
+        const existingStars = document.querySelector('.background-stars');
+        if (existingShips) existingShips.remove();
+        if (existingStars) existingStars.remove();
+        
+        createStarsAndPlanets();
+        createFlyingShips();
         
         // Only play menu music if it's not already playing
         if (menuMusic.paused) {
@@ -1044,27 +1069,6 @@ function initSpaceshipGame() {
             backgroundContainer.appendChild(circle);
         }
     }
-
-    // Update the showMenu function to include the background creation
-    function showMenu() {
-        menuOverlay.classList.remove('hidden');
-        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
-        difficultyInfo.textContent = 'Choose your challenge level';
-        currentState = GAME_STATE.MENU;
-        
-        // Create background effects
-        createDifficultyMenuBackground();
-    }
-
-    // Add event listeners for difficulty buttons to add hover effects
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-            const ripple = document.createElement('div');
-            ripple.className = 'button-ripple';
-            btn.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 1000);
-        });
-    });
 
     update();
 }
