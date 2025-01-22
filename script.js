@@ -1203,7 +1203,7 @@ function initTouchControls() {
         }
     }, { passive: false });
 
-    // Add touch controls for buttons
+    // Add touch feedback for buttons
     const addTouchFeedback = (element) => {
         element.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -1213,8 +1213,6 @@ function initTouchControls() {
         element.addEventListener('touchend', (e) => {
             e.preventDefault();
             element.style.transform = 'none';
-            // Trigger click event for button functionality
-            element.click();
         }, { passive: false });
     };
 
