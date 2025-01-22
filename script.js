@@ -831,12 +831,14 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
+        // Only play menu music if it's not already playing
+        if (menuMusic.paused) {
+            menuMusic.play();
+        }
+
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
             menuOverlay.classList.remove('hidden');
-            // Create background effects for difficulty menu
-            createStarsAndPlanets(document.querySelector('.difficulty-background-effects'));
-            createFlyingShips(document.querySelector('.difficulty-background-effects'));
         }, 1500);
     });
 
@@ -910,10 +912,10 @@ function initSpaceshipGame() {
     }
 
     // Add this function to create stars and planets
-    function createStarsAndPlanets(container = document.querySelector('.background-effects')) {
+    function createStarsAndPlanets() {
         const backgroundStars = document.createElement('div');
         backgroundStars.className = 'background-stars';
-        container.appendChild(backgroundStars);
+        document.querySelector('.background-effects').appendChild(backgroundStars);
 
         // Create stars
         for (let i = 0; i < 100; i++) {
@@ -959,10 +961,10 @@ function initSpaceshipGame() {
     }
 
     // Update the createFlyingShips function to enhance ship appearance
-    function createFlyingShips(container = document.querySelector('.background-effects')) {
+    function createFlyingShips() {
         const flyingShipsContainer = document.createElement('div');
         flyingShipsContainer.className = 'flying-ships';
-        container.appendChild(flyingShipsContainer);
+        document.querySelector('.background-effects').appendChild(flyingShipsContainer);
 
         // Create multiple ships
         for (let i = 0; i < 5; i++) {
@@ -1001,6 +1003,68 @@ function initSpaceshipGame() {
             flyingShipsContainer.appendChild(ship);
         }
     }
+
+    // Add this function to create background effects for difficulty menu
+    function createDifficultyMenuBackground() {
+        const difficultyMenu = document.querySelector('.menu-overlay');
+        
+        // Create background container if it doesn't exist
+        let backgroundContainer = difficultyMenu.querySelector('.difficulty-background');
+        if (!backgroundContainer) {
+            backgroundContainer = document.createElement('div');
+            backgroundContainer.className = 'difficulty-background';
+            difficultyMenu.insertBefore(backgroundContainer, difficultyMenu.firstChild);
+        }
+
+        // Clear existing circles
+        backgroundContainer.innerHTML = '';
+
+        // Create floating circles
+        const colors = ['#ff2d55', '#0ff', '#b026ff'];
+        for (let i = 0; i < 6; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'floating-circle';
+            
+            const size = Math.random() * 200 + 100;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const delay = Math.random() * -15;
+            
+            circle.style.cssText = `
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                left: ${left}%;
+                top: ${top}%;
+                animation-delay: ${delay}s;
+                animation-duration: ${15 + Math.random() * 10}s;
+            `;
+            
+            backgroundContainer.appendChild(circle);
+        }
+    }
+
+    // Update the showMenu function to include the background creation
+    function showMenu() {
+        menuOverlay.classList.remove('hidden');
+        difficultyBtns.forEach(btn => btn.classList.remove('selected'));
+        difficultyInfo.textContent = 'Choose your challenge level';
+        currentState = GAME_STATE.MENU;
+        
+        // Create background effects
+        createDifficultyMenuBackground();
+    }
+
+    // Add event listeners for difficulty buttons to add hover effects
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            const ripple = document.createElement('div');
+            ripple.className = 'button-ripple';
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 1000);
+        });
+    });
 
     update();
 }
