@@ -247,66 +247,6 @@ function initSpaceshipGame() {
         });
     }
 
-    // Touch controls
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let isTouching = false;
-
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-        isTouching = true;
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        if (!isTouching) return;
-
-        const touch = e.touches[0];
-        const deltaX = touch.clientX - touchStartX;
-        const deltaY = touch.clientY - touchStartY;
-
-        // Update player position
-        player.x = Math.min(Math.max(player.width / 2, player.x + deltaX * 0.5), canvas.width - player.width / 2);
-        player.y = Math.min(Math.max(player.minY, player.y + deltaY * 0.5), player.maxY);
-
-        // Update touch reference points
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        isTouching = false;
-    }, { passive: false });
-
-    // Prevent default touch behavior
-    document.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-
-    // Lock screen orientation to portrait
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('portrait')
-            .catch(err => console.log('Orientation lock failed:', err));
-    }
-
-    // Update controls hint for mobile
-    const controlsHint = document.querySelector('.controls-hint');
-    if ('ontouchstart' in window) {
-        controlsHint.textContent = 'Touch and drag to move | Automatic shooting';
-    }
-
-    // Add mobile detection
-    const isMobile = 'ontouchstart' in window;
-    if (isMobile) {
-        // Adjust game settings for mobile
-        player.speed = 4; // Slower movement for better control
-        player.shootDelay = Math.floor(player.shootDelay * 1.2); // Slightly slower shooting
-    }
-
     // Event listeners
     window.addEventListener('keydown', (e) => {
         if (currentState === GAME_STATE.MENU) {
