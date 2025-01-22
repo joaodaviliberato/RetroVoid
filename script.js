@@ -100,53 +100,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const difficultyBtns = document.querySelectorAll('.difficulty-btn');
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            resetDifficultySelection();
-            
-            const difficulty = DIFFICULTY[btn.dataset.difficulty];
-            selectedDifficulty = btn.dataset.difficulty;
-            
-            // Update button styles
-            btn.classList.add('selected');
-            
-            // Show difficulty description
-            difficultyInfo.textContent = difficulty.description;
-            
-            // Apply difficulty settings
-            gameState.enemySpawnRate = difficulty.enemySpawnRate;
-            gameState.enemyShootRate = difficulty.enemyShootRate;
-            player.shootDelay = difficulty.playerShootDelay;
-            player.shield = difficulty.playerShield;
-            gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Hide header and footer
-            document.querySelector('.game-header').classList.add('hidden');
-            document.querySelector('.game-footer').classList.add('hidden');
-
-            // Switch from menu music to game music
+            // Stop menu music and start game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
             if (!isGameMuted) {
-                gameMusic.play();
+                gameMusic.play()
+                    .then(() => {
+                        console.log('Game music started successfully');
+                    })
+                    .catch(error => {
+                        console.log('Error playing game music:', error);
+                    });
             }
 
-            // Start the game immediately
-            menuOverlay.classList.add('hidden');
-            currentState = GAME_STATE.PLAYING;
-            
-            // Reset player position
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 100;
-            player.lives = 3;
-            player.shield = difficulty.playerShield;
-            
-            // Reset game state
-            gameState.enemies = [];
-            gameState.bullets = [];
-            gameState.enemyBullets = [];
-            gameState.particles = [];
-            gameState.gameOver = false;
-            score = 0;
-            scoreElement.textContent = score;
+            setTimeout(() => {
+                menuOverlay.classList.add('hidden');
+                currentState = GAME_STATE.PLAYING;
+            }, 500);
         });
     });
     
@@ -935,60 +905,23 @@ function initSpaceshipGame() {
     // Update difficulty button click handlers
     difficultyBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            resetDifficultySelection();
-            
-            const difficulty = DIFFICULTY[btn.dataset.difficulty];
-            selectedDifficulty = btn.dataset.difficulty;
-            
-            // Update button styles
-            btn.classList.add('selected');
-            
-            // Show difficulty description
-            difficultyInfo.textContent = difficulty.description;
-            
-            // Apply difficulty settings
-            gameState.enemySpawnRate = difficulty.enemySpawnRate;
-            gameState.enemyShootRate = difficulty.enemyShootRate;
-            player.shootDelay = difficulty.playerShootDelay;
-            player.shield = difficulty.playerShield;
-            gameState.bulletDamage = difficulty.bulletDamage;
-            
-            // Hide header and footer
-            document.querySelector('.game-header').classList.add('hidden');
-            document.querySelector('.game-footer').classList.add('hidden');
-
-            // Switch from menu music to game music
+            // Stop menu music and start game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
             if (!isGameMuted) {
-                gameMusic.play();
+                gameMusic.play()
+                    .then(() => {
+                        console.log('Game music started successfully');
+                    })
+                    .catch(error => {
+                        console.log('Error playing game music:', error);
+                    });
             }
 
-            // Start the game immediately
-            menuOverlay.classList.add('hidden');
-            currentState = GAME_STATE.PLAYING;
-            
-            // Reset player position
-            player.x = canvas.width / 2;
-            player.y = canvas.height - 100;
-            player.lives = 3;
-            player.shield = difficulty.playerShield;
-            
-            // Reset game state
-            gameState.enemies = [];
-            gameState.bullets = [];
-            gameState.enemyBullets = [];
-            gameState.particles = [];
-            gameState.gameOver = false;
-            score = 0;
-            scoreElement.textContent = score;
-        });
-
-        // Show difficulty info on hover
-        btn.addEventListener('mouseenter', () => {
-            if (!btn.classList.contains('selected')) {
-                difficultyInfo.textContent = DIFFICULTY[btn.dataset.difficulty].description;
-            }
+            setTimeout(() => {
+                menuOverlay.classList.add('hidden');
+                currentState = GAME_STATE.PLAYING;
+            }, 500);
         });
     });
 
