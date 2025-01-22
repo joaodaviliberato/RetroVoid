@@ -212,15 +212,36 @@ footer.hidden {
     font-family: 'Courier New', monospace;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-shadow: 0 0 5px var(--neon-blue);
     box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.difficulty-btn:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--neon-blue);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
+}
+
+.difficulty-btn:hover:before {
+    width: 300%;
+    height: 300%;
 }
 
 .difficulty-btn:hover {
-    background: var(--neon-blue);
     color: #000;
     box-shadow: 0 0 20px var(--neon-blue);
+    transform: translateY(-3px);
 }
 
 .difficulty-btn.selected {
@@ -246,19 +267,39 @@ footer.hidden {
     font-family: 'Courier New', monospace;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-shadow: 0 0 5px var(--neon-pink);
     box-shadow: 0 0 10px rgba(255, 45, 85, 0.3);
     border-radius: 4px;
     letter-spacing: 1px;
     text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-btn:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--neon-pink);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
+}
+
+.menu-btn:hover:before {
+    width: 300%;
+    height: 300%;
 }
 
 .menu-btn:hover {
-    background: var(--neon-pink);
     color: #000;
     box-shadow: 0 0 20px var(--neon-pink);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 }
 
 .high-score-alert {
@@ -533,24 +574,54 @@ footer.hidden {
     background: transparent;
     border: 2px solid var(--neon-blue);
     color: var(--neon-blue);
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.sound-btn:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--neon-blue);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
+}
+
+.sound-btn:hover:before {
+    width: 200%;
+    height: 200%;
 }
 
 .sound-btn:hover {
-    background: var(--neon-blue);
     color: #000;
     box-shadow: 0 0 20px var(--neon-blue);
+    transform: scale(1.1);
 }
 
-.sound-btn.muted .icon {
-    opacity: 0.5;
+.sound-btn.muted {
+    border-color: var(--neon-pink);
+    color: var(--neon-pink);
+}
+
+.sound-btn.muted:before {
+    background: var(--neon-pink);
+}
+
+.sound-btn.muted:hover {
+    box-shadow: 0 0 20px var(--neon-pink);
 }
 
 /* Position the game sound button */
@@ -799,4 +870,11 @@ footer.hidden {
 /* Remove header title */
 .game-header {
     display: none;
+}
+
+/* Add sound button to difficulty menu */
+.menu-overlay .sound-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
 } 

@@ -1,117 +1,23 @@
-// Global variables for music and mute controls (at the very top of the file)
-let menuMusic, gameMusic, toggleMusicBtn, menuToggleMusicBtn;
-let isMuted = false;
-
-// Initialize music controls
-function initMusicControls() {
-    menuMusic = document.getElementById('menu-music');
-    gameMusic = document.getElementById('game-music');
-    toggleMusicBtn = document.getElementById('game-toggle-music');
-    menuToggleMusicBtn = document.getElementById('toggle-music');
-    
-    // Set initial volumes
+document.addEventListener('DOMContentLoaded', () => {
+    // Start with muted audio
+    const menuMusic = document.getElementById('menu-music');
+    const gameMusic = document.getElementById('game-music');
     menuMusic.volume = 0.7;
     gameMusic.volume = 0.7;
-
-    // Add click handlers for both mute buttons
-    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-        if (btn) {
-            btn.addEventListener('click', toggleMute);
-        }
-    });
-
-    // Try to play menu music on page load
-    const startMusic = () => {
-        menuMusic.play()
-            .then(() => {
-                console.log('Menu music started');
-                // Remove listeners once music starts
-                document.removeEventListener('click', startMusic);
-                document.removeEventListener('keydown', startMusic);
-                document.removeEventListener('touchstart', startMusic);
-            })
-            .catch(error => {
-                console.log('Error playing music:', error);
-            });
-    };
-
-    // Try to play immediately
-    startMusic();
-
-    // Also try on first interaction
-    document.addEventListener('click', startMusic);
-    document.addEventListener('keydown', startMusic);
-    document.addEventListener('touchstart', startMusic);
-}
-
-// Music control functions
-function updateMuteButtons() {
-    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
-        if (btn) {
-            btn.classList.toggle('muted', isMuted);
-            btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
-        }
-    });
-}
-
-function toggleMute() {
-    isMuted = !isMuted;
     
-    [gameMusic, menuMusic].forEach(audio => {
-        if (audio) {
-            audio.muted = isMuted;
-            // If unmuting and no music is playing, start menu music
-            if (!isMuted && audio === menuMusic && audio.paused) {
-                audio.play();
-            }
-        }
-    });
+    // Set initial muted state
+    menuMusic.muted = true;
+    gameMusic.muted = true;
+    isMuted = true;
     
+    // Update all mute buttons to show muted state
     updateMuteButtons();
-}
-
-function playMenuMusic() {
-    if (gameMusic && menuMusic) {
-        gameMusic.pause();
-        gameMusic.currentTime = 0;
-        if (!isMuted) {
-            menuMusic.play();
-        }
-    }
-}
-
-function playGameMusic() {
-    if (gameMusic && menuMusic) {
-        menuMusic.pause();
-        menuMusic.currentTime = 0;
-        if (!isMuted) {
-            gameMusic.play();
-        }
-    }
-}
-
-// Initialize everything when the window loads
-window.addEventListener('load', () => {
-    initMusicControls();
+    
+    // Initialize the game
     initSpaceshipGame();
+    createStarsAndPlanets();
+    createFlyingShips();
 });
-
-// Update the showGameOver function
-function showGameOver() {
-    const gameOverOverlay = document.querySelector('.game-over-overlay');
-    gameOverOverlay.classList.remove('hidden');
-    
-    // Remove any existing h3 elements
-    const existingTitle = gameOverOverlay.querySelector('h3');
-    if (existingTitle) {
-        existingTitle.remove();
-    }
-    
-    // Add new game over title
-    const gameOverTitle = document.createElement('h3');
-    gameOverTitle.textContent = 'GAME OVER';
-    gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
-}
 
 function getHighScore() {
     return localStorage.getItem('highScore') || 0;
@@ -828,25 +734,14 @@ function initSpaceshipGame() {
             player.shield = difficulty.playerShield;
             gameState.bulletDamage = difficulty.bulletDamage;
             
-            // Show fullscreen prompt
-            showFullscreenPrompt();
-            
             // Hide header and footer
             document.querySelector('.game-header').classList.add('hidden');
             document.querySelector('.game-footer').classList.add('hidden');
 
-            // Switch from menu music to game music with proper transition
-            const menuMusic = document.getElementById('menu-music');
-            const gameMusic = document.getElementById('game-music');
-            
+            // Switch from menu music to game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
-            gameMusic.volume = 0.7;
-            gameMusic.play().then(() => {
-                console.log('Game music started playing');
-            }).catch(error => {
-                console.log('Error playing game music:', error);
-            });
+            gameMusic.play();
 
             setTimeout(() => {
                 menuOverlay.classList.add('hidden');
@@ -891,19 +786,10 @@ function initSpaceshipGame() {
         player.shield = selectedDifficulty ? DIFFICULTY[selectedDifficulty].playerShield : 100;
         player.autoShootCooldown = 0;
         
-        // Switch back to menu music with proper transition
-        const gameMusic = document.getElementById('game-music');
-        const menuMusic = document.getElementById('menu-music');
-        
+        // Stop game music and reset menu music
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
-        menuMusic.volume = 0.7;
-        menuMusic.play().then(() => {
-            console.log('Menu music resumed');
-        }).catch(error => {
-            console.log('Error playing menu music:', error);
-        });
         
         // Show header and footer
         document.querySelector('.game-header').classList.remove('hidden');
@@ -952,7 +838,6 @@ function initSpaceshipGame() {
         createStars();
         
         // Only play menu music if it's not already playing
-        const menuMusic = document.getElementById('menu-music');
         if (menuMusic.paused) {
             menuMusic.play();
         }
@@ -1125,44 +1010,89 @@ function initSpaceshipGame() {
         }
     }
 
-    // Add this function to show the fullscreen prompt
-    function showFullscreenPrompt() {
-        const prompt = document.createElement('div');
-        prompt.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border: 2px solid var(--neon-blue);
-            border-radius: 8px;
-            color: var(--neon-blue);
-            font-size: 24px;
-            text-align: center;
-            z-index: 1000;
-            animation: fadeInOut 2s forwards;
-        `;
-        prompt.textContent = 'Press F11 for Fullscreen';
-        document.body.appendChild(prompt);
-
-        // Remove the prompt after animation
-        setTimeout(() => {
-            prompt.remove();
-        }, 2000);
+    // Add mute button to difficulty menu
+    function addDifficultyMenuMuteButton() {
+        const menuOverlay = document.querySelector('.menu-overlay');
+        const soundControls = document.createElement('div');
+        soundControls.className = 'sound-controls';
+        
+        const muteBtn = document.createElement('button');
+        muteBtn.className = 'sound-btn' + (isMuted ? ' muted' : '');
+        muteBtn.innerHTML = `<span class="icon">${isMuted ? '��' : '🔊'}</span>`;
+        muteBtn.addEventListener('click', toggleMute);
+        
+        soundControls.appendChild(muteBtn);
+        menuOverlay.appendChild(soundControls);
     }
 
-    // Add this CSS animation to your styles
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-        }
-    `;
-    document.head.appendChild(style);
+    // Update the updateMuteButtons function
+    function updateMuteButtons() {
+        const allMuteButtons = document.querySelectorAll('.sound-btn');
+        allMuteButtons.forEach(btn => {
+            btn.classList.toggle('muted', isMuted);
+            btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+        });
+    }
+
+    // Call this after initializing the difficulty menu
+    addDifficultyMenuMuteButton();
 
     update();
+}
+
+// Add at the beginning of initSpaceshipGame
+const gameMusic = document.getElementById('game-music');
+const menuMusic = document.getElementById('menu-music');
+const toggleMusicBtn = document.getElementById('game-toggle-music');
+const menuToggleMusicBtn = document.getElementById('toggle-music');
+let isMuted = false;
+
+function updateMuteButtons() {
+    [toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+        btn.classList.toggle('muted', isMuted);
+        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    });
+}
+
+function toggleMute() {
+    isMuted = !isMuted;
+    [gameMusic, menuMusic].forEach(audio => {
+        audio.muted = isMuted;
+    });
+    updateMuteButtons();
+}
+
+// Add click handlers for both mute buttons
+[toggleMusicBtn, menuToggleMusicBtn].forEach(btn => {
+    btn.addEventListener('click', toggleMute);
+});
+
+// Handle music transitions
+function playMenuMusic() {
+    gameMusic.pause();
+    gameMusic.currentTime = 0;
+    menuMusic.play();
+}
+
+function playGameMusic() {
+    menuMusic.pause();
+    menuMusic.currentTime = 0;
+    gameMusic.play();
+}
+
+// Update the showGameOver function
+function showGameOver() {
+    const gameOverOverlay = document.querySelector('.game-over-overlay');
+    gameOverOverlay.classList.remove('hidden');
+    
+    // Remove any existing h3 elements
+    const existingTitle = gameOverOverlay.querySelector('h3');
+    if (existingTitle) {
+        existingTitle.remove();
+    }
+    
+    // Add new game over title
+    const gameOverTitle = document.createElement('h3');
+    gameOverTitle.textContent = 'GAME OVER';
+    gameOverOverlay.insertBefore(gameOverTitle, gameOverOverlay.firstChild);
 } 
