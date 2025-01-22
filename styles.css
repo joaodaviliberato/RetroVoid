@@ -1043,124 +1043,116 @@ footer.hidden {
     transform: scale(1.1); /* Added scale effect on hover */
 }
 
-/* Mobile-specific styles */
+/* Mobile Styles */
 @media (max-width: 768px) {
-    .controls-hint {
-        display: none; /* Hide keyboard controls hint on mobile */
-    }
-
     .game-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
 
     .game-desc {
-        font-size: 0.9rem;
-        padding: 0 1rem;
+        font-size: 1rem;
+        margin-bottom: 2rem;
     }
 
     .play-btn {
-        padding: 0.8rem 2.5rem;
-        font-size: 1.3rem;
+        padding: 1rem 3rem;
+        font-size: 1.5rem;
+    }
+
+    .difficulty-container {
+        width: 95%;
+        padding: 1rem;
     }
 
     .difficulty-buttons {
         grid-template-columns: 1fr;
         gap: 1rem;
-        padding: 0 1rem;
     }
 
     .difficulty-btn {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
-    .difficulty-desc {
-        font-size: 0.9rem;
-        padding: 0.8rem;
-    }
-
-    .menu-overlay h3 {
-        font-size: 2rem;
-    }
-
-    .game-controls {
-        gap: 5px;
-        bottom: 10px;
-        right: 10px;
-    }
-
-    .sound-btn {
-        width: 35px;
-        height: 35px;
-    }
-
-    .menu-btn {
-        padding: 0.3rem 0.8rem;
-        font-size: 0.8rem;
+        padding: 1rem;
+        font-size: 1rem;
     }
 
     .score, .high-score {
         font-size: 0.8rem;
+        width: 120px;
         padding: 0.3rem 0.5rem;
-        width: 100px;
-        top: 10px;
     }
 
     .high-score {
-        right: 120px;
+        right: 150px;
+    }
+
+    .controls-hint {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.5rem;
+        bottom: 10px;
     }
 
     .shield-bar {
-        width: 120px;
-        height: 15px;
-        bottom: 10px;
-        left: 10px;
+        width: 150px;
+        height: 20px;
     }
 
     .life-bar {
-        font-size: 16px;
-        left: 140px;
+        font-size: 18px;
+        left: 180px;
+    }
+
+    .game-controls {
         bottom: 10px;
+        right: 10px;
+        gap: 5px;
     }
 
-    /* Game over overlay for mobile */
-    .game-over-overlay h3 {
-        font-size: 2.5rem;
+    .sound-btn {
+        width: 30px;
+        height: 30px;
     }
 
-    /* Social buttons for mobile */
-    .social-links {
-        gap: 10px;
-    }
-
-    .social-btn {
-        padding: 0.3rem 0.6rem;
+    .menu-btn {
+        padding: 0.3rem 1rem;
         font-size: 0.8rem;
-        min-width: 70px;
     }
 }
 
-/* Touch-specific styles */
-@media (hover: none) {
-    .difficulty-btn:hover::before,
-    .difficulty-btn:hover::after,
-    .play-btn:hover,
-    .menu-btn:hover,
-    .sound-btn:hover {
-        transform: none;
-        box-shadow: none;
-    }
-
-    .difficulty-btn:active,
-    .play-btn:active,
-    .menu-btn:active,
-    .sound-btn:active {
-        transform: scale(0.95);
-        transition: transform 0.1s;
-    }
-}
-
-/* Remove orientation warning styles */
-.orientation-warning {
+/* Touch Controls */
+.touch-controls {
     display: none;
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .touch-controls {
+        display: flex;
+        gap: 20px;
+    }
+
+    .touch-btn {
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 0, 0, 0.5);
+        border: 2px solid var(--neon-blue);
+        border-radius: 50%;
+        color: var(--neon-blue);
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+    }
+
+    .touch-btn:active {
+        background: var(--neon-blue);
+        color: #000;
+    }
+
+    .controls-hint {
+        display: none;
+    }
 } 
