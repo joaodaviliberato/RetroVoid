@@ -4,47 +4,21 @@ window.addEventListener('load', () => {
     menuMusic.volume = 0.7;
     
     // Try to play music immediately
-    menuMusic.play().catch(() => {
-        // If autoplay is blocked, add a visible play button
-        const playMusicBtn = document.createElement('div');
-        playMusicBtn.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px 40px;
-            border: 2px solid var(--neon-purple);
-            border-radius: 8px;
-            color: var(--neon-purple);
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1000;
-            text-shadow: 0 0 5px var(--neon-purple);
-            transition: all 0.3s ease;
-        `;
-        playMusicBtn.textContent = 'Click to Start';
-        
-        // Add hover effect
-        playMusicBtn.onmouseover = () => {
-            playMusicBtn.style.background = 'var(--neon-purple)';
-            playMusicBtn.style.color = '#000';
-            playMusicBtn.style.boxShadow = '0 0 20px var(--neon-purple)';
-        };
-        
-        playMusicBtn.onmouseout = () => {
-            playMusicBtn.style.background = 'rgba(0, 0, 0, 0.8)';
-            playMusicBtn.style.color = 'var(--neon-purple)';
-            playMusicBtn.style.boxShadow = 'none';
-        };
-        
-        // Start music and remove button on click
-        playMusicBtn.onclick = () => {
+    menuMusic.play().then(() => {
+        console.log('Menu music started automatically');
+    }).catch(error => {
+        console.log('Error playing menu music:', error);
+        // If autoplay fails, try playing on any user interaction with the page
+        const playOnInteraction = () => {
             menuMusic.play();
-            playMusicBtn.remove();
+            document.removeEventListener('click', playOnInteraction);
+            document.removeEventListener('keydown', playOnInteraction);
+            document.removeEventListener('touchstart', playOnInteraction);
         };
         
-        document.body.appendChild(playMusicBtn);
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+        document.addEventListener('touchstart', playOnInteraction);
     });
 });
 
