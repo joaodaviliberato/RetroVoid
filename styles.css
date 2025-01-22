@@ -9,6 +9,12 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 body {
@@ -1041,4 +1047,67 @@ footer.hidden {
     color: #000;
     box-shadow: 0 0 20px var(--neon-blue);
     transform: scale(1.1); /* Added scale effect on hover */
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+    .game-container {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    canvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+    }
+
+    .controls-hint {
+        font-size: 0.8rem;
+        bottom: 10px;
+    }
+
+    .game-controls {
+        bottom: 10px;
+        right: 10px;
+        gap: 8px;
+    }
+
+    .game-controls button {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+
+    .score-display {
+        font-size: 0.8rem;
+        top: 10px;
+        right: 10px;
+    }
+
+    .shield-bar {
+        bottom: 10px;
+        left: 10px;
+        width: 120px;
+        height: 15px;
+    }
+
+    .life-bar {
+        height: 15px;
+        margin-left: 5px;
+    }
+
+    .life-bar img {
+        height: 15px;
+        width: auto;
+    }
+
+    .menu-overlay button,
+    .main-menu-overlay button,
+    .difficulty-menu-overlay button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        margin: 5px;
+    }
 } 
