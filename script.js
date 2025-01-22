@@ -11,29 +11,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to start playing menu music
     const startMenuMusic = () => {
         if (!isMuted) {
+            menuMusic.currentTime = 0;
             menuMusic.play()
                 .then(() => {
                     console.log('Menu music started successfully');
                 })
                 .catch(error => {
-                    console.log('Autoplay prevented, waiting for user interaction');
+                    console.log('Autoplay prevented, adding click listener');
+                    // Add one-time click listener to the whole document
+                    const playOnFirstClick = () => {
+                        if (!isMuted) {
+                            menuMusic.play();
+                        }
+                        document.removeEventListener('click', playOnFirstClick);
+                    };
+                    document.addEventListener('click', playOnFirstClick);
                 });
         }
     };
 
-    // Try to play music immediately
+    // Try to play immediately
     startMenuMusic();
 
-    // Add click listener to the entire document for first interaction
-    const handleFirstInteraction = () => {
-        startMenuMusic();
-        document.removeEventListener('click', handleFirstInteraction);
-    };
-    document.addEventListener('click', handleFirstInteraction);
-
-    // Also try to play when the play button is clicked
+    // Add click listener to play button specifically
     const playBtn = document.querySelector('.play-btn');
-    playBtn.addEventListener('click', startMenuMusic, { once: true });
+    playBtn.addEventListener('click', () => {
+        if (menuMusic.paused && !isMuted) {
+            menuMusic.play();
+        }
+    });
 });
 
 function getHighScore() {
@@ -876,7 +882,7 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Keep menu music playing during transition
+        // Ensure menu music is playing during transition
         if (menuMusic.paused && !isMuted) {
             menuMusic.play();
         }
@@ -1121,6 +1127,13 @@ function toggleMute() {
     isMuted = !isMuted;
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
+        if (isMuted) {
+            audio.pause();
+        } else if (currentState === GAME_STATE.MENU || currentState === undefined) {
+            menuMusic.play();
+        } else if (currentState === GAME_STATE.PLAYING) {
+            gameMusic.play();
+        }
     });
     updateMuteButtons();
 }
@@ -1132,11 +1145,18 @@ function toggleMute() {
 
 // Handle music transitions
 function playMenuMusic() {
-    const menuMusic = document.getElementById('menu-music');
     if (!isMuted) {
         menuMusic.currentTime = 0;
         menuMusic.play().catch(error => {
             console.log('Could not play menu music:', error);
+            // Add one-time click listener if autoplay fails
+            const playOnClick = () => {
+                if (!isMuted) {
+                    menuMusic.play();
+                }
+                document.removeEventListener('click', playOnClick);
+            };
+            document.addEventListener('click', playOnClick);
         });
     }
 }
@@ -1166,11 +1186,18 @@ function showGameOver() {
 
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
-    const menuMusic = document.getElementById('menu-music');
     if (!isMuted) {
         menuMusic.currentTime = 0;
         menuMusic.play().catch(error => {
             console.log('Could not play menu music:', error);
+            // Add one-time click listener if autoplay fails
+            const playOnClick = () => {
+                if (!isMuted) {
+                    menuMusic.play();
+                }
+                document.removeEventListener('click', playOnClick);
+            };
+            document.addEventListener('click', playOnClick);
         });
     }
 } 
