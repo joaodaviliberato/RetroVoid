@@ -391,6 +391,11 @@ footer.hidden {
     align-items: center;
     z-index: 20;
     overflow: hidden;
+    transition: all 1.5s ease-in-out;
+}
+
+.main-menu-overlay.fade-out {
+    animation: fadeOutToVoid 1.5s ease-in-out forwards;
 }
 
 .menu-content {
@@ -631,7 +636,7 @@ footer.hidden {
 .life-bar {
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    left: 240px; /* Position it to the right of the shield bar */
     z-index: 5;
     display: flex;
     gap: 10px;
@@ -679,7 +684,7 @@ footer.hidden {
 .shield-bar {
     position: fixed;
     bottom: 20px;
-    left: 180px; /* Position it to the right of hearts */
+    left: 20px; /* Position it at the left bottom corner */
     z-index: 5;
     width: 200px;
     height: 25px;
@@ -1061,4 +1066,16 @@ footer.hidden {
     color: #000;
     box-shadow: 0 0 20px var(--neon-blue);
     transform: scale(1.1); /* Added scale effect on hover */
+}
+
+/* Add fade-out animation */
+@keyframes fadeOutToVoid {
+    0% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(2) rotate(360deg);
+    }
 } 

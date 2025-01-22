@@ -887,27 +887,33 @@ function initSpaceshipGame() {
 
     // Update the play button click handler
     playBtn.addEventListener('click', () => {
-        mainMenuOverlay.classList.add('hidden');
-        lightspeedOverlay.classList.remove('hidden');
-        createStars();
+        mainMenuOverlay.classList.add('fade-out');
         
         // Keep menu music playing during transition
         if (menuMusic.paused && !isMuted) {
             menuMusic.play();
         }
         
-        // Recreate background effects before transitioning
-        const existingShips = document.querySelector('.flying-ships');
-        const existingStars = document.querySelector('.background-stars');
-        if (existingShips) existingShips.remove();
-        if (existingStars) existingStars.remove();
-        
-        createStarsAndPlanets();
-        createFlyingShips();
-
+        // Wait for fade-out animation to complete
         setTimeout(() => {
-            lightspeedOverlay.classList.add('hidden');
-            menuOverlay.classList.remove('hidden');
+            mainMenuOverlay.classList.add('hidden');
+            mainMenuOverlay.classList.remove('fade-out');
+            lightspeedOverlay.classList.remove('hidden');
+            createStars();
+            
+            // Recreate background effects before transitioning
+            const existingShips = document.querySelector('.flying-ships');
+            const existingStars = document.querySelector('.background-stars');
+            if (existingShips) existingShips.remove();
+            if (existingStars) existingStars.remove();
+            
+            createStarsAndPlanets();
+            createFlyingShips();
+
+            setTimeout(() => {
+                lightspeedOverlay.classList.add('hidden');
+                menuOverlay.classList.remove('hidden');
+            }, 1500);
         }, 1500);
     });
 
