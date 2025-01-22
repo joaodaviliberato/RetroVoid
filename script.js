@@ -4,42 +4,33 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarsAndPlanets();
     createFlyingShips();
     
-    // Get menu music element
+    // Start menu music
     const menuMusic = document.getElementById('menu-music');
     menuMusic.volume = 0.7;
     
-    // Function to start playing menu music
-    const startMenuMusic = () => {
-        if (!isMuted) {
-            menuMusic.currentTime = 0;
-            menuMusic.play()
-                .then(() => {
-                    console.log('Menu music started successfully');
-                })
-                .catch(error => {
-                    console.log('Autoplay prevented, adding click listener');
-                    // Add one-time click listener to the whole document
-                    const playOnFirstClick = () => {
-                        if (!isMuted) {
-                            menuMusic.play();
-                        }
-                        document.removeEventListener('click', playOnFirstClick);
-                    };
-                    document.addEventListener('click', playOnFirstClick);
-                });
-        }
+    // Try to play music immediately
+    const playMusic = () => {
+        menuMusic.play()
+            .then(() => {
+                console.log('Music started successfully');
+            })
+            .catch(() => {
+                // If autoplay is blocked, add a one-time click listener to the document
+                const startAudio = () => {
+                    if (!isMuted) {
+                        menuMusic.play();
+                    }
+                    document.removeEventListener('click', startAudio);
+                };
+                document.addEventListener('click', startAudio);
+                console.log('Autoplay prevented - waiting for user interaction');
+            });
     };
-
-    // Try to play immediately
-    startMenuMusic();
-
-    // Add click listener to play button specifically
-    const playBtn = document.querySelector('.play-btn');
-    playBtn.addEventListener('click', () => {
-        if (menuMusic.paused && !isMuted) {
-            menuMusic.play();
-        }
-    });
+    
+    // Try to play immediately and set up click handler if needed
+    if (!isMuted) {
+        playMusic();
+    }
 });
 
 function getHighScore() {
@@ -882,7 +873,7 @@ function initSpaceshipGame() {
         lightspeedOverlay.classList.remove('hidden');
         createStars();
         
-        // Ensure menu music is playing during transition
+        // Keep menu music playing during transition
         if (menuMusic.paused && !isMuted) {
             menuMusic.play();
         }
@@ -1127,13 +1118,6 @@ function toggleMute() {
     isMuted = !isMuted;
     [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
-        if (isMuted) {
-            audio.pause();
-        } else if (currentState === GAME_STATE.MENU || currentState === undefined) {
-            menuMusic.play();
-        } else if (currentState === GAME_STATE.PLAYING) {
-            gameMusic.play();
-        }
     });
     updateMuteButtons();
 }
@@ -1145,19 +1129,10 @@ function toggleMute() {
 
 // Handle music transitions
 function playMenuMusic() {
-    if (!isMuted) {
+    const menuMusic = document.getElementById('menu-music');
+    if (menuMusic.paused && !isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play().catch(error => {
-            console.log('Could not play menu music:', error);
-            // Add one-time click listener if autoplay fails
-            const playOnClick = () => {
-                if (!isMuted) {
-                    menuMusic.play();
-                }
-                document.removeEventListener('click', playOnClick);
-            };
-            document.addEventListener('click', playOnClick);
-        });
+        menuMusic.play();
     }
 }
 
@@ -1186,18 +1161,9 @@ function showGameOver() {
 
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
-    if (!isMuted) {
+    const menuMusic = document.getElementById('menu-music');
+    if (menuMusic.paused && !isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play().catch(error => {
-            console.log('Could not play menu music:', error);
-            // Add one-time click listener if autoplay fails
-            const playOnClick = () => {
-                if (!isMuted) {
-                    menuMusic.play();
-                }
-                document.removeEventListener('click', playOnClick);
-            };
-            document.addEventListener('click', playOnClick);
-        });
+        menuMusic.play();
     }
 } 
