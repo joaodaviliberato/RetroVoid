@@ -8,29 +8,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuMusic = document.getElementById('menu-music');
     menuMusic.volume = 0.7;
     
-    // Try to play music immediately
-    const playMusic = () => {
-        menuMusic.play()
-            .then(() => {
-                console.log('Music started successfully');
-            })
-            .catch(() => {
-                // If autoplay is blocked, add a one-time click listener to the document
-                const startAudio = () => {
-                    if (!isMuted) {
-                        menuMusic.play();
-                    }
-                    document.removeEventListener('click', startAudio);
-                };
-                document.addEventListener('click', startAudio);
-                console.log('Autoplay prevented - waiting for user interaction');
-            });
+    // Function to try playing music
+    const tryPlayMusic = () => {
+        if (!isMuted) {
+            menuMusic.play()
+                .then(() => {
+                    console.log('Music started successfully');
+                })
+                .catch(() => {
+                    console.log('Autoplay prevented - adding click listener');
+                });
+        }
     };
-    
-    // Try to play immediately and set up click handler if needed
-    if (!isMuted) {
-        playMusic();
-    }
+
+    // Try to play immediately
+    tryPlayMusic();
+
+    // Add click listener to the whole document for first interaction
+    const startMusicOnInteraction = () => {
+        tryPlayMusic();
+        document.removeEventListener('click', startMusicOnInteraction);
+    };
+    document.addEventListener('click', startMusicOnInteraction);
+
+    // Also try to play when the play button is clicked
+    const playBtn = document.querySelector('.play-btn');
+    playBtn.addEventListener('click', tryPlayMusic);
 });
 
 function getHighScore() {
@@ -1130,9 +1133,9 @@ function toggleMute() {
 // Handle music transitions
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (!isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play();
+        menuMusic.play().catch(error => console.log('Music play prevented:', error));
     }
 }
 
@@ -1162,8 +1165,8 @@ function showGameOver() {
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (!isMuted) {
         menuMusic.currentTime = 0;
-        menuMusic.play();
+        menuMusic.play().catch(error => console.log('Music play prevented:', error));
     }
 } 
