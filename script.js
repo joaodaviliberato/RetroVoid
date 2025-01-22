@@ -869,41 +869,43 @@ function initSpaceshipGame() {
 
     // Update the play button click handler
     playBtn.addEventListener('click', () => {
-        // Add fade out class to main menu
+        // Start fade out animation for main menu
         mainMenuOverlay.classList.add('fade-out');
-        
-        // Show and activate lightspeed effect after menu fades
-        setTimeout(() => {
-            mainMenuOverlay.classList.add('hidden');
-            lightspeedOverlay.classList.remove('hidden');
-            setTimeout(() => {
-                lightspeedOverlay.classList.add('active');
-                createStars();
-            }, 50);
-        }, 1500);
         
         // Keep menu music playing during transition
         if (menuMusic.paused && !isMuted) {
             menuMusic.play();
         }
         
-        // Recreate background effects before transitioning
-        const existingShips = document.querySelector('.flying-ships');
-        const existingStars = document.querySelector('.background-stars');
-        if (existingShips) existingShips.remove();
-        if (existingStars) existingStars.remove();
-        
-        createStarsAndPlanets();
-        createFlyingShips();
-
-        // Show difficulty menu after lightspeed effect
+        // After menu fades out, show lightspeed effect
         setTimeout(() => {
-            lightspeedOverlay.classList.remove('active');
+            mainMenuOverlay.classList.add('hidden');
+            lightspeedOverlay.classList.remove('hidden');
+            
+            // Add active class after a brief delay to trigger fade in
             setTimeout(() => {
-                lightspeedOverlay.classList.add('hidden');
-                menuOverlay.classList.remove('hidden');
-            }, 500);
-        }, 3000);
+                lightspeedOverlay.classList.add('active');
+                createStars();
+            }, 50);
+            
+            // Recreate background effects
+            const existingShips = document.querySelector('.flying-ships');
+            const existingStars = document.querySelector('.background-stars');
+            if (existingShips) existingShips.remove();
+            if (existingStars) existingStars.remove();
+            
+            createStarsAndPlanets();
+            createFlyingShips();
+
+            // Show difficulty menu after lightspeed effect
+            setTimeout(() => {
+                lightspeedOverlay.classList.remove('active');
+                setTimeout(() => {
+                    lightspeedOverlay.classList.add('hidden');
+                    menuOverlay.classList.remove('hidden');
+                }, 500);
+            }, 1500);
+        }, 1000);
     });
 
     // Update the controls hint text

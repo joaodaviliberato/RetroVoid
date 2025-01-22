@@ -391,9 +391,7 @@ footer.hidden {
     align-items: center;
     z-index: 20;
     overflow: hidden;
-    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
-    opacity: 1;
-    transform: scale(1);
+    transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
 .main-menu-overlay.fade-out {
@@ -507,12 +505,6 @@ footer.hidden {
     height: 100%;
     perspective: 400px;
     transform-style: preserve-3d;
-    opacity: 0;
-    transition: opacity 0.5s ease-in;
-}
-
-.lightspeed-overlay.active .stars {
-    opacity: 1;
 }
 
 @keyframes lightspeed {
@@ -652,7 +644,7 @@ footer.hidden {
 .life-bar {
     position: fixed;
     bottom: 20px;
-    left: 240px;  /* Position it to the right of shield bar */
+    left: 240px; /* Position it right after the shield bar */
     z-index: 5;
     display: flex;
     gap: 10px;
@@ -792,8 +784,8 @@ footer.hidden {
 /* Update shield bar styles */
 .shield-bar {
     position: fixed;
-    bottom: 20px;  /* Align with bottom */
-    left: 20px;    /* Keep left alignment */
+    bottom: 20px;  /* Same level as hearts */
+    left: 20px;
     z-index: 5;
     width: 200px;
     height: 20px;
