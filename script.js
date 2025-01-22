@@ -1110,7 +1110,7 @@ let isMenuMuted = false;
 let isGameMuted = false;
 
 function updateMuteButtons() {
-    // Update menu music button (difficulty screen only)
+    // Update menu music button
     difficultyToggleMusicBtn.classList.toggle('muted', isMenuMuted);
     difficultyToggleMusicBtn.querySelector('.icon').textContent = isMenuMuted ? '🔈' : '🔊';
     
