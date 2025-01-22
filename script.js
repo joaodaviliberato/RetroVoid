@@ -4,12 +4,6 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarsAndPlanets();
     createFlyingShips();
     
-    // Initialize touch controls for mobile devices
-    if (isMobileDevice()) {
-        initTouchControls();
-        document.querySelector('.controls-hint').style.display = 'none';
-    }
-    
     // Start menu music
     const menuMusic = document.getElementById('menu-music');
     menuMusic.volume = 0.7;
@@ -1180,78 +1174,4 @@ function playMenuMusic() {
         menuMusic.currentTime = 0;
         menuMusic.play();
     }
-}
-
-// Add touch control handling
-function initTouchControls() {
-    const touchButtons = {
-        left: document.getElementById('touch-left'),
-        right: document.getElementById('touch-right'),
-        up: document.getElementById('touch-up'),
-        down: document.getElementById('touch-down')
-    };
-
-    // Map touch buttons to keyboard keys in gameState.keys
-    const buttonToKey = {
-        'touch-left': 'ArrowLeft',
-        'touch-right': 'ArrowRight',
-        'touch-up': 'ArrowUp',
-        'touch-down': 'ArrowDown'
-    };
-
-    // Handle touch events for each button
-    Object.entries(touchButtons).forEach(([direction, button]) => {
-        button.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            gameState.keys[buttonToKey[`touch-${direction}`]] = true;
-        });
-
-        button.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            gameState.keys[buttonToKey[`touch-${direction}`]] = false;
-        });
-
-        // Prevent default touch behavior to avoid scrolling
-        button.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-        });
-    });
-
-    // Add swipe controls for the entire game area
-    const canvas = document.getElementById('spaceship-canvas');
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    canvas.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-    });
-
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        if (currentState === GAME_STATE.PLAYING) {
-            const touchX = e.touches[0].clientX;
-            const touchY = e.touches[0].clientY;
-            
-            // Calculate new player position based on touch movement
-            const deltaX = touchX - touchStartX;
-            const deltaY = touchY - touchStartY;
-            
-            // Update player position with boundaries
-            player.x = Math.min(Math.max(player.width / 2, player.x + deltaX * 0.5), canvas.width - player.width / 2);
-            player.y = Math.min(Math.max(player.minY, player.y + deltaY * 0.5), player.maxY);
-            
-            // Update touch start position
-            touchStartX = touchX;
-            touchStartY = touchY;
-        }
-    });
-}
-
-// Add mobile detection
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-}
-
-update();
 } 
