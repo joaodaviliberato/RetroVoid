@@ -554,12 +554,6 @@ function initSpaceshipGame() {
                         }
                     );
                     player.autoShootCooldown = player.shootDelay;
-                    
-                    // Play shoot sound if not muted
-                    if (!isMuted) {
-                        shootSound.currentTime = 0;
-                        shootSound.play().catch(e => console.log('Error playing sound:', e));
-                    }
                 }
                 
                 // Spawn enemies based on level
@@ -577,12 +571,6 @@ function initSpaceshipGame() {
                             // Create explosion particles
                             for (let i = 0; i < 10; i++) {
                                 gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
-                            }
-                            
-                            // Play explosion sound if not muted
-                            if (!isMuted) {
-                                explosionSound.currentTime = 0;
-                                explosionSound.play().catch(e => console.log('Error playing sound:', e));
                             }
                             
                             gameState.bullets.splice(bulletIndex, 1);
@@ -615,12 +603,6 @@ function initSpaceshipGame() {
                         if (player.shield > 0) {
                             player.shield -= gameState.bulletDamage;
                             if (player.shield < 0) player.shield = 0;
-                            
-                            // Play hit sound if not muted
-                            if (!isMuted) {
-                                hitSound.currentTime = 0;
-                                hitSound.play().catch(e => console.log('Error playing sound:', e));
-                            }
                         } else {
                             player.lives--;
                             if (player.lives > 0) {
@@ -887,6 +869,7 @@ function initSpaceshipGame() {
 
     // Update the play button click handler
     playBtn.addEventListener('click', () => {
+        // Add fade-out class to main menu
         mainMenuOverlay.classList.add('fade-out');
         
         // Keep menu music playing during transition
@@ -894,10 +877,10 @@ function initSpaceshipGame() {
             menuMusic.play();
         }
         
-        // Wait for fade-out animation to complete
+        // Wait for fade-out animation before hiding menu
         setTimeout(() => {
             mainMenuOverlay.classList.add('hidden');
-            mainMenuOverlay.classList.remove('fade-out');
+            mainMenuOverlay.classList.remove('fade-out'); // Reset for next time
             lightspeedOverlay.classList.remove('hidden');
             createStars();
             
@@ -914,7 +897,7 @@ function initSpaceshipGame() {
                 lightspeedOverlay.classList.add('hidden');
                 menuOverlay.classList.remove('hidden');
             }, 1500);
-        }, 1500);
+        }, 1500); // Match this with the animation duration
     });
 
     // Update the controls hint text
@@ -1140,7 +1123,7 @@ function updateMuteButtons() {
 
 function toggleMute() {
     isMuted = !isMuted;
-    [gameMusic, menuMusic, shootSound, explosionSound, hitSound].forEach(audio => {
+    [gameMusic, menuMusic].forEach(audio => {
         audio.muted = isMuted;
     });
     updateMuteButtons();
@@ -1190,85 +1173,4 @@ function playMenuMusic() {
         menuMusic.currentTime = 0;
         menuMusic.play();
     }
-}
-
-// Add these variables at the beginning of initSpaceshipGame
-const shootSound = document.getElementById('shoot-sound');
-const explosionSound = document.getElementById('explosion-sound');
-const hitSound = document.getElementById('hit-sound');
-
-// Set volumes for sound effects
-shootSound.volume = 0.3;
-explosionSound.volume = 0.4;
-hitSound.volume = 0.4;
-
-// Update the automatic shooting code to add sound
-if (player.autoShootCooldown <= 0) {
-    gameState.bullets.push(
-        {
-            x: player.x - 15,
-            y: player.y - 20,
-            width: 4,
-            height: 15,
-            color: '#0ff'
-        },
-        {
-            x: player.x + 15,
-            y: player.y - 20,
-            width: 4,
-            height: 15,
-            color: '#0ff'
-        }
-    );
-    player.autoShootCooldown = player.shootDelay;
-    
-    // Play shoot sound if not muted
-    if (!isMuted) {
-        shootSound.currentTime = 0;
-        shootSound.play().catch(e => console.log('Error playing sound:', e));
-    }
-}
-
-// Update enemy collision code to add explosion sound
-if (checkCollision(bullet, enemy)) {
-    // Create explosion particles
-    for (let i = 0; i < 10; i++) {
-        gameState.particles.push(createParticle(enemy.x, enemy.y, enemy.color));
-    }
-    
-    // Play explosion sound if not muted
-    if (!isMuted) {
-        explosionSound.currentTime = 0;
-        explosionSound.play().catch(e => console.log('Error playing sound:', e));
-    }
-    
-    gameState.bullets.splice(bulletIndex, 1);
-    gameState.enemies.splice(enemyIndex, 1);
-    score += 100;
-    scoreElement.textContent = score;
-}
-
-// Update player hit code to add hit sound
-if (checkCollision(bullet, player)) {
-    gameState.enemyBullets.splice(index, 1);
-    if (player.shield > 0) {
-        player.shield -= gameState.bulletDamage;
-        if (player.shield < 0) player.shield = 0;
-        
-        // Play hit sound if not muted
-        if (!isMuted) {
-            hitSound.currentTime = 0;
-            hitSound.play().catch(e => console.log('Error playing sound:', e));
-        }
-    }
-    // ... rest of the hit code
-}
-
-// Update the toggleMute function to include sound effects
-function toggleMute() {
-    isMuted = !isMuted;
-    [gameMusic, menuMusic, shootSound, explosionSound, hitSound].forEach(audio => {
-        audio.muted = isMuted;
-    });
-    updateMuteButtons();
 } 
