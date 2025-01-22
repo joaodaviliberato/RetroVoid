@@ -17,7 +17,12 @@ body {
     font-family: 'Courier New', monospace;
     min-height: 100vh;
     position: relative;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     overflow: hidden;
+    height: 100vh;
+    width: 100vw;
 }
 
 .neon-overlay {
@@ -72,7 +77,6 @@ header.hidden {
     padding: 0;
     position: relative;
     z-index: 2;
-    overflow: hidden;
 }
 
 .cabinet {
@@ -101,7 +105,6 @@ header.hidden {
 .cabinet-content {
     height: 100%;
     position: relative;
-    overflow: hidden;
 }
 
 .cabinet-base {
@@ -306,9 +309,9 @@ footer.hidden {
     background: transparent;
     border: 2px solid var(--neon-pink);
     color: var(--neon-pink);
-    padding: 0.8rem 2rem;
+    padding: 0.5rem 1.5rem;
     font-family: 'Courier New', monospace;
-    font-size: 1.4rem;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     text-shadow: 0 0 5px var(--neon-pink);
@@ -316,8 +319,6 @@ footer.hidden {
     border-radius: 4px;
     letter-spacing: 1px;
     text-transform: uppercase;
-    min-width: 160px;
-    height: 50px;
 }
 
 .menu-btn:hover {
@@ -396,6 +397,7 @@ footer.hidden {
     text-align: center;
     padding: 2rem;
     max-width: 800px;
+    width: 90%;
     margin: 0 auto;
     position: relative;
     z-index: 2;
@@ -403,8 +405,6 @@ footer.hidden {
     border: 1px solid var(--neon-blue);
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
-    max-height: 100vh;
-    overflow: hidden;
 }
 
 .game-title {
@@ -465,42 +465,6 @@ footer.hidden {
     justify-content: center;
     margin: 0 auto;
     margin-bottom: 3rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.play-btn::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(176, 38, 255, 0.3),
-        transparent
-    );
-    transform: translate(-100%, -100%);
-    transition: 0.5s;
-}
-
-.play-btn:hover::before {
-    transform: translate(0, 0);
-    animation: playButtonGlow 1s ease-out;
-}
-
-@keyframes playButtonGlow {
-    0% {
-        transform: translate(-100%, -100%);
-    }
-    50% {
-        transform: translate(0, 0);
-    }
-    100% {
-        transform: translate(100%, 100%);
-    }
 }
 
 .play-btn:hover {
@@ -638,15 +602,14 @@ footer.hidden {
     background: transparent;
     border: 2px solid var(--neon-blue);
     color: var(--neon-blue);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
 }
 
 .sound-btn:hover {
@@ -688,11 +651,10 @@ footer.hidden {
     position: fixed;
     top: 20px;
     right: 20px;
-    padding: 0.3rem 0.8rem;
+    padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-blue);
     border-radius: 4px;
-    font-size: 0.9rem;
 }
 
 /* Update menu and sound buttons container */
@@ -709,14 +671,13 @@ footer.hidden {
 .high-score {
     position: fixed;
     top: 20px;
-    right: 120px; /* Adjust position due to smaller size */
-    padding: 0.3rem 0.8rem;
+    right: 150px; /* Position it to the left of the score */
+    padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.7);
     border: 1px solid var(--neon-purple);
     border-radius: 4px;
     color: var(--neon-purple);
     text-shadow: 0 0 5px var(--neon-purple);
-    font-size: 0.9rem;
 }
 
 /* Add social links styles */
@@ -756,42 +717,13 @@ footer.hidden {
     text-shadow: 0 0 5px var(--neon-purple);
     font-weight: bold;
     font-size: 1.2rem;
-    position: relative;
-    overflow: hidden;
 }
 
-.social-btn.twitter::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(176, 38, 255, 0.3),
-        transparent
-    );
-    transform: translate(-100%, -100%);
-    transition: 0.5s;
-}
-
-.social-btn.twitter:hover::before {
-    transform: translate(0, 0);
-    animation: twitterButtonGlow 1s ease-out;
-}
-
-@keyframes twitterButtonGlow {
-    0% {
-        transform: translate(-100%, -100%);
-    }
-    50% {
-        transform: translate(0, 0);
-    }
-    100% {
-        transform: translate(100%, 100%);
-    }
+.social-btn.twitter:hover {
+    background: var(--neon-purple);
+    color: #000;
+    box-shadow: 0 0 20px var(--neon-purple);
+    transform: translateY(-2px);
 }
 
 .social-btn.coming-soon {
@@ -1042,33 +974,4 @@ footer.hidden {
     100% {
         filter: hue-rotate(360deg);
     }
-}
-
-/* Increase size of game controls buttons */
-.game-controls .menu-btn {
-    padding: 0.8rem 2rem;
-    font-size: 1.4rem;
-    min-width: 160px;
-    height: 50px;
-}
-
-/* Increase size of back to menu button in game over screen */
-.game-over-overlay .menu-btn {
-    padding: 0.8rem 2rem;
-    font-size: 1.4rem;
-    min-width: 160px;
-    height: 50px;
-    margin-top: 2rem;
-}
-
-/* Click effect for play button */
-.play-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 0 30px var(--neon-purple);
-}
-
-/* Click effect for Twitter button */
-.social-btn.twitter:active {
-    transform: scale(0.95);
-    box-shadow: 0 0 30px var(--neon-purple);
 } 

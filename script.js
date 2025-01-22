@@ -1,11 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Start menu music immediately when the page loads
     const menuMusic = document.getElementById('menu-music');
-    menuMusic.volume = 0.7; // Set a comfortable volume level
+    menuMusic.volume = 0.7;
+    
+    // Try to play music (will be blocked by some browsers until user interaction)
     menuMusic.play().catch(() => {
-        // Handle autoplay restrictions gracefully
         console.log('Autoplay prevented - waiting for user interaction');
     });
+    
+    // Add click event listener to the whole document to start music on first interaction
+    const startMusicOnInteraction = () => {
+        if (menuMusic.paused) {
+            menuMusic.play();
+        }
+        document.removeEventListener('click', startMusicOnInteraction);
+    };
+    document.addEventListener('click', startMusicOnInteraction);
     
     // Initialize the game
     initSpaceshipGame();
@@ -855,11 +865,6 @@ function initSpaceshipGame() {
         
         createStarsAndPlanets();
         createFlyingShips();
-        
-        // Only play menu music if it's not already playing
-        if (menuMusic.paused) {
-            menuMusic.play();
-        }
 
         setTimeout(() => {
             lightspeedOverlay.classList.add('hidden');
