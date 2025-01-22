@@ -1105,17 +1105,14 @@ function initSpaceshipGame() {
 const gameMusic = document.getElementById('game-music');
 const menuMusic = document.getElementById('menu-music');
 const toggleMusicBtn = document.getElementById('game-toggle-music');
-const menuToggleMusicBtn = document.getElementById('toggle-music');
 const difficultyToggleMusicBtn = document.getElementById('difficulty-toggle-music');
 let isMenuMuted = false;
 let isGameMuted = false;
 
 function updateMuteButtons() {
-    // Update menu music buttons
-    [menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
-        btn.classList.toggle('muted', isMenuMuted);
-        btn.querySelector('.icon').textContent = isMenuMuted ? '🔈' : '🔊';
-    });
+    // Update menu music button (difficulty screen only)
+    difficultyToggleMusicBtn.classList.toggle('muted', isMenuMuted);
+    difficultyToggleMusicBtn.querySelector('.icon').textContent = isMenuMuted ? '🔈' : '🔊';
     
     // Update game music button
     toggleMusicBtn.classList.toggle('muted', isGameMuted);
@@ -1135,10 +1132,7 @@ function toggleGameMute() {
 }
 
 // Add click handlers for mute buttons
-[menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
-    btn.addEventListener('click', toggleMenuMute);
-});
-
+difficultyToggleMusicBtn.addEventListener('click', toggleMenuMute);
 toggleMusicBtn.addEventListener('click', toggleGameMute);
 
 // Handle music transitions
