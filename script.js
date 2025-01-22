@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(() => {
                 // If autoplay is blocked, add a one-time click listener to the document
                 const startAudio = () => {
-                    if (!isMuted) {
+                    if (!isMenuMuted) {
                         menuMusic.play();
                     }
                     document.removeEventListener('click', startAudio);
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     // Try to play immediately and set up click handler if needed
-    if (!isMuted) {
+    if (!isMenuMuted) {
         playMusic();
     }
 });
@@ -758,7 +758,9 @@ function initSpaceshipGame() {
         gameMusic.pause();
         gameMusic.currentTime = 0;
         menuMusic.currentTime = 0;
-        menuMusic.play();
+        if (!isMenuMuted) {
+            menuMusic.play();
+        }
         
         // Show header and footer
         document.querySelector('.game-header').classList.remove('hidden');
@@ -821,7 +823,7 @@ function initSpaceshipGame() {
             // Switch from menu music to game music
             menuMusic.pause();
             menuMusic.currentTime = 0;
-            if (!isMuted) {
+            if (!isGameMuted) {
                 gameMusic.play();
             }
 
@@ -874,7 +876,7 @@ function initSpaceshipGame() {
         createStars();
         
         // Keep menu music playing during transition
-        if (menuMusic.paused && !isMuted) {
+        if (menuMusic.paused && !isMenuMuted) {
             menuMusic.play();
         }
         
@@ -1099,38 +1101,50 @@ function initSpaceshipGame() {
     update();
 }
 
-// Add at the beginning of initSpaceshipGame
+// Update these variables at the beginning of initSpaceshipGame
 const gameMusic = document.getElementById('game-music');
 const menuMusic = document.getElementById('menu-music');
 const toggleMusicBtn = document.getElementById('game-toggle-music');
 const menuToggleMusicBtn = document.getElementById('toggle-music');
 const difficultyToggleMusicBtn = document.getElementById('difficulty-toggle-music');
-let isMuted = false;
+let isMenuMuted = false;
+let isGameMuted = false;
 
 function updateMuteButtons() {
-    [toggleMusicBtn, menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
-        btn.classList.toggle('muted', isMuted);
-        btn.querySelector('.icon').textContent = isMuted ? '🔈' : '🔊';
+    // Update menu music buttons
+    [menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
+        btn.classList.toggle('muted', isMenuMuted);
+        btn.querySelector('.icon').textContent = isMenuMuted ? '🔈' : '🔊';
     });
+    
+    // Update game music button
+    toggleMusicBtn.classList.toggle('muted', isGameMuted);
+    toggleMusicBtn.querySelector('.icon').textContent = isGameMuted ? '🔈' : '🔊';
 }
 
-function toggleMute() {
-    isMuted = !isMuted;
-    [gameMusic, menuMusic].forEach(audio => {
-        audio.muted = isMuted;
-    });
+function toggleMenuMute() {
+    isMenuMuted = !isMenuMuted;
+    menuMusic.muted = isMenuMuted;
     updateMuteButtons();
 }
 
-// Add click handlers for both mute buttons
-[toggleMusicBtn, menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
-    btn.addEventListener('click', toggleMute);
+function toggleGameMute() {
+    isGameMuted = !isGameMuted;
+    gameMusic.muted = isGameMuted;
+    updateMuteButtons();
+}
+
+// Add click handlers for mute buttons
+[menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
+    btn.addEventListener('click', toggleMenuMute);
 });
+
+toggleMusicBtn.addEventListener('click', toggleGameMute);
 
 // Handle music transitions
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (menuMusic.paused && !isMenuMuted) {
         menuMusic.currentTime = 0;
         menuMusic.play();
     }
@@ -1162,7 +1176,7 @@ function showGameOver() {
 // Add this function to ensure menu music plays when returning to menu
 function playMenuMusic() {
     const menuMusic = document.getElementById('menu-music');
-    if (menuMusic.paused && !isMuted) {
+    if (menuMusic.paused && !isMenuMuted) {
         menuMusic.currentTime = 0;
         menuMusic.play();
     }
