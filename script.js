@@ -4,32 +4,119 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarsAndPlanets();
     createFlyingShips();
     
-    // Start menu music
+    // Initialize audio elements
     const menuMusic = document.getElementById('menu-music');
+    const gameMusic = document.getElementById('game-music');
     menuMusic.volume = 0.7;
+    gameMusic.volume = 0.7;
     
-    // Try to play music immediately
+    // Initialize mute states and buttons
+    let isMenuMuted = false;
+    let isGameMuted = false;
+    
+    const menuToggleMusicBtn = document.getElementById('toggle-music');
+    const difficultyToggleMusicBtn = document.getElementById('difficulty-toggle-music');
+    const gameToggleMusicBtn = document.getElementById('game-toggle-music');
+    
+    function updateMuteButtons() {
+        // Update menu music buttons
+        [menuToggleMusicBtn, difficultyToggleMusicBtn].forEach(btn => {
+            if (btn) {
+                btn.classList.toggle('muted', isMenuMuted);
+                btn.querySelector('.icon').textContent = isMenuMuted ? '🔈' : '🔊';
+            }
+        });
+        
+        // Update game music button
+        if (gameToggleMusicBtn) {
+            gameToggleMusicBtn.classList.toggle('muted', isGameMuted);
+            gameToggleMusicBtn.querySelector('.icon').textContent = isGameMuted ? '🔈' : '🔊';
+        }
+    }
+    
+    function toggleMenuMute() {
+        isMenuMuted = !isMenuMuted;
+        menuMusic.muted = isMenuMuted;
+        updateMuteButtons();
+    }
+    
+    function toggleGameMute() {
+        isGameMuted = !isGameMuted;
+        gameMusic.muted = isGameMuted;
+        updateMuteButtons();
+    }
+    
+    // Add click handlers for all mute buttons
+    if (menuToggleMusicBtn) {
+        menuToggleMusicBtn.addEventListener('click', toggleMenuMute);
+    }
+    if (difficultyToggleMusicBtn) {
+        difficultyToggleMusicBtn.addEventListener('click', toggleMenuMute);
+    }
+    if (gameToggleMusicBtn) {
+        gameToggleMusicBtn.addEventListener('click', toggleGameMute);
+    }
+    
+    // Try to play menu music immediately
     const playMusic = () => {
-        menuMusic.play()
-            .then(() => {
-                console.log('Music started successfully');
-            })
-            .catch(() => {
-                // If autoplay is blocked, add a one-time click listener to the document
-                const startAudio = () => {
-                    if (!isMenuMuted) {
-                        menuMusic.play();
-                    }
-                    document.removeEventListener('click', startAudio);
-                };
-                document.addEventListener('click', startAudio);
-                console.log('Autoplay prevented - waiting for user interaction');
-            });
+        if (!isMenuMuted) {
+            menuMusic.play()
+                .then(() => {
+                    console.log('Menu music started successfully');
+                })
+                .catch(() => {
+                    // If autoplay is blocked, add a one-time click listener to the document
+                    const startAudio = () => {
+                        if (!isMenuMuted) {
+                            menuMusic.play();
+                        }
+                        document.removeEventListener('click', startAudio);
+                    };
+                    document.addEventListener('click', startAudio);
+                    console.log('Autoplay prevented - waiting for user interaction');
+                });
+        }
     };
     
-    // Try to play immediately and set up click handler if needed
-    if (!isMenuMuted) {
-        playMusic();
+    // Try to play immediately
+    playMusic();
+    
+    // Update the difficulty button click handlers to handle music transition
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Stop menu music and start game music
+            menuMusic.pause();
+            menuMusic.currentTime = 0;
+            if (!isGameMuted) {
+                gameMusic.play()
+                    .then(() => {
+                        console.log('Game music started successfully');
+                    })
+                    .catch(error => {
+                        console.log('Error playing game music:', error);
+                    });
+            }
+        });
+    });
+    
+    // Update menu button to handle music transition
+    const menuBtn = document.querySelector('.menu-btn');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            // Stop game music and start menu music
+            gameMusic.pause();
+            gameMusic.currentTime = 0;
+            if (!isMenuMuted) {
+                menuMusic.play()
+                    .then(() => {
+                        console.log('Menu music resumed successfully');
+                    })
+                    .catch(error => {
+                        console.log('Error playing menu music:', error);
+                    });
+            }
+        });
     }
 });
 
